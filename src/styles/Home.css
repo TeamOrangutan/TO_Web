@@ -1,0 +1,12 @@
+.parent {
+    background-color: lightgray;
+    min-height: 300px;
+    display: grid;
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: 100px 200px;
+    gap: 20px
+}
+
+.item {
+    background-color: indigo;
+}
