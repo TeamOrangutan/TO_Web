@@ -36,7 +36,7 @@ nav ul li a {
 
 .Background-image {
     width: 100vw;
-    height: 90vh;
+    height: 100vh;
     object-fit:cover;
     object-position: center;
 }

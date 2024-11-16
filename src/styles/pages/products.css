@@ -1,0 +1,17 @@
+.save-button {
+    background-color: #1E1E1E;
+    color: white;
+  }
+
+  .parent {
+    min-height: 300px;
+    min-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    grid-template-rows: auto;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }

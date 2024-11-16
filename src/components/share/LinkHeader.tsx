@@ -10,6 +10,6 @@ interface MyComponentProps  {
 export const LinkHeader : React.FC<MyComponentProps> = ({isTop, label, route}) => {
 
   return (
-    <Link to={route} style={{ color: isTop && window.location.pathname == '/' ? "white" : "black" }}>{label}</Link>
+    <Link to={route} style={{ color: isTop && window.location.pathname === '/' ? "white" : "black" }}>{label}</Link>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { data } from './data/data';
-import '../styles/components/ListImages.css';
+import { data } from '../../data/imagesBackground';
+import '../../styles/components/ListImages.css';
 
 interface ImageData {
   id: number;
@@ -23,7 +23,7 @@ export const ListImages: React.FC = () => {
             transform: `translateX(-${currentIndex * 100}%)`, 
           }}
         >
-          {data.map((item: ImageData, index: number) => (
+          {data.map((item: ImageData, _index: number) => (
             <li key={item.id}>
               <img src={item.imgUrl} alt={`Image ${item.id}`} className='background-image' />
             </li>
