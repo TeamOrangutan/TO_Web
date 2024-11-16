@@ -6,6 +6,7 @@ export const productData = [
       path: "example.jpg",
       hoverPath: "example1.jpg",
       price: 9.99,
+      estado: "disponible"
     },
     {
       id: 2,
@@ -14,5 +15,6 @@ export const productData = [
       path: "example1.jpg",
       hoverPath: "example.jpg",
       price: 9.99,
+      estado: "disponible"
     },
   ];

@@ -1,9 +1,10 @@
-
 interface productI {
-    id: Number;
-    name: string;
-    description: string;
-    price: number;
-    path: string;
-    hoverPath: string;
-  }
+  id: Number;
+  name: string;
+  description: string;
+  price: number;
+  path: string;
+  hoverPath: string;
+  estado: string;
+  detalles?: string[];
+}

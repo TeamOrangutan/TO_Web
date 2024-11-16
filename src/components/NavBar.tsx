@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Logo1 from "../assets/images/Logo2.png";
-import Logo from "../assets/images/Logo.png";
+import PrimalGarage_Black from "../assets/images/PrimalGarage-Black.png";
+import PrimalGarage_White from "../assets/images/PrimalGarage-White.png";
 import "../styles/components/NavBar.css";
 import { LinkHeader } from "./share/LinkHeader";
 
-export const NavBar = () => {
+export const NavBar: React.FC = () => {
   const [isTop, setIsTop] = useState(true);
   const location = useLocation(); 
 
@@ -45,7 +45,7 @@ export const NavBar = () => {
       </ul>
       <Link to="/">
         <img
-          src={isTop && location.pathname === "/" ? Logo1 : Logo}
+          src={isTop && location.pathname === "/" ? PrimalGarage_White : PrimalGarage_Black}
           alt="PrimalGarage Logo"
           className="Logo"
         />
