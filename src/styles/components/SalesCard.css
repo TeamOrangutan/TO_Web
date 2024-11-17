@@ -1,0 +1,34 @@
+.sales-card {
+    flex: 1;
+    margin: 0 10px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    font-weight: 100;
+  }
+  
+  .sales-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .sales-card.highlight {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .sales-card.default {
+    background-color: #f5f5f5;
+    color: #000;
+  }
+  
+  .sales-card h3 {
+    margin: 0;
+  }
+  
+  .sales-card p {
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  

@@ -1,0 +1,35 @@
+[
+    {
+      "name": "Eliezer Acuña",
+      "email": "eacuna42@gmail.com",
+      "paymentMethod": "Mastercard",
+      "products": ["Producto 1", "Producto 2"],
+      "date": "2024-01-01",
+      "total": 45.0
+    },
+    {
+      "name": "Juan Pérez",
+      "email": "juan.perez@example.com",
+      "paymentMethod": "Visa",
+      "products": ["Producto 3"],
+      "date": "2024-01-02",
+      "total": 60.5
+    },
+    {
+      "name": "María López",
+      "email": "maria.lopez@example.com",
+      "paymentMethod": "PayPal",
+      "products": ["Producto 4", "Producto 5"],
+      "date": "2024-01-03",
+      "total": 120.0
+    },
+    {
+      "name": "Carlos Gómez",
+      "email": "carlos.gomez@example.com",
+      "paymentMethod": "Mastercard",
+      "products": ["Producto 6"],
+      "date": "2024-01-04",
+      "total": 75.0
+    }
+  ]
+  

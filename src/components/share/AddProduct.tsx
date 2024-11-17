@@ -10,6 +10,7 @@ interface ProductI {
   manufacturingPrice: number;
   sizes: string[];
   details: string[];
+  image: string | null;
 }
 
 export const AddProduct: React.FC<{ closeModal: () => void }> = ({
@@ -22,6 +23,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     manufacturingPrice: 0,
     sizes: ["M"],
     details: [],
+    image: null,
   });
   const [count, setCounter] = useState(0);
 
@@ -38,6 +40,20 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
           ? Number(value)
           : value,
     });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProduct({
+          ...product,
+          image: reader.result as string,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAddDetail = () => {
@@ -76,62 +92,90 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
         </button>
         <Title label="AÑADIR PRODUCTO" />
 
-        <input
-          type="text"
-          name="name"
-          value={product.name}
-          onChange={handleInputChange}
-          placeholder="Nombre del producto"
-        />
-        <textarea
-          name="description"
-          value={product.description}
-          onChange={handleInputChange}
-          placeholder="Descripción"
-        />
-        <input
-          type="number"
-          name="salePrice"
-          value={product.salePrice}
-          onChange={handleInputChange}
-          placeholder="Precio de venta"
-        />
-        <input
-          type="number"
-          name="manufacturingPrice"
-          value={product.manufacturingPrice}
-          onChange={handleInputChange}
-          placeholder="Precio de fabricación"
-        />
+        {/* Contenedor para imagen y inputs */}
+        <div className="modal-body">
+          {/* Imagen del producto */}
+          <div className="image-upload">
+            <input
+              type="file"
+              onChange={handleImageChange}
+              accept="image/*"
+              id="product-image"
+              style={{ display: "none" }}
+            />
+            <label htmlFor="product-image" className="image-label">
+              {product.image ? (
+                <img src={product.image} alt="Producto" className="preview-image" />
+              ) : (
+                <span>+</span>
+              )}
+            </label>
+          </div>
 
-        <select
-          name="sizes"
-          value={product.sizes[0]}
-          onChange={handleInputChange}
-        >
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-        </select>
+          <div className="inputs">
+            <input
+              type="text"
+              name="name"
+              value={product.name}
+              onChange={handleInputChange}
+              placeholder="Nombre del producto"
+            />
+            <textarea
+              name="description"
+              value={product.description}
+              onChange={handleInputChange}
+              placeholder="Descripción"
+            />
+            <input
+              type="number"
+              name="salePrice"
+              value={product.salePrice}
+              onChange={handleInputChange}
+              placeholder="Precio de venta"
+            />
+            <input
+              type="number"
+              name="manufacturingPrice"
+              value={product.manufacturingPrice}
+              onChange={handleInputChange}
+              placeholder="Precio de fabricación"
+            />
 
-        <div className="details">
-          <h3>Detalles:</h3>
-          <ul>
-            {product.details.map((detalle, index) => (
-              <li key={index}>
-                {detalle}{" "}
-                <button onClick={() => handleRemoveDetail(index)}>✖</button>
-              </li>
-            ))}
-          </ul>
-          <button onClick={handleAddDetail}>Agregar detalle</button>
+            <select
+              name="sizes"
+              value={product.sizes[0]}
+              onChange={handleInputChange}
+            >
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+            </select>
+
+            <div className="details">
+              <h3>Detalles:</h3>
+              <ul>
+                {product.details.map((detalle, index) => (
+                  <li key={index}>
+                    {detalle}{" "}
+                    <button onClick={() => handleRemoveDetail(index)}>✖</button>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={handleAddDetail}
+                disabled={count >= 3}
+              >
+                {count < 3 ? "Agregar detalle" : "Límite de detalles alcanzado"}
+              </button>
+            </div>
+          </div>
+
         </div>
-
-        <div className="actions">
-          <button onClick={handleSaveChanges} className="cancel-button">Cancelar</button>
-          <button onClick={handleSaveChanges} className="save-button">Guardar</button>
-        </div>
+          <div className="actions">
+            <button onClick={closeModal} className="cancel-button">Cancelar</button>
+            <button onClick={handleSaveChanges} className="save-button">Guardar</button>
+          </div>
       </div>
     </motion.div>
   );

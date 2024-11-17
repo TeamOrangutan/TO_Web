@@ -57,14 +57,15 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
         <select
           id="estado"
           name="estado"
-          value={product.estado!}
+          value={product.estado}
           onChange={handleInputChange}
-          style={{ width: "100px" }}
+          style={{ width: "200px" }}
         >
           <option value="disponible">Disponible</option>
           <option value="agotado">Agotado</option>
         </select>
 
+        <label htmlFor="detalles">Detalles:</label>
         <ul className="details-list">
           {product.detalles?.map((detalle, index) => (
             <li key={index}>
@@ -72,9 +73,14 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
                 type="text"
                 value={detalle}
                 onChange={(e) => {
-                  const updatedDetalles = [...(product.detalles || [])];
+                  const updatedDetalles = [...product.detalles!];
                   updatedDetalles[index] = e.target.value;
-                  handleInputChange(e);
+                  handleInputChange({
+                    target: {
+                      name: "detalles",
+                      value: updatedDetalles
+                    }
+                  });
                 }}
                 className="editable-detail"
               />
@@ -86,11 +92,13 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
               </button>
             </li>
           ))}
-          <li>
-            <button className="add-button" onClick={handleAddDetail}>
-              Agregar +
-            </button>
-          </li>
+          {(product.detalles || []).length < 4 && (
+            <li>
+              <button className="add-button" onClick={handleAddDetail}>
+                Agregar +
+              </button>
+            </li>
+          )}
         </ul>
       </div>
     </div>

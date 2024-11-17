@@ -43,7 +43,7 @@ export const UpdateProducts: React.FC = () => {
   };
 
   const handleAddDetail = () => {
-    if (product && count < 3) {
+    if (product && count < 4) {
       const detalles = product.detalles || [];
       setProduct({ ...product, detalles: [...detalles, `Nuevo Detalle`] });
       setCounter(count + 1);

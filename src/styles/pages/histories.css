@@ -1,0 +1,64 @@
+.histories-container {
+  margin-top: 100px;
+  padding: 0 20px;
+}
+
+.histories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.histories-header label {
+  font-weight: bold;
+}
+
+.histories-header select {
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.histories-header input {
+  padding: 5px 10px;
+  font-size: 16px;
+  width: 100%;
+}
+.histories-table th {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  background-color: #f5f5f5;
+  font-weight: lighter;
+  font-size: 14px;
+  color: #666; 
+}
+.cards-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.histories-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.histories-table th {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+.histories-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.histories-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}

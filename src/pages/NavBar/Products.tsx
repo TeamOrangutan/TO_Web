@@ -1,21 +1,27 @@
-import React, { useRef } from "react";
+import React, {useState} from "react";
 import { Title } from "../../components/Title";
 import "../../styles/pages/products.css";
 import { ProductCard } from "../../components/share/productCard";
+import "../../styles/Home.css";
 import ScrollToTop from "../../routers/ScrollToTop";
-import { motion, useInView } from "framer-motion";
-
+import {motion} from 'framer-motion'
+import { AddProduct } from '../../components/share/AddProduct';
 export const Products: React.FC = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref);
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
   };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   const productData = Array.from({ length: 10 }, (_, index) => ({
     id: index + 1,
     name: "TE PASO UN FÓSFORO",
     path: "example.jpg",
+    estado: "disponible",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     price: 9.99,
@@ -26,33 +32,37 @@ export const Products: React.FC = () => {
       <ScrollToTop />
       <div style={{ marginTop: "100px" }}>
         <Title label="TODOS LOS PRODUCTOS" />
-        <button className="save-button">Agregar</button>
-        <motion.div
-          className="parent"
-          initial="hidden"
-          animate="visible"
-          transition={{ staggerChildren: 0.05 }}
-        >
-          {productData.map((product) => (
+        <div style={{ flexDirection: "row", display: "flex", gap: 15 }}>
+          <div className="cancel-button">Ordenar por</div> {/*Cambiar*/}
+          <div>
+            {/* Este es el contenedor del icono */}
             <motion.div
-              ref={ref}
-              key={product.id}
-              variants={cardVariants}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              animate={isInView ? "visible" : "hidden"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              onClick={openModal}
             >
-              <ProductCard
-                name={product.name}
-                path={product.path}
-                id={product.id}
-                description={product.description}
-                price={product.price}
-                hoverPath={product.hoverPath}
-              />
             </motion.div>
+
+            <button className="save-button" onClick={openModal}>
+              Agregar
+            </button>
+            {isModalOpen && <AddProduct closeModal={closeModal} />}
+          </div>
+        </div>
+        <div className="parent">
+          {productData.map((product) => (
+            <ProductCard
+              name={product.name}
+              path={product.path}
+              id={product.id}
+              estado={product.estado}
+              description={product.description}
+              price={product.price}
+              hoverPath={product.hoverPath}
+            />
           ))}
-        </motion.div>
+        </div>
       </div>
     </>
   );

@@ -7,37 +7,44 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  width: 300px; 
+  width: 300px;
+  justify-content: center;
+  align-items: center;
   height: 400px; 
   font-size: medium;
   font-weight: 100;
-  justify-content: center;
-  align-items: center;
 }
 
 .icon {
-  font-size: 80px; 
-  color: #777; 
+  font-size: 80px;
+  color: #777;
   font-weight: lighter;
 }
+
 .card-image {
   width: 100%;
-  height: auto;
+  height: 400px;
+  background-color: red;
   object-fit: cover;
 }
 
 .card-content {
-  margin-top: 10px;
+  margin-top: auto; 
+  padding: 10px;
   text-align: center;
+  background-color: #f8f8f8;
+  height: 100px;
+  overflow: hidden;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-
 .card-actions {
-  position: absolute; 
+  position: absolute;
   top: 10px;
-  right: 10px; 
-  display: flex; 
-  flex-direction: column; 
+  right: 10px;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   z-index: 1;
 }
@@ -47,24 +54,28 @@
   width: 40px;
   background-color: #f0f0f0;
   border: none;
-  border-radius: 50%; 
-  display: flex; 
+  border-radius: 50%;
+  display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-  transition: background-color 0.3s ease; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
 }
 
 .card-actions button:hover {
-  background-color: #d1d1d1; 
+  background-color: #d1d1d1;
 }
 
 .add-product-container {
   position: fixed;
-  bottom: 20px; 
-  right: 20px; 
+  bottom: 20px;
+  right: 20px;
   z-index: 1050;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-
+.add-product-container:hover {
+  transform: scale(1.1);
+}
