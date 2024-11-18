@@ -7,4 +7,5 @@ interface productI {
   hoverPath: string;
   estado: string;
   detalles?: string[];
+  onProductDeleted?: any;
 }

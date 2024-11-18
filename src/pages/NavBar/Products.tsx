@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Title } from "../../components/Title";
 import "../../styles/pages/products.css";
 import { ProductCard } from "../../components/share/productCard";
@@ -6,18 +6,34 @@ import ScrollToTop from "../../routers/ScrollToTop";
 import { motion } from "framer-motion";
 import { AddProduct } from "../../components/share/AddProduct";
 import { SortSelector } from "../../components/SortSelector";
-import data from "../../data/product.json"; 
+import axios from "axios";
 import "../../styles/pages/histories.css";
 
 export const Products: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState(data);
-  const [sortBy, setSortBy] = useState("Fecha de publicacion");
+  const [products, setProducts] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState("fecha_de_publicacion");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-  const options = [
-    { label: 'Fecha de publicacion' },
-    { label: 'Precio' }
-  ];
+  const options = [{ label: "fecha_de_publicacion" }, { label: "precio" }];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/products");
+        const updatedProducts = response.data.map((product: any) => ({
+          ...product,
+          path: `http://localhost:3000/api/products/file/${product.path}`,
+          hoverPath: `http://localhost:3000/api/products/file/${product.hoverPath}`,
+        }));
+        setProducts(updatedProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -25,18 +41,62 @@ export const Products: React.FC = () => {
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSortBy = e.target.value;
     setSortBy(newSortBy);
-
-    setFilteredData(applySort(filteredData, newSortBy));
+    const sortedProducts = applySort(products, newSortBy, sortOrder);
+    setProducts(sortedProducts);
   };
 
-  const applySort = (dataToSort: typeof data, sortBy: string) => {
+  const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newOrder = e.target.value;
+    setSortOrder(newOrder);
+    const sortedProducts = applySort(products, sortBy, newOrder);
+    setProducts(sortedProducts);
+  };
+
+  const applySort = (dataToSort: any[], sortBy: string, sortOrder: string) => {
     switch (sortBy) {
-      case "Fecha de publicacion":
-        return [...dataToSort].sort((a, b) => new Date(a.fecha_de_publicacion).getTime() - new Date(b.fecha_de_publicacion).getTime());
-      case "Precio":
-        return [...dataToSort].sort((a, b) => a.price - b.price);
+      case "fecha_de_publicacion":
+        return [...dataToSort].sort((a, b) => {
+          const dateA = new Date(a.fecha_de_publicacion).getTime();
+          const dateB = new Date(b.fecha_de_publicacion).getTime();
+          return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+        });
+      case "precio":
+        return [...dataToSort].sort((a, b) => {
+          return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+        });
       default:
         return dataToSort;
+    }
+  };
+
+  const handleProductDeleted = (id: string) => {
+    setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+  };
+
+  const handleProductCreation = async () => {
+    try {
+      const newProduct = {
+        name: "Nuevo Producto",
+        descripcion: "Descripción",
+        precio: 100,
+        manufacturingPrice: 50,
+        images: [],
+      };
+
+      const response = await axios.post(
+        "http://localhost:3000/api/products",
+        newProduct
+      );
+
+      if (response.status === 201) {
+        const updatedProducts = await axios.get(
+          "http://localhost:3000/api/products"
+        );
+        setProducts(updatedProducts.data);
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Error al crear el producto:", error);
     }
   };
 
@@ -45,10 +105,22 @@ export const Products: React.FC = () => {
       <ScrollToTop />
       <div style={{ marginTop: "100px" }}>
         <Title label="TODOS LOS PRODUCTOS" />
-        
         <div style={{ flexDirection: "row", display: "flex", gap: 15 }}>
           <div className="histories-header">
-            <SortSelector value={sortBy} onChange={handleSortChange} options={options} />
+            <SortSelector
+              value={sortBy}
+              onChange={handleSortChange}
+              options={options}
+            />
+            <SortSelector
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+              options={[
+                { label: "asc" }, 
+                { label: "desc" }
+              ]}
+              labelText='De forma:'
+            />
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -63,7 +135,7 @@ export const Products: React.FC = () => {
 
         {/* Productos */}
         <div className="parent">
-          {filteredData.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               name={product.name}
@@ -73,6 +145,7 @@ export const Products: React.FC = () => {
               description={product.description}
               price={product.price}
               hoverPath={product.hoverPath}
+              onProductDeleted={handleProductDeleted}
             />
           ))}
         </div>

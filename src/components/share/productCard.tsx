@@ -6,6 +6,7 @@ import { fadeConfig } from "../../utils/motionConfig";
 import { SlPencil } from "react-icons/sl";
 import { AiOutlineDelete } from "react-icons/ai";
 import swal from "sweetalert";
+import axios from "axios"; // Asegúrate de instalar axios
 
 export const ProductCard: React.FC<productI> = ({
   id,
@@ -13,28 +14,49 @@ export const ProductCard: React.FC<productI> = ({
   price,
   path,
   hoverPath,
+  onProductDeleted, 
 }) => {
-  const formatPrice = (price: number): string => price.toFixed(2);
-  const [currentImg, setCurrentImg] = useState<string>(path);
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(price);
+  };
 
+  const [currentImg, setCurrentImg] = useState<string>(`${path}`);
   const navigate = useNavigate();
 
   const changeRoute = (path: string) => navigate(path);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     swal({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este producto.",
       icon: "warning",
       buttons: ["Cancelar", "Eliminar"],
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete) {
-        // Aquí iría la lógica para eliminar el producto
-        console.log(`Producto con ID ${id} eliminado`);
-        swal("¡Producto eliminado!", {
-          icon: "success",
-        });
+        try {
+          // Realizar solicitud DELETE al backend
+          const response = await axios.delete(`http://localhost:3000/api/products/${id}`);
+
+          if (response.status === 200) {
+            swal("¡Producto eliminado!", {
+              icon: "success",
+            });
+
+            // Llamar a la función para eliminar el producto de la lista en el frontend
+            if (onProductDeleted) {
+              onProductDeleted(id); // Enviar el ID del producto eliminado
+            }
+          }
+        } catch (error) {
+          console.error("Error al eliminar el producto:", error);
+          swal("Hubo un error al eliminar el producto.", {
+            icon: "error",
+          });
+        }
       } else {
         swal("El producto está a salvo.");
       }
@@ -44,8 +66,8 @@ export const ProductCard: React.FC<productI> = ({
   return (
     <div
       className="card"
-      onMouseEnter={() => setCurrentImg(hoverPath)}
-      onMouseLeave={() => setCurrentImg(path)}
+      onMouseEnter={() => setCurrentImg(`${hoverPath}`)}
+      onMouseLeave={() => setCurrentImg(`${path}`)}
     >
       <div className="card-actions">
         <button
@@ -69,7 +91,7 @@ export const ProductCard: React.FC<productI> = ({
 
       <div className="card-content">
         <p>{name}</p>
-        <p>{`$ ${formatPrice(price)}`}</p>
+        <p>{formatPrice(price)}</p> 
       </div>
     </div>
   );

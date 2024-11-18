@@ -34,12 +34,16 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     >
   ) => {
     const { name, value } = e.target;
+  
+    // Si el valor es vacío, asignar 0
     setProduct({
       ...product,
       [name]:
         name === "salePrice" || name === "manufacturingPrice"
-          ? Number(value)
-          : 1,
+          ? value === "" 
+            ? 0
+            : parseFloat(value) 
+          : value, 
     });
   };
 
@@ -195,7 +199,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
               <div className="input">
                 <span>$</span>
                 <input
-                  type="number"
+                  type="text"
                   name="salePrice"
                   value={product.salePrice}
                   onChange={handleInputChange}
@@ -206,7 +210,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
               <div className="input">
                 <span>$</span>
                 <input
-                  type="number"
+                  type="text"
                   name="manufacturingPrice"
                   value={product.manufacturingPrice}
                   onChange={handleInputChange}
