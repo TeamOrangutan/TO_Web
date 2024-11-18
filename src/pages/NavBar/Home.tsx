@@ -44,7 +44,7 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.5 }}
             onClick={openModal}
           >
-            <AiOutlinePlus data-tip="Añadir Producto" className="icon" />
+            <AiOutlinePlus data-tip="Añadir Producto"  size={40} color="#777"/>
           </motion.div>
 
           {isModalOpen && <AddProduct closeModal={closeModal} />}

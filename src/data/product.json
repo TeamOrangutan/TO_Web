@@ -1,0 +1,76 @@
+[
+    {
+        "id": 1,
+        "name": "Producto 1",
+        "path": "gorra (1).png",
+        "estado": "disponible",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "price": 9.99,
+        "hoverPath": "gorra (2).png",
+        "fecha_de_publicacion": "2024-11-01"
+    },
+    {
+        "id": 2,
+        "name": "Producto 2",
+        "path": "gorra1 (1).png",
+        "estado": "agotado",
+        "description": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "price": 15.99,
+        "hoverPath": "gorra1 (2).png",
+        
+        "fecha_de_publicacion": "2024-11-02"
+    },
+    {
+        "id": 3,
+        "name": "Producto 3",
+        "path": "camisa.png",
+        "estado": "disponible",
+        "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "price": 25.99,
+        "hoverPath": "camisa1.png",
+        "fecha_de_publicacion": "2024-11-03"
+    },
+    {
+        "id": 4,
+        "name": "Producto 4",
+        "path": "gorros (1).png",
+        "estado": "disponible",
+        "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "price": 19.99,
+        "hoverPath": "gorros (2).png",
+        "fecha_de_publicacion": "2024-11-04"
+    },
+    {
+        "id": 5,
+        "name": "Producto 5",
+        "path": "gorra2 (2).png",
+        "estado": "agotado",
+        "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "price": 12.99,
+        "hoverPath": "gorra2 (1).png",
+
+        "fecha_de_publicacion": "2024-11-05"
+    }, 
+    {
+        "id": 6,
+        "name": "Producto 6",
+        "path": "camisa2 (1).png",
+        "estado": "agotado",
+        "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "price": 7.99,
+        "hoverPath": "camisa2 (2).png",
+
+        "fecha_de_publicacion": "2024-11-05"
+    },
+    {
+        "id": 7,
+        "name": "Producto 6",
+        "path": "camisa3 (1).png",
+        "estado": "agotado",
+        "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "price": 7.99,
+        "hoverPath": "camisa3 (2).png",
+
+        "fecha_de_publicacion": "2024-11-05"
+    }
+]

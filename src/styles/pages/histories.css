@@ -1,38 +1,53 @@
 .histories-container {
   margin-top: 100px;
   padding: 0 20px;
+  width: 60vw;
 }
 
 .histories-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
+  align-items: center;
+  gap: 15px;
 }
 
 .histories-header label {
-  font-weight: bold;
+  position: relative;
+  font-weight: lighter;
+  font-size: 12px;
+  background-color: #fff;
+  top: 8px;
+  left: 8px;
+}
+
+.order {
+  align-items: start;
 }
 
 .histories-header select {
-  margin-left: 10px;
   padding: 5px;
-  font-size: 16px;
+  font-size: 12px;
+  background-color: #fff;
+  height: 40px;
+  border-color: #666;
 }
 
 .histories-header input {
   padding: 5px 10px;
-  font-size: 16px;
-  width: 100%;
+  font-size: 12px;
+  height: 40px;
+  width: 16vw;
+  margin-top: 19px;
+  border-color: #666;
 }
 .histories-table th {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
   background-color: #f5f5f5;
-  font-weight: lighter;
   font-size: 14px;
-  color: #666; 
+  color: #666;
 }
 .cards-container {
   display: flex;
@@ -57,8 +72,41 @@
 .histories-table td {
   padding: 10px;
   border: 1px solid #ddd;
+  font-size: 12px;
 }
 
 .histories-table tr:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* .search-container input::placeholder {
+  color: #999;
+  font-size: 12px;
+  text-align: right;
+} */
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-container input {
+  padding-left: 50px;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  bottom: 20px;
+  font-size: 20px;
+  color: #666;
 }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { data } from '../../data/imagesBackground';
-import '../../styles/components/ListImages.css';
+import React, { useState } from "react";
+import { data } from "../../data/imagesBackground";
+import "../../styles/components/ListImages.css";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 interface ImageData {
   id: number;
@@ -17,27 +18,31 @@ export const ListImages: React.FC = () => {
   return (
     <div className="slider-container">
       <div className="container-images">
-        <ul 
-          className="image-list" 
+        <ul
+          className="image-list"
           style={{
-            transform: `translateX(-${currentIndex * 100}%)`, 
+            transform: `translateX(-${currentIndex * 100}%)`,
           }}
         >
           {data.map((item: ImageData, _index: number) => (
             <li key={item.id}>
-              <img src={item.imgUrl} alt={`Image ${item.id}`} className='background-image' />
+              <img
+                src={item.imgUrl}
+                alt={`Image ${item.id}`}
+                className="background-image"
+              />
             </li>
           ))}
         </ul>
-
         <div className="navigation-dots">
           {data.map((_, index) => (
             <span
-              key={index}
-              className={`dot ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => handlePointClick(index)} 
+            key={index}
+            className={`dot ${index === currentIndex ? "active" : ""}`}
+            onClick={() => handlePointClick(index)}
             />
           ))}
+          <MdOutlineKeyboardArrowDown className="arrowIcon" />
         </div>
       </div>
     </div>

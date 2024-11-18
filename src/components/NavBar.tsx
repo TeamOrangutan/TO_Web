@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import PrimalGarage_Black from "../assets/images/PrimalGarage-Black.png";
-import PrimalGarage_White from "../assets/images/PrimalGarage-White.png";
+import PrimalGarage_Black from "../assets/images/PrimalGarage-Black.webp";
+import PrimalGarage_White from "../assets/images/PrimalGarage-White.webp";
 import "../styles/components/NavBar.css";
 import { LinkHeader } from "./share/LinkHeader";
 

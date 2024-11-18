@@ -1,74 +1,75 @@
 /* addProduct.css */
 .product-form {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .product-image {
-    width: 150px;
-    height: 150px;
-    border: 2px dashed #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .add-image-button {
-    font-size: 24px;
-    color: #999;
-  }
-  
-  .form-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex-grow: 1;
-  }
-  
-  .product-input {
-    padding: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .sizes select {
-    width: 100px;
-  }
-  
-  .details ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  
-  .details button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .action-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  .cancel-button, .save-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-  }
-  
-  .cancel-button {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  .save-button {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+}
+
+.product-image {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-image-button {
+  font-size: 24px;
+  color: #999;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.product-input {
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.sizes select {
+  width: 100px;
+}
+
+.details ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.details button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #000;
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.cancel-button,
+.save-button {
+  padding: 10px 20px;
+  font-weight: 100;
+}
+
+.cancel-button {
+  background-color: #fff;
+  color: #000;
+  border: #000 solid 1px;
+}
+
+.save-button {
+  background-color: #000;
+  color: white;
+}

@@ -1,8 +1,12 @@
+// src/pages/Histories.tsx
 import React, { useState } from "react";
 
 import "../../styles/pages/histories.css";
-import data from '../../data/data.json'
+import data from "../../data/data.json";
 import { SalesCard } from "../../components/SalesCard";
+import { Title } from "../../components/Title";
+import { CiSearch } from "react-icons/ci";
+import { SortSelector } from "../../components/SortSelector"; 
 
 export const Histories: React.FC = () => {
   const cardsData = [
@@ -15,6 +19,18 @@ export const Histories: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState(data);
   const [sortBy, setSortBy] = useState("Fecha de venta");
+
+  const option = [
+    {
+      label: "Fecha de venta"
+    }, 
+    {
+      label: "Monto total"
+    }, 
+    {
+      label: "Método de pago"
+    }, 
+  ]
 
   // Manejar búsqueda
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +59,18 @@ export const Histories: React.FC = () => {
     setFilteredData(applySort(filteredData, newSortBy));
   };
 
-  // Función para aplicar ordenación
   const applySort = (dataToSort: typeof data, sortBy: string) => {
     switch (sortBy) {
       case "Fecha de venta":
-        return [...dataToSort].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        return [...dataToSort].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
       case "Monto total":
         return [...dataToSort].sort((a, b) => b.total - a.total);
       case "Método de pago":
-        return [...dataToSort].sort((a, b) => a.paymentMethod.localeCompare(b.paymentMethod));
+        return [...dataToSort].sort((a, b) =>
+          a.paymentMethod.localeCompare(b.paymentMethod)
+        );
       default:
         return dataToSort;
     }
@@ -59,21 +78,16 @@ export const Histories: React.FC = () => {
 
   return (
     <div className="histories-container">
-      <h1 style={{ textAlign: "center", fontWeight: "bold" }}>HISTORIAL DE VENTAS</h1>
+      <Title label="HISTORIAL DE VENTAS" />
 
       <div className="histories-header">
-        <div>
-          <label htmlFor="filter">Ordenar por:</label>
-          <select id="filter" value={sortBy} onChange={handleSortChange}>
-            <option value="Fecha de venta">Fecha de venta</option>
-            <option value="Monto total">Monto total</option>
-            <option value="Método de pago">Método de pago</option>
-          </select>
-        </div>
-        <div>
+        <SortSelector value={sortBy} onChange={handleSortChange} options={option}/>
+
+        <div className="search-container">
+          <CiSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Buscar en el historial"
+            placeholder={"Buscar en el historial"}
             value={searchQuery}
             onChange={handleSearch}
           />
@@ -94,7 +108,14 @@ export const Histories: React.FC = () => {
       <table className="histories-table">
         <thead>
           <tr>
-            {["NOMBRE", "CORREO", "MÉTODO DE PAGO", "PRODUCTOS", "FECHA", "TOTAL"].map((header, index) => (
+            {[
+              "NOMBRE",
+              "CORREO",
+              "MÉTODO DE PAGO",
+              "PRODUCTOS",
+              "FECHA",
+              "TOTAL",
+            ].map((header, index) => (
               <th key={index}>{header}</th>
             ))}
           </tr>

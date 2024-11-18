@@ -5,6 +5,7 @@ import "../../styles/components/productCard.css";
 import { fadeConfig } from "../../utils/motionConfig";
 import { SlPencil } from "react-icons/sl";
 import { AiOutlineDelete } from "react-icons/ai";
+import swal from "sweetalert";
 
 export const ProductCard: React.FC<productI> = ({
   id,
@@ -13,14 +14,32 @@ export const ProductCard: React.FC<productI> = ({
   path,
   hoverPath,
 }) => {
-  const formatPrice = (price: number): string => {
-    return price.toFixed(2);
-  };
+  const formatPrice = (price: number): string => price.toFixed(2);
+  const [currentImg, setCurrentImg] = useState<string>(path);
 
   const navigate = useNavigate();
 
   const changeRoute = (path: string) => navigate(path);
-  const [currentImg, setCurrentImg] = useState<string>(path);
+
+  const handleDelete = () => {
+    swal({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este producto.",
+      icon: "warning",
+      buttons: ["Cancelar", "Eliminar"],
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        // Aquí iría la lógica para eliminar el producto
+        console.log(`Producto con ID ${id} eliminado`);
+        swal("¡Producto eliminado!", {
+          icon: "success",
+        });
+      } else {
+        swal("El producto está a salvo.");
+      }
+    });
+  };
 
   return (
     <div
@@ -35,8 +54,8 @@ export const ProductCard: React.FC<productI> = ({
         >
           <SlPencil size={14} />
         </button>
-        <button className="delete-button">
-          <AiOutlineDelete color="black" size={20}/>
+        <button className="delete-button" onClick={handleDelete}>
+          <AiOutlineDelete color="black" size={20} />
         </button>
       </div>
 

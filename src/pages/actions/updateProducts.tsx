@@ -5,7 +5,6 @@ import "../../styles/pages/updateProduct.css";
 import { Title } from "../../components/Title";
 import { EditProduct } from "../../components/EditProduct";
 
-
 function getDataById(id: number): productI | undefined {
   return productData.find((item) => item.id === id);
 }
@@ -18,7 +17,7 @@ export const UpdateProducts: React.FC = () => {
 
   useEffect(() => {
     if (productid) {
-      console.log("Product ID from URL:", productid); // Agregar este log
+      console.log("Product ID from URL:", productid);
       const fetchedProduct = getDataById(Number(productid));
       setProduct(fetchedProduct);
     }
@@ -74,13 +73,15 @@ export const UpdateProducts: React.FC = () => {
         handleRemoveDetail={handleRemoveDetail}
       />
 
-      <div className="action-buttons">
-        <button className="cancel-button" onClick={handleGoBack}>
-          Cancelar
-        </button>
-        <button className="save-button" onClick={handleSaveChanges}>
-          Guardar
-        </button>
+      <div className="actions">
+        <div className="actions-container">
+          <button className="cancel-button" onClick={handleGoBack}>
+            Cancelar
+          </button>
+          <button className="save-button" onClick={handleSaveChanges}>
+            Guardar
+          </button>
+        </div>
       </div>
     </div>
   );
