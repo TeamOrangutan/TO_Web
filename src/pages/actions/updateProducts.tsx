@@ -1,31 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { productData } from "../../data/products";
+import axios from "axios";
 import "../../styles/pages/updateProduct.css";
 import { Title } from "../../components/Title";
 import { EditProduct } from "../../components/EditProduct";
 
-function getDataById(id: number): productI | undefined {
-  return productData.find((item) => item.id === id);
-}
-
 export const UpdateProducts: React.FC = () => {
   const navigate = useNavigate();
   const { productid } = useParams<{ productid: string }>();
-  const [product, setProduct] = useState<productI | undefined>(undefined);
-  const [count, setCounter] = useState(0);
+  const [product, setProduct] = useState<any | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (productid) {
-      console.log("Product ID from URL:", productid);
-      const fetchedProduct = getDataById(Number(productid));
-      setProduct(fetchedProduct);
-    }
+    const fetchProductData = async () => {
+      if (productid) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/api/products/${productid}`
+          );
+          setProduct(response.data);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching product:", error);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProductData();
   }, [productid]);
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  if (loading) return <div>Cargando...</div>;
+
+  if (!product) return <div>Producto no encontrado.</div>;
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -33,45 +40,35 @@ export const UpdateProducts: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-    if (product) {
-      setProduct({
-        ...product,
-        [name]: name === "price" ? Number(value) : value,
+    setProduct({
+      ...product,
+      [name]: name === "price" ? Number(value) : value,
+    });
+  };
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      console.log(product);
+      await axios.put(`http://localhost:3000/api/products/${productid}`, {
+        nombre: product.name,
+        descripcion: product.description,
+        precioVenta: product.price,
       });
+      alert("Producto actualizado con éxito!");
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Hubo un error al actualizar el producto.");
     }
   };
-
-  const handleAddDetail = () => {
-    if (product && count < 4) {
-      const detalles = product.detalles || [];
-      setProduct({ ...product, detalles: [...detalles, `Nuevo Detalle`] });
-      setCounter(count + 1);
-    }
-  };
-
-  const handleRemoveDetail = (index: number) => {
-    if (product?.detalles) {
-      const updatedDetalles = product.detalles.filter((_, i) => i !== index);
-      setProduct({ ...product, detalles: updatedDetalles });
-      setCounter(count - 1);
-    }
-  };
-
-  const handleSaveChanges = () => {
-    console.log("Producto actualizado:", product);
-  };
-
-  if (!product) return <div>Cargando...</div>;
 
   return (
     <div style={{ marginTop: "100px" }}>
       <Title label="ACTUALIZAR PRODUCTO" />
-      <EditProduct
-        product={product}
-        handleInputChange={handleInputChange}
-        handleAddDetail={handleAddDetail}
-        handleRemoveDetail={handleRemoveDetail}
-      />
+      <EditProduct product={product} handleInputChange={handleInputChange} />
 
       <div className="actions">
         <div className="actions-container">

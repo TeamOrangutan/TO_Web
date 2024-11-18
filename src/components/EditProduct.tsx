@@ -7,6 +7,7 @@ interface ProductContainerProps {
     description: string;
     estado: string;
     detalles?: string[];
+    path?: string;
   };
   handleInputChange: (
     e: React.ChangeEvent<
@@ -23,10 +24,21 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
   handleAddDetail,
   handleRemoveDetail,
 }) => {
+  const handleDetailChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updatedDetalles = [...(product.detalles || [])];
+    updatedDetalles[index] = e.target.value;
+    handleInputChange({
+      target: { name: "detalles", value: updatedDetalles },
+    });
+  };
+
   return (
     <div className="product-container">
       <div className="image-container">
-        <img src="/example.jpg" alt={product.name} className="product-image" />
+        <img src={`http://localhost:3000/api/products/file/${product.path}`} alt={product.name} className="product-image" />
       </div>
 
       <div className="edit-container">
@@ -67,21 +79,12 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
 
         <label htmlFor="detalles">Detalles:</label>
         <ul className="details-list">
-          {product.detalles?.map((detalle, index) => (
+          {(product.detalles || []).map((detalle, index) => (
             <li key={index}>
               <input
                 type="text"
                 value={detalle}
-                onChange={(e) => {
-                  const updatedDetalles = [...product.detalles!];
-                  updatedDetalles[index] = e.target.value;
-                  handleInputChange({
-                    target: {
-                      name: "detalles",
-                      value: updatedDetalles
-                    }
-                  });
-                }}
+                onChange={(e) => handleDetailChange(e, index)}
                 className="editable-detail"
               />
               <button
@@ -92,7 +95,7 @@ export const EditProduct: React.FC<ProductContainerProps> = ({
               </button>
             </li>
           ))}
-          {(product.detalles || []).length < 4 && (
+          {(product.detalles?.length || 0) < 4 && (
             <li>
               <button className="add-button" onClick={handleAddDetail}>
                 Agregar +
