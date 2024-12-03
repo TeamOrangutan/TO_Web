@@ -1,43 +1,59 @@
-// src/pages/Histories.tsx
-import React, { useState } from "react";
-
-import "../../styles/pages/histories.css";
-import data from "../../data/data.json";
+import React, { useState, useEffect } from "react";
+import { CiSearch } from "react-icons/ci";
 import { SalesCard } from "../../components/SalesCard";
 import { Title } from "../../components/Title";
-import { CiSearch } from "react-icons/ci";
-import { SortSelector } from "../../components/SortSelector"; 
+import { SortSelector } from "../../components/SortSelector";
+import { getBills, getSales } from "../../api/service/bill.service";
+import Modal from "../../components/share/Modal";
 
 export const Histories: React.FC = () => {
-  const cardsData = [
-    { label: "Ventas Totales", amount: "$ 00,000.00", isHighlighted: true },
-    { label: "Ventas mensuales", amount: "$ 00,000.00" },
-    { label: "Ventas Semanales", amount: "$ 00,000.00" },
-    { label: "Ventas de Hoy", amount: "$ 00,000.00" },
-  ];
-
+  const [dataSales, setDataSales] = useState<salesI>();
+  const [data, setData] = useState<billI[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState(data);
   const [sortBy, setSortBy] = useState("Fecha de venta");
+  const [modalVisible, setModalVisible] = useState(false); // Estado para mostrar el modal
 
-  const option = [
-    {
-      label: "Fecha de venta"
-    }, 
-    {
-      label: "Monto total"
-    }, 
-    {
-      label: "Método de pago"
-    }, 
-  ]
+  interface Product {
+    name: string;
+    price: number;
+    quantity: number;
+    total: number;
+  }
+  const cardsData = [
+    { label: "Ventas Totales", isHighlighted: true },
+    { label: "Ventas mensuales" },
+    { label: "Ventas Semanales" },
+    { label: "Ventas de Hoy" },
+  ];
+  const selectedProducts: Product[] = [
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
+    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 }
+  ];
 
-  // Manejar búsqueda
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res: salesI = await getSales();
+        const response: billI[] = await getBills();
+        setDataSales(res);
+        setFilteredData(response);
+        setData(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
-    // Filtrar datos por búsqueda y aplicar el filtro actual
     const filtered = data.filter(
       (item) =>
         item.name.toLowerCase().includes(query) ||
@@ -46,16 +62,12 @@ export const Histories: React.FC = () => {
         item.date.includes(query) ||
         item.total.toString().includes(query)
     );
-
-    setFilteredData(applySort(filtered, sortBy));
+    setFilteredData(filtered);
   };
 
-  // Manejar cambio en el criterio de ordenación
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSortBy = e.target.value;
     setSortBy(newSortBy);
-
-    // Aplicar el nuevo criterio de ordenación
     setFilteredData(applySort(filteredData, newSortBy));
   };
 
@@ -76,13 +88,24 @@ export const Histories: React.FC = () => {
     }
   };
 
+  const handleViewProducts = () => {
+    setModalVisible(true); // Muestra el modal
+  };
+
   return (
     <div className="histories-container">
       <Title label="HISTORIAL DE VENTAS" />
 
       <div className="histories-header">
-        <SortSelector value={sortBy} onChange={handleSortChange} options={option}/>
-
+        <SortSelector
+          value={sortBy}
+          onChange={handleSortChange}
+          options={[
+            { label: "Fecha de venta" },
+            { label: "Monto total" },
+            { label: "Método de pago" },
+          ]}
+        />
         <div className="search-container">
           <CiSearch className="search-icon" />
           <input
@@ -99,7 +122,7 @@ export const Histories: React.FC = () => {
           <SalesCard
             key={index}
             label={card.label}
-            amount={card.amount}
+            amount={String(dataSales?.ventasHoy)}
             isHighlighted={card.isHighlighted}
           />
         ))}
@@ -114,6 +137,7 @@ export const Histories: React.FC = () => {
               "MÉTODO DE PAGO",
               "PRODUCTOS",
               "FECHA",
+              "HORA",
               "TOTAL",
             ].map((header, index) => (
               <th key={index}>{header}</th>
@@ -128,21 +152,38 @@ export const Histories: React.FC = () => {
                 <td>{item.email}</td>
                 <td>{item.paymentMethod}</td>
                 <td>
-                  <a href="#">Ver todos</a>
+                  <button
+                    onClick={() => handleViewProducts()}
+                    style={{
+                      all: "unset",
+                      background: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Ver todos
+                  </button>
                 </td>
                 <td>{item.date}</td>
-                <td>${item.total.toFixed(2)}</td>
+                <td>{item.hour}</td>
+                <td>${item.total}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={6} style={{ textAlign: "center" }}>
+              <td colSpan={7} style={{ textAlign: "center" }}>
                 No se encontraron resultados.
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
+      {/* Modal de productos */}
+      <Modal
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)} // Cerrar el modal
+        products={selectedProducts} // Pasar los productos seleccionados
+      />
     </div>
   );
 };

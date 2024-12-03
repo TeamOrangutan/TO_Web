@@ -98,7 +98,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     formData.append("precioVenta", product.salePrice.toString());
     formData.append("manufacturingPrice", product.manufacturingPrice.toString());
   
-    // Validar que haya al menos una imagen
+
     if (!product.images || product.images.length === 0) {
       console.log("El producto debe tener al menos una imagen");
       return;
@@ -111,7 +111,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
         byteArrays[i] = byteCharacters.charCodeAt(i);
       }
   
-      const extension = image.split(";")[0].split("/")[1]; // Obtiene la extensión de la imagen
+      const extension = image.split(";")[0].split("/")[1];
       const blob = new Blob([byteArrays], { type: `image/${extension}` });
       formData.append("images", blob, `image.${extension}`);
     });

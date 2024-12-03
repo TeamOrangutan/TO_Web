@@ -6,8 +6,7 @@ import { fadeConfig } from "../../utils/motionConfig";
 import { SlPencil } from "react-icons/sl";
 import { AiOutlineDelete } from "react-icons/ai";
 import swal from "sweetalert";
-import axios from "axios"; // Asegúrate de instalar axios
-
+import axios from "axios"; 
 export const ProductCard: React.FC<productI> = ({
   id,
   name,
@@ -38,7 +37,6 @@ export const ProductCard: React.FC<productI> = ({
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          // Realizar solicitud DELETE al backend
           const response = await axios.delete(`http://localhost:3000/api/products/${id}`);
 
           if (response.status === 200) {
@@ -46,9 +44,8 @@ export const ProductCard: React.FC<productI> = ({
               icon: "success",
             });
 
-            // Llamar a la función para eliminar el producto de la lista en el frontend
             if (onProductDeleted) {
-              onProductDeleted(id); // Enviar el ID del producto eliminado
+              onProductDeleted(id);
             }
           }
         } catch (error) {

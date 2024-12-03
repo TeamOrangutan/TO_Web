@@ -5,6 +5,7 @@
       "paymentMethod": "Mastercard",
       "products": ["Producto 1", "Producto 2"],
       "date": "2024-01-01",
+      "hour": "23:39:33",
       "total": 45.0
     },
     {
@@ -13,6 +14,7 @@
       "paymentMethod": "Visa",
       "products": ["Producto 3"],
       "date": "2024-01-02",
+      "hour": "23:39:33",
       "total": 60.5
     },
     {
@@ -21,6 +23,7 @@
       "paymentMethod": "PayPal",
       "products": ["Producto 4", "Producto 5"],
       "date": "2024-01-03",
+      "hour": "23:39:33",
       "total": 120.0
     },
     {
@@ -29,7 +32,7 @@
       "paymentMethod": "Mastercard",
       "products": ["Producto 6"],
       "date": "2024-01-04",
+      "hour": "23:39:33",
       "total": 75.0
     }
   ]
-  
