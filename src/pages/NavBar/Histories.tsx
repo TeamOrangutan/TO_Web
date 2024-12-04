@@ -43,7 +43,7 @@ export const Histories: React.FC = () => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([
+  const [availableProducts, _setAvailableProducts] = useState<Product[]>([
     {
       name: "Producto 1",
       price: 10,
@@ -448,7 +448,7 @@ export const Histories: React.FC = () => {
                               value={product.quantity}
                               min="1"
                               onChange={(e) =>
-                                updateQuantity(index, e.target.value)
+                                updateQuantity(index, Number(e.target.value))
                               }
                               className="border p-1 w-16"
                               style={{ textAlign: "center" }}
@@ -462,7 +462,7 @@ export const Histories: React.FC = () => {
                             }}
                           >
                             <select
-                              value={product.size}
+                              value={product.sizes}
                               onChange={(e) =>
                                 updateSize(index, e.target.value)
                               }
@@ -572,8 +572,8 @@ const styles = {
     height: "80%", // Auto height to allow scrolling when needed
     maxHeight: "800px", // Set a maximum height
     textAlign: "center" as const,
-    overflowY: "auto",
-    overflowX: "hidden",
+    overflowY: "auto" as const,
+    overflowX: "hidden" as const,
   },
   input: {
     width: "100%",
