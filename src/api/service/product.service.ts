@@ -13,3 +13,15 @@ export const getProductsWithUpdatedPaths = async () => {
     throw error;
   }
 };
+
+export const getProducts = async () => {
+  try {
+    const response = await primalGarageApi.get('/products/List');
+
+    return response.data;
+
+  } catch (err) {
+    console.error("Error fetching data");
+    throw err;
+  }
+};

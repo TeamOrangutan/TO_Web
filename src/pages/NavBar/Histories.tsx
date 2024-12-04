@@ -7,8 +7,8 @@ import { getBills, getSales } from "../../api/service/bill.service";
 import Modal from "../../components/share/Modal";
 import { motion } from "framer-motion";
 import "../../styles/components/addProduct.css";
+import { getProducts } from "../../api/service/product.service";
 
-// Asegúrate de que los tipos de datos estén correctamente definidos
 interface SalesData {
   ventasHoy: number;
   ventasMensuales: number;
@@ -33,6 +33,17 @@ interface Product {
   sizes: string[];
 }
 
+type sizes = {
+  name: string;
+  cantidad: string;
+};
+
+interface productList {
+  name: string;
+  price: number;
+  sizes: sizes[];
+}
+
 export const Histories: React.FC = () => {
   const [dataSales, setDataSales] = useState<SalesData | null>(null);
   const [data, setData] = useState<Bill[]>([]);
@@ -43,23 +54,7 @@ export const Histories: React.FC = () => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [availableProducts, _setAvailableProducts] = useState<Product[]>([
-    {
-      name: "Producto 1",
-      price: 10,
-      quantity: 1,
-      total: 0,
-      sizes: ["S", "M", "L"],
-    },
-    {
-      name: "Producto 2",
-      price: 15,
-      quantity: 1,
-      total: 0,
-      sizes: ["M", "L", "XL"],
-    },
-    { name: "Producto 3", price: 20, quantity: 1, total: 0, sizes: ["S", "L"] },
-  ]);
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
   const [selectedProducts1, setSelectedProducts1] = useState<Product[]>([]);
 
   const cardsData = [
@@ -74,8 +69,21 @@ export const Histories: React.FC = () => {
       try {
         const res: SalesData = await getSales();
         const response: Bill[] = await getBills();
+
+        const listProduct: productList[] = await getProducts();
+
+        
+        const ParseListProduct: Product[] = listProduct.map((list) => ({
+          name: list.name,
+          price: Number(list.price),
+          quantity: 1,
+          total: 0,
+          sizes: list.sizes.map((size) => size.name),
+        }));
+        console.log(ParseListProduct);
         setDataSales(res);
         setFilteredData(response);
+        setAvailableProducts(ParseListProduct);
         setData(response);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -381,9 +389,16 @@ export const Histories: React.FC = () => {
               {/* Muestra de productos seleccionados y subtotal */}
               <div className="invoice">
                 <div className="mb-8">
-                  <h2 className="text-lg font-bold mb-4"  style={{margin: 0}}>Factura para:</h2>
+                  <h2 className="text-lg font-bold mb-4" style={{ margin: 0 }}>
+                    Factura para:
+                  </h2>
                   <div className="text-gray-700 mb-2">Nombre del cliente</div>
-                  <div className="text-gray-700 mb-2"  style={{marginBottom: 30}}>test@gmail.com</div>
+                  <div
+                    className="text-gray-700 mb-2"
+                    style={{ marginBottom: 30 }}
+                  >
+                    test@gmail.com
+                  </div>
                 </div>
                 <center>
                   <div
@@ -560,7 +575,7 @@ export const Histories: React.FC = () => {
                 </center>
               </div>
 
-              <div style={{margin: 30}}>
+              <div style={{ margin: 30 }}>
                 <h4>Gran Total: ${calculateSubtotal()}</h4>
               </div>
               <div
@@ -581,7 +596,14 @@ export const Histories: React.FC = () => {
                 >
                   Cancelar
                 </button>
-                <button className="save-button" onClick={() => {console.log(selectedProducts1)}}>Guardar</button>
+                <button
+                  className="save-button"
+                  onClick={() => {
+                    console.log(selectedProducts1);
+                  }}
+                >
+                  Guardar
+                </button>
               </div>
             </div>
           </motion.div>
@@ -614,14 +636,14 @@ const styles = {
     zIndex: 9999, // Ensure it's above other elements
   },
   modal: {
-    padding: "20px", 
+    padding: "20px",
     borderRadius: "8px",
     maxHeight: "100vh",
-    height: "auto", 
+    height: "auto",
     textAlign: "center" as const,
-    overflow: "hidden", 
+    overflow: "hidden",
     backgroundColor: "#fff",
- },
+  },
   input: {
     width: "100%",
     padding: "8px",

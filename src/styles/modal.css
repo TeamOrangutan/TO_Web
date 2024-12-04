@@ -26,19 +26,22 @@
   /* Cabecera del modal */
   .modal-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
   }
   
   .modal-logo {
-    width: 150px; /* Ajusta según el tamaño de tu logo */
+    width: 150px; 
   }
   
   .close-btn {
     background: transparent;
     border: none;
     font-size: 20px;
+    position: absolute;
     cursor: pointer;
+    right: 0;
+    margin-right: 30px;
   }
   
   /* Título del modal */

@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import "../../styles/modal.css";
+import LogoPrimalGarage from "../../assets/images/PrimalGarage-Black.webp";
+import { Title } from "../Title";
 
 interface Product {
   name: string;
@@ -18,8 +20,15 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isVisible, onClose, products }) => {
   if (!isVisible) return null;
 
-  const totalGanancias = products.reduce((acc, product) => acc + product.total, 0);
-  const totalVentas = totalGanancias; // En este ejemplo es lo mismo
+  const totalGanancias = products.reduce(
+    (acc, product) => acc + product.total,
+    0
+  );
+  const totalVentas = totalGanancias;
+
+  // Calcular las filas adicionales vacías necesarias para llegar a 15
+  const emptyRowsCount = Math.max(0, 15 - products.length);
+  const emptyRows = Array.from({ length: emptyRowsCount });
 
   return (
     <motion.div
@@ -34,13 +43,17 @@ const Modal: React.FC<ModalProps> = ({ isVisible, onClose, products }) => {
         initial={{ y: "-100%" }}
         animate={{ y: 0 }}
         exit={{ y: "-100%" }}
-        onClick={(e) => e.stopPropagation()} // Evita cerrar el modal al hacer clic en el contenido
+        onClick={(e) => e.stopPropagation()}
       >
         <header className="modal-header">
-          <img src="/logo.png" alt="Logo" className="modal-logo" />
-          <button className="close-btn" onClick={onClose}>X</button>
+          <center>
+            <img src={LogoPrimalGarage} alt="Logo" className="modal-logo" />
+          </center>
+          <button className="close-btn" onClick={onClose}>
+            X
+          </button>
         </header>
-        <h2 className="modal-title">TODOS LOS PRODUCTOS</h2>
+        <Title label="TODOS LOS PRODUCTOS" />
         <div className="table-wrapper">
           <table className="product-table">
             <thead>
@@ -58,6 +71,14 @@ const Modal: React.FC<ModalProps> = ({ isVisible, onClose, products }) => {
                   <td>${product.price}</td>
                   <td>{product.quantity}</td>
                   <td>${product.total}</td>
+                </tr>
+              ))}
+              {emptyRows.map((_, index) => (
+                <tr key={`empty-${index}`}>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
                 </tr>
               ))}
             </tbody>
