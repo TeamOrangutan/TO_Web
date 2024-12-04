@@ -111,7 +111,6 @@ export const Histories: React.FC = () => {
         item.total.toString().includes(query)
     );
     setFilteredData(filtered);
-    
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -304,221 +303,264 @@ export const Histories: React.FC = () => {
                 </div>
               </div>
               <h3>Seleccionar productos</h3>
-              <div className="product-search">
+              <div
+                className="product-search"
+                style={{ position: "relative", width: "100%" }}
+              >
                 <input
                   type="text"
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Buscar productos"
-                />
-                <button onClick={handleViewProducts}>Buscar</button>
-              </div>
-              {productSearch && (
-                <motion.div
-                  className="search-results"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
                   style={{
-                    position: "absolute",
-                    backgroundColor: "white",
+                    padding: "8px",
+                    borderRadius: "4px",
                     width: "100%",
-                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                    zIndex: 100,
+                    boxSizing: "border-box",
                   }}
-                >
-                  {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product, index) => (
+                />
+
+                {productSearch && (
+                  <motion.div
+                    className="search-results"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: "absolute", // Posiciona los resultados debajo del input
+                      top: "100%", // Asegura que se posicione debajo del input
+                      left: 0,
+                      backgroundColor: "white",
+                      width: "100%",
+                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                      zIndex: 100,
+                      maxHeight: "200px", // Para evitar que los resultados se expandan demasiado
+                      overflowY: "auto", // Agrega scroll si hay demasiados resultados
+                      marginTop: "4px", // Espacio entre el input y los resultados
+                    }}
+                  >
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map((product, index) => (
+                        <motion.div
+                          key={index}
+                          className="product-suggestion"
+                          onClick={() => addProduct(product)}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{
+                            padding: "10px",
+                            cursor: "pointer",
+                            borderBottom: "1px solid #ccc",
+                          }}
+                        >
+                          {product.name} - ${product.price}
+                        </motion.div>
+                      ))
+                    ) : (
                       <motion.div
-                        key={index}
-                        className="product-suggestion"
-                        onClick={() => addProduct(product)}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         style={{
                           padding: "10px",
-                          cursor: "pointer",
-                          borderBottom: "1px solid #ccc",
+                          fontStyle: "italic",
+                          color: "#aaa",
                         }}
                       >
-                        {product.name} - ${product.price}
+                        No hay resultados
                       </motion.div>
-                    ))
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      style={{
-                        padding: "10px",
-                        fontStyle: "italic",
-                        color: "#aaa",
-                      }}
-                    >
-                      No hay resultados
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
+                    )}
+                  </motion.div>
+                )}
+              </div>
 
               {/* Muestra de productos seleccionados y subtotal */}
               <div className="invoice">
                 <div className="mb-8">
-                  <h2 className="text-lg font-bold mb-4">Bill To:</h2>
+                  <h2 className="text-lg font-bold mb-4"  style={{margin: 0}}>Factura para:</h2>
                   <div className="text-gray-700 mb-2">Nombre del cliente</div>
-                  <div className="text-gray-700 mb-2">test@gmail.com</div>
+                  <div className="text-gray-700 mb-2"  style={{marginBottom: 30}}>test@gmail.com</div>
                 </div>
                 <center>
-                  <table
-                    className="w-full mb-8"
+                  <div
                     style={{
-                      borderCollapse: "collapse",
-                      width: "100%",
-                      border: "1px solid #ccc",
+                      maxHeight: "200px", // Ajusta este valor según el espacio disponible
+                      overflowY: "auto", // Permite el desplazamiento vertical
+                      marginBottom: "16px", // Espaciado opcional
                     }}
                   >
-                    <thead>
-                      <tr style={{ backgroundColor: "#f5f5f5" }}>
-                        <th
-                          className="text-left font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Description
-                        </th>
-                        <th
-                          className="text-right font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Amount
-                        </th>
-                        <th
-                          className="text-center font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Quantity
-                        </th>
-                        <th
-                          className="text-center font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Size
-                        </th>
-                        <th
-                          className="text-center font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedProducts1.map((product, index) => (
-                        <tr key={index} style={{ border: "1px solid #ccc" }}>
-                          <td
-                            className="text-left text-gray-700"
+                    <table
+                      className="w-full mb-8"
+                      style={{
+                        borderCollapse: "collapse",
+                        width: "100%",
+                        border: "1px solid #ccc",
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ backgroundColor: "#f5f5f5" }}>
+                          <th
+                            className="text-left font-bold text-gray-700"
                             style={{
                               padding: "10px",
                               border: "1px solid #ccc",
                             }}
                           >
-                            {product.name}
-                          </td>
-                          <td
-                            className="text-right text-gray-700"
+                            Descripción
+                          </th>
+                          <th
+                            className="text-right font-bold text-gray-700"
                             style={{
                               padding: "10px",
                               border: "1px solid #ccc",
                             }}
                           >
-                            ${(product.quantity * product.price).toFixed(2)}
-                          </td>
-                          <td
-                            className="text-center"
+                            Precio
+                          </th>
+                          <th
+                            className="text-center font-bold text-gray-700"
                             style={{
                               padding: "10px",
                               border: "1px solid #ccc",
                             }}
                           >
-                            <input
-                              type="number"
-                              value={product.quantity}
-                              min="1"
-                              onChange={(e) =>
-                                updateQuantity(index, Number(e.target.value))
-                              }
-                              className="border p-1 w-16"
-                              style={{ textAlign: "center" }}
-                            />
-                          </td>
-                          <td
-                            className="text-center"
+                            Cantidad
+                          </th>
+                          <th
+                            className="text-center font-bold text-gray-700"
                             style={{
                               padding: "10px",
                               border: "1px solid #ccc",
                             }}
                           >
-                            <select
-                              value={product.sizes}
-                              onChange={(e) =>
-                                updateSize(index, e.target.value)
-                              }
-                              className="border p-1"
-                            >
-                              {product.sizes.map((size, i) => (
-                                <option key={i} value={size}>
-                                  {size}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          <td
-                            className="text-center"
+                            Talla
+                          </th>
+                          <th
+                            className="text-center font-bold text-gray-700"
                             style={{
                               padding: "10px",
                               border: "1px solid #ccc",
                             }}
                           >
-                            <button
-                              onClick={() => removeProduct(index)}
-                              className="text-red-500 hover:text-red-700"
+                            Acción
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedProducts1.map((product, index) => (
+                          <tr key={index} style={{ border: "1px solid #ccc" }}>
+                            <td
+                              className="text-left text-gray-700"
                               style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                fontWeight: "bold",
+                                padding: "10px",
+                                border: "1px solid #ccc",
                               }}
                             >
-                              Eliminar
-                            </button>
+                              {product.name}
+                            </td>
+                            <td
+                              className="text-right text-gray-700"
+                              style={{
+                                padding: "10px",
+                                border: "1px solid #ccc",
+                              }}
+                            >
+                              ${(product.quantity * product.price).toFixed(2)}
+                            </td>
+                            <td
+                              className="text-center"
+                              style={{
+                                padding: "10px",
+                                border: "1px solid #ccc",
+                              }}
+                            >
+                              <input
+                                type="number"
+                                value={product.quantity}
+                                min="1"
+                                onChange={(e) =>
+                                  updateQuantity(index, Number(e.target.value))
+                                }
+                                className="border p-1 w-16"
+                                style={{ textAlign: "center" }}
+                              />
+                            </td>
+                            <td
+                              className="text-center"
+                              style={{
+                                padding: "10px",
+                                border: "1px solid #ccc",
+                              }}
+                            >
+                              <select
+                                value={product.sizes}
+                                onChange={(e) =>
+                                  updateSize(index, e.target.value)
+                                }
+                                className="border p-1"
+                              >
+                                {product.sizes.map((size, i) => (
+                                  <option key={i} value={size}>
+                                    {size}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td
+                              className="text-center"
+                              style={{
+                                padding: "10px",
+                                border: "1px solid #ccc",
+                              }}
+                            >
+                              <button
+                                onClick={() => removeProduct(index)}
+                                className="text-red-500 hover:text-red-700"
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                Eliminar
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr style={{ backgroundColor: "#f5f5f5" }}>
+                          <td
+                            className="text-left font-bold text-gray-700"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            Total
+                          </td>
+                          <td
+                            className="text-right font-bold text-gray-700"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            ${calculateSubtotal()}
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr style={{ backgroundColor: "#f5f5f5" }}>
-                        <td
-                          className="text-left font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          Total
-                        </td>
-                        <td
-                          className="text-right font-bold text-gray-700"
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          ${calculateSubtotal()}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                      </tfoot>
+                    </table>
+                  </div>
                 </center>
               </div>
 
-              <div>
+              <div style={{margin: 30}}>
                 <h4>Gran Total: ${calculateSubtotal()}</h4>
               </div>
               <div
@@ -529,12 +571,17 @@ export const Histories: React.FC = () => {
                   alignItems: "center",
                   right: 0,
                   bottom: 0,
-                  marginRight: 50,
+                  marginRight: 10,
                   gap: 20,
                 }}
               >
-                <button className="cancel-button">Cancelar</button>
-                <button className="save-button">Guardar</button>
+                <button
+                  className="cancel-button"
+                  onClick={() => setModalVisible1(false)}
+                >
+                  Cancelar
+                </button>
+                <button className="save-button" onClick={() => {console.log(selectedProducts1)}}>Guardar</button>
               </div>
             </div>
           </motion.div>
@@ -560,21 +607,21 @@ const styles = {
     left: 0,
     width: "100vw",
     height: "100vh",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Increased opacity for better contrast
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 9999, // Ensure it's above other elements
   },
   modal: {
-    padding: "15px",
+    padding: "20px", 
     borderRadius: "8px",
-    width: "800px",
-    height: "80%", // Auto height to allow scrolling when needed
-    maxHeight: "800px", // Set a maximum height
+    maxHeight: "100vh",
+    height: "auto", 
     textAlign: "center" as const,
-    overflowY: "auto" as const,
-    overflowX: "hidden" as const,
-  },
+    overflow: "hidden", 
+    backgroundColor: "#fff",
+ },
   input: {
     width: "100%",
     padding: "8px",

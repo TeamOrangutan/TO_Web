@@ -1,11 +1,12 @@
 import React from "react";
 
 interface Product {
-  nombre: string;
-  descripcion: string;
-  precioVenta: number;
+  name: string;
+  description: string;
+  price: number;
   stock: { nombre: string; cantidad: number }[];
   imagenes: string[];
+  estado: string;
 }
 
 interface EditProductProps {
@@ -33,8 +34,8 @@ export const EditProduct: React.FC<EditProductProps> = ({
         <label>Nombre del Producto</label>
         <input
           type="text"
-          name="nombre"
-          value={product.nombre}
+          name="name"
+          value={product.name}
           onChange={handleInputChange}
         />
       </div>
@@ -42,8 +43,8 @@ export const EditProduct: React.FC<EditProductProps> = ({
       <div className="product-details">
         <label>Descripción del Producto</label>
         <textarea
-          name="descripcion"
-          value={product.descripcion}
+          name="description"
+          value={product.description}
           onChange={handleInputChange}
         />
       </div>
@@ -52,8 +53,8 @@ export const EditProduct: React.FC<EditProductProps> = ({
         <label>Precio de Venta</label>
         <input
           type="number"
-          name="precioVenta"
-          value={product.precioVenta}
+          name="price" 
+          value={product.price}
           onChange={handleInputChange}
         />
       </div>
@@ -66,7 +67,7 @@ export const EditProduct: React.FC<EditProductProps> = ({
               <label>Talla</label>
               <input
                 type="text"
-                name="nombre"
+                name="nombre" 
                 value={talla.nombre}
                 onChange={(e) => handleStockChange(index, "nombre", e.target.value)}
               />
@@ -75,7 +76,7 @@ export const EditProduct: React.FC<EditProductProps> = ({
               <label>Cantidad</label>
               <input
                 type="number"
-                name="cantidad"
+                name="cantidad"  // 'cantidad' es el campo dentro de 'stock'
                 value={talla.cantidad}
                 onChange={(e) => handleStockChange(index, "cantidad", e.target.value)}
               />

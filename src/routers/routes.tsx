@@ -12,7 +12,7 @@ export const AppRoutes = () => {
       <Route path="/Histories" element={<Histories />} errorElement={<ErrorPage/>} />
       <Route path="/AboutUs" element={<AboutUs />} errorElement={<ErrorPage/>} />
       
-      <Route path="/Product/:productid" element={<UpdateProducts />} errorElement={<ErrorPage/>} />
+      <Route path="/product/:productid" element={<UpdateProducts />} errorElement={<ErrorPage/>} />
 
     </Routes>
   );

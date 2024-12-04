@@ -5,10 +5,20 @@ import "../../styles/pages/updateProduct.css";
 import { Title } from "../../components/Title";
 import { EditProduct } from "../../components/EditProduct";
 
+interface Product {
+  map(arg0: (product: any) => { nombre: any; }): unknown;
+  name: string;
+  description: string;
+  price: number;
+  stock: { nombre: string; cantidad: number }[];
+  imagenes: string[];
+  estado: string;
+}
+
 export const UpdateProducts: React.FC = () => {
   const navigate = useNavigate();
   const { productid } = useParams<{ productid: string }>();
-  const [product, setProduct] = useState<any | undefined>(undefined);
+  const [product, setProduct] = useState<Product | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -34,7 +44,6 @@ export const UpdateProducts: React.FC = () => {
 
   if (!product) return <div>Producto no encontrado.</div>;
 
-  // Verificación de stock (tallas)
   const validateStock = (stock: any[]) => {
     for (let talla of stock) {
       if (!talla.nombre || !talla.cantidad) {
@@ -45,7 +54,6 @@ export const UpdateProducts: React.FC = () => {
     return true;
   };
 
-  // Maneja cambios en los campos generales del producto (nombre, precio, descripción)
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -54,11 +62,10 @@ export const UpdateProducts: React.FC = () => {
     const { name, value } = e.target;
     setProduct({
       ...product,
-      [name]: name === "precioVenta" ? Number(value) : value,
+      [name]: name === "price" ? Number(value) : value, // Corregir nombre de campo
     });
   };
 
-  // Maneja cambios en las tallas (stock)
   const handleStockChange = (
     index: number,
     field: string,
@@ -69,30 +76,33 @@ export const UpdateProducts: React.FC = () => {
     setProduct({ ...product, stock: updatedStock });
   };
 
-  // Maneja la acción de regresar
   const handleGoBack = () => {
     navigate(-1);
   };
 
   const handleSaveChanges = async () => {
-    // Validar que las tallas sean correctas antes de guardar
     if (!validateStock(product.stock)) {
       alert("Por favor, complete todos los campos de tallas y cantidades.");
       return;
     }
 
-    // Validar precio
-    if (isNaN(product.precioVenta) || product.precioVenta <= 0) {
+    if (isNaN(product.price) || product.price <= 0) {
       alert("Por favor, ingrese un precio válido.");
       return;
     }
 
     try {
-      // Enviar los datos a la API para actualizar el producto
+      const FormatProduct = {
+        nombre: product.name,
+        descripcion: product.description,
+        precioVenta: product.price,
+        tallas: product.stock
+      };
+
+      console.log(FormatProduct);
       await axios.put(
         `http://localhost:3000/api/products/${productid}`,
-        product,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        FormatProduct,
       );
       alert("Producto actualizado con éxito!");
       navigate("/products"); // Redirigir a la lista de productos o a otro lugar
