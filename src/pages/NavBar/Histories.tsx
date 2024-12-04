@@ -6,6 +6,7 @@ import { SortSelector } from "../../components/SortSelector";
 import { getBills, getSales } from "../../api/service/bill.service";
 import Modal from "../../components/share/Modal";
 import { motion } from "framer-motion";
+import "../../styles/components/addProduct.css";
 
 // Asegúrate de que los tipos de datos estén correctamente definidos
 interface SalesData {
@@ -29,7 +30,7 @@ interface Product {
   price: number;
   quantity: number;
   total: number;
-  sizes: string[]
+  sizes: string[];
 }
 
 export const Histories: React.FC = () => {
@@ -41,9 +42,22 @@ export const Histories: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [productSearch, setProductSearch] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([
-    { name: "Producto 1", price: 10, quantity: 1, total: 0, sizes: ["S", "M", "L"] },
-    { name: "Producto 2", price: 15, quantity: 1, total: 0, sizes: ["M", "L", "XL"] },
+    {
+      name: "Producto 1",
+      price: 10,
+      quantity: 1,
+      total: 0,
+      sizes: ["S", "M", "L"],
+    },
+    {
+      name: "Producto 2",
+      price: 15,
+      quantity: 1,
+      total: 0,
+      sizes: ["M", "L", "XL"],
+    },
     { name: "Producto 3", price: 20, quantity: 1, total: 0, sizes: ["S", "L"] },
   ]);
   const [selectedProducts1, setSelectedProducts1] = useState<Product[]>([]);
@@ -71,9 +85,23 @@ export const Histories: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setFilteredProducts(
+      availableProducts.filter((product) =>
+        product.name.toLowerCase().includes(productSearch)
+      )
+    );
+  }, [productSearch, availableProducts]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
+    setProductSearch(query);
+    setFilteredProducts(
+      availableProducts.filter((product) =>
+        product.name.toLowerCase().includes(query)
+      )
+    );
     const filtered = data.filter(
       (item) =>
         item.name.toLowerCase().includes(query) ||
@@ -83,6 +111,7 @@ export const Histories: React.FC = () => {
         item.total.toString().includes(query)
     );
     setFilteredData(filtered);
+    
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -137,7 +166,6 @@ export const Histories: React.FC = () => {
       )
     );
   };
-
 
   const calculateSubtotal = () =>
     selectedProducts1.reduce((sum, p) => sum + p.total, 0);
@@ -245,146 +273,273 @@ export const Histories: React.FC = () => {
         onClose={() => setModalVisible(false)}
         products={selectedProducts1}
       />
-{modalVisible1 && (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    style={styles.overlay}
-  >
-    <motion.div
-      initial={{ y: "-100%" }}
-      animate={{ y: "0%" }}
-      exit={{ y: "-100%" }}
-      style={styles.modal}
-    >
-      {/* Modal de nueva factura */}
-      <div className="modal-header">
-        <button
-          onClick={() => setModalVisible1(false)}
-          style={styles.closeButton}
+      {modalVisible1 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          style={styles.overlay}
         >
-          X
-        </button>
-      </div>
-      <div className="modal-content">
-        <h3>Seleccionar productos</h3>
-        <div className="product-search">
-          <input
-            type="text"
-            value={productSearch}
-            onChange={(e) => setProductSearch(e.target.value)}
-            placeholder="Buscar productos"
-          />
-          <button onClick={handleViewProducts}>Buscar</button>
-        </div>
-        <div className="product-list">
-          {availableProducts
-            .filter((product) =>
-              product.name.toLowerCase().includes(productSearch.toLowerCase())
-            )
-            .map((product, index) => (
-              <div key={index} onClick={() => addProduct(product)}>
-                {product.name}
+          <motion.div
+            initial={{ y: "-100%" }}
+            animate={{ y: "0%" }}
+            exit={{ y: "-100%" }}
+            style={styles.modal}
+          >
+            {/* Modal de nueva factura */}
+
+            <div className="modal-content">
+              <button
+                onClick={() => setModalVisible1(false)}
+                style={{ width: 20 }}
+              >
+                X
+              </button>
+              <div className="flex justify-between mb-6">
+                <h1 className="text-lg font-bold" style={{ margin: 0 }}>
+                  Factura
+                </h1>
+                <div className="text-gray-700">
+                  <div>Fecha: {new Date().toLocaleDateString()}</div>
+                </div>
               </div>
-            ))}
-        </div>
-
-        {/* Muestra de productos seleccionados y subtotal */}
-        <div className="invoice">
-          <h3 className="font-bold text-2xl my-4 text-center text-blue-600">KRP Services</h3>
-          <hr className="mb-2" />
-          <div className="flex justify-between mb-6">
-            <h1 className="text-lg font-bold">Invoice</h1>
-            <div className="text-gray-700">
-              <div>Date: {new Date().toLocaleDateString()}</div>
-              <div>Invoice #: </div>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-lg font-bold mb-4">Bill To:</h2>
-            <div className="text-gray-700 mb-2"></div>
-            <div className="text-gray-700 mb-2"></div>
-            <div className="text-gray-700 mb-2"></div>
-            <div className="text-gray-700"></div>
-          </div>
-            <center>
-
-          <table className="w-full mb-8">
-            <thead>
-              <tr>
-                <th className="text-left font-bold text-gray-700">Description</th>
-                <th className="text-right font-bold text-gray-700">Amount</th>
-                <th className="text-center font-bold text-gray-700">Quantity</th>
-                <th className="text-center font-bold text-gray-700">Size</th>
-                <th className="text-center font-bold text-gray-700">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedProducts1.map((product, index) => (
-                <tr key={index}>
-                  <td className="text-left text-gray-700">{product.name}</td>
-                  <td className="text-right text-gray-700">${(product.quantity * product.price).toFixed(2)}</td>
-
-                  {/* Campo para cambiar la cantidad */}
-                  <td className="text-center">
-                    <input
-                      type="number"
-                      value={product.quantity}
-                      min="1"
-                      onChange={(e) => updateQuantity(index, e.target.value)}
-                      className="border p-1 w-16"
-                    />
-                  </td>
-
-                  {/* Selector de talla */}
-                  <td className="text-center">
-                    <select
-                      value={product.size}
-                      onChange={(e) => updateSize(index, e.target.value)}
-                      className="border p-1"
+              <h3>Seleccionar productos</h3>
+              <div className="product-search">
+                <input
+                  type="text"
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Buscar productos"
+                />
+                <button onClick={handleViewProducts}>Buscar</button>
+              </div>
+              {productSearch && (
+                <motion.div
+                  className="search-results"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    position: "absolute",
+                    backgroundColor: "white",
+                    width: "100%",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    zIndex: 100,
+                  }}
+                >
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, index) => (
+                      <motion.div
+                        key={index}
+                        className="product-suggestion"
+                        onClick={() => addProduct(product)}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                          padding: "10px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #ccc",
+                        }}
+                      >
+                        {product.name} - ${product.price}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        padding: "10px",
+                        fontStyle: "italic",
+                        color: "#aaa",
+                      }}
                     >
-                      {product.sizes.map((size, i) => (
-                        <option key={i} value={size}>
-                          {size}
-                        </option>
+                      No hay resultados
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Muestra de productos seleccionados y subtotal */}
+              <div className="invoice">
+                <div className="mb-8">
+                  <h2 className="text-lg font-bold mb-4">Bill To:</h2>
+                  <div className="text-gray-700 mb-2">Nombre del cliente</div>
+                  <div className="text-gray-700 mb-2">test@gmail.com</div>
+                </div>
+                <center>
+                  <table
+                    className="w-full mb-8"
+                    style={{
+                      borderCollapse: "collapse",
+                      width: "100%",
+                      border: "1px solid #ccc",
+                    }}
+                  >
+                    <thead>
+                      <tr style={{ backgroundColor: "#f5f5f5" }}>
+                        <th
+                          className="text-left font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Description
+                        </th>
+                        <th
+                          className="text-right font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Amount
+                        </th>
+                        <th
+                          className="text-center font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Quantity
+                        </th>
+                        <th
+                          className="text-center font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Size
+                        </th>
+                        <th
+                          className="text-center font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedProducts1.map((product, index) => (
+                        <tr key={index} style={{ border: "1px solid #ccc" }}>
+                          <td
+                            className="text-left text-gray-700"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            {product.name}
+                          </td>
+                          <td
+                            className="text-right text-gray-700"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            ${(product.quantity * product.price).toFixed(2)}
+                          </td>
+                          <td
+                            className="text-center"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            <input
+                              type="number"
+                              value={product.quantity}
+                              min="1"
+                              onChange={(e) =>
+                                updateQuantity(index, e.target.value)
+                              }
+                              className="border p-1 w-16"
+                              style={{ textAlign: "center" }}
+                            />
+                          </td>
+                          <td
+                            className="text-center"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            <select
+                              value={product.size}
+                              onChange={(e) =>
+                                updateSize(index, e.target.value)
+                              }
+                              className="border p-1"
+                            >
+                              {product.sizes.map((size, i) => (
+                                <option key={i} value={size}>
+                                  {size}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td
+                            className="text-center"
+                            style={{
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                            }}
+                          >
+                            <button
+                              onClick={() => removeProduct(index)}
+                              className="text-red-500 hover:text-red-700"
+                              style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
                       ))}
-                    </select>
-                  </td>
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ backgroundColor: "#f5f5f5" }}>
+                        <td
+                          className="text-left font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          Total
+                        </td>
+                        <td
+                          className="text-right font-bold text-gray-700"
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
+                          ${calculateSubtotal()}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </center>
+              </div>
 
-                  {/* Botón para eliminar */}
-                  <td className="text-center">
-                    <button
-                      onClick={() => removeProduct(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td className="text-left font-bold text-gray-700">Total</td>
-                <td className="text-right font-bold text-gray-700">${calculateSubtotal()}</td>
-              </tr>
-            </tfoot>
-          </table>
-              
-            </center>
-          <div className="text-gray-700 mb-2">Thank you for your business!</div>
-          <div className="text-gray-700 text-sm">Please remit payment within 30 days.</div>
-        </div>
-
-        <div>
-          <h4>Subtotal: ${calculateSubtotal()}</h4>
-        </div>
-      </div>
-    </motion.div>
-  </motion.div>
-)}
+              <div>
+                <h4>Gran Total: ${calculateSubtotal()}</h4>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  position: "absolute",
+                  alignItems: "center",
+                  right: 0,
+                  bottom: 0,
+                  marginRight: 50,
+                  gap: 20,
+                }}
+              >
+                <button className="cancel-button">Cancelar</button>
+                <button className="save-button">Guardar</button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };
@@ -415,9 +570,10 @@ const styles = {
     borderRadius: "8px",
     width: "800px",
     height: "80%", // Auto height to allow scrolling when needed
-    maxHeight: "500px", // Set a maximum height
+    maxHeight: "800px", // Set a maximum height
     textAlign: "center" as const,
-    overflowY: "auto", // Make the modal scrollable when content exceeds maxHeight
+    overflowY: "auto",
+    overflowX: "hidden",
   },
   input: {
     width: "100%",
@@ -442,6 +598,7 @@ const styles = {
   addButton: {
     padding: "5px 10px",
     cursor: "pointer",
+
     backgroundColor: "#28a745",
     color: "white",
     border: "none",
