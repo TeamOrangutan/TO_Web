@@ -9,9 +9,9 @@ interface ProductI {
   description: string;
   salePrice: number;
   manufacturingPrice: number;
-  sizes: string[];
   details: string[];
   images: string[];
+  tallas: { nombre: string; cantidad: number }[];
 }
 
 export const AddProduct: React.FC<{ closeModal: () => void }> = ({
@@ -22,9 +22,9 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     description: "",
     salePrice: 0,
     manufacturingPrice: 0,
-    sizes: ["M"],
     details: [],
     images: [],
+    tallas: [{ nombre: "M", cantidad: 0 }], // Inicializa con una talla M y cantidad 0
   });
   const [count, setCounter] = useState(0);
 
@@ -34,16 +34,14 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     >
   ) => {
     const { name, value } = e.target;
-  
-    // Si el valor es vacío, asignar 0
     setProduct({
       ...product,
       [name]:
         name === "salePrice" || name === "manufacturingPrice"
-          ? value === "" 
+          ? value === ""
             ? 0
-            : parseFloat(value) 
-          : value, 
+            : parseFloat(value)
+          : value,
     });
   };
 
@@ -89,21 +87,77 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
     setCounter(count - 1);
   };
 
+  const handleStockChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { name, value } = e.target;
+    
+    // Si el campo es de tipo "cantidad" y el valor es un número válido
+    const updatedStock = [...product.tallas];
+    
+    updatedStock[index] = {
+      ...updatedStock[index],
+      // Verificamos si el campo es cantidad o nombre
+      [name]: name === "cantidad" ? (value === "" ? 0 : parseInt(value)) : value,
+    };
+    
+    setProduct({
+      ...product,
+      tallas: updatedStock,
+    });
+  };
+
+  const handleAddStock = () => {
+    setProduct({
+      ...product,
+      tallas: [...product.tallas, { nombre: "", cantidad: 0 }],
+    });
+  };
+
+  const handleRemoveStock = (index: number) => {
+    setProduct({
+      ...product,
+      tallas: product.tallas.filter((_, i) => i !== index),
+    });
+  };
 
   const handleSaveChanges = async () => {
+    // Validar que las tallas tengan 'nombre' y 'cantidad'
+    const validateStock = (stock: { nombre: string; cantidad: number; }[]) => {
+      for (let talla of stock) {
+        if (!talla.nombre || !talla.cantidad) {
+          console.log("Cada talla debe tener un nombre y una cantidad.");
+          return false;
+        }
+      }
+      return true;
+    };
+  
+    // Verificar las tallas
+    if (!validateStock(product.tallas)) {
+      return; // No enviar si no es válido
+    }
+  
+    // Crear un nuevo objeto FormData
     const formData = new FormData();
-    
+  
+    // Agregar los datos básicos del producto
     formData.append("nombre", product.name);
     formData.append("descripcion", product.description);
     formData.append("precioVenta", product.salePrice.toString());
     formData.append("manufacturingPrice", product.manufacturingPrice.toString());
   
-
+    // Convertir las tallas a JSON y agregarlo al FormData
+    formData.append('tallas', JSON.stringify(product.tallas));
+  
+    // Verificar si se han proporcionado imágenes
     if (!product.images || product.images.length === 0) {
       console.log("El producto debe tener al menos una imagen");
       return;
     }
   
+    // Convertir las imágenes de base64 a Blob y agregarlas al FormData
     product.images.forEach((image) => {
       const byteCharacters = atob(image.split(",")[1]);
       const byteArrays = new Uint8Array(byteCharacters.length);
@@ -113,18 +167,22 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
   
       const extension = image.split(";")[0].split("/")[1];
       const blob = new Blob([byteArrays], { type: `image/${extension}` });
+  
+      // Agregar la imagen al FormData
       formData.append("images", blob, `image.${extension}`);
     });
   
+    // Enviar la solicitud a la API
     try {
       const response = await fetch("http://localhost:3000/api/products/", {
         method: "POST",
         body: formData,
       });
   
+      // Si la respuesta es exitosa
       if (response.ok) {
         console.log("Producto agregado correctamente");
-        closeModal();
+        closeModal(); // Cerrar el modal si todo va bien
       } else {
         const errorData = await response.json();
         console.log("Error al guardar el producto:", errorData.error || errorData.message || "Desconocido");
@@ -133,6 +191,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
       console.error("Error al enviar el producto", error);
     }
   };
+
   return (
     <motion.div
       className="modal"
@@ -150,7 +209,11 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
           <div className="image-upload">
             {product.images.map((image, index) => (
               <div key={index} className="image-preview">
-                <img src={image} alt={`Producto ${index + 1}`} style={{height: '100%', width:'100%'}}/>
+                <img
+                  src={image}
+                  alt={`Producto ${index + 1}`}
+                  style={{ height: "100%", width: "100%" }}
+                />
                 <button
                   className="delete-button"
                   onClick={() => handleRemoveImage(index)}
@@ -168,22 +231,17 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
                   accept="image/*"
                   style={{ display: "none" }}
                 />
-                <AiOutlinePlus
-                  data-tip="Añadir Producto"
-                  size={40}
-                  color="#777"
-                  
-                />
+                <AiOutlinePlus size={40} color="#777" />
               </label>
             )}
           </div>
 
           <div className="edit-container">
+            <label>Nombre del producto</label>
             <input
               type="text"
               name="name"
               value={product.name}
-              placeholder="Nombre del producto"
               onChange={handleInputChange}
               className="editable-title"
             />
@@ -197,7 +255,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
 
             <div className="inputs-container">
               <div className="input">
-                <span>$</span>
+                <label>Precio de venta</label>
                 <input
                   type="text"
                   name="salePrice"
@@ -208,7 +266,7 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
               </div>
 
               <div className="input">
-                <span>$</span>
+                <label>Coste de producción</label>
                 <input
                   type="text"
                   name="manufacturingPrice"
@@ -263,14 +321,47 @@ export const AddProduct: React.FC<{ closeModal: () => void }> = ({
                 </li>
               )}
             </ul>
+
+            {/* NUEVO: Tallas y cantidades */}
+            <label htmlFor="stock">Stock (Talla y Cantidad):</label>
+            <div className="stock-container">
+              {product.tallas.map((item, index) => (
+                <div key={index} className="stock-item">
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={item.nombre}
+                    onChange={(e) => handleStockChange(e, index)}
+                    placeholder="Tamaño"
+                    className="stock-input"
+                  />
+                  <input
+                    type="number"
+                    name="cantidad"
+                    value={item.cantidad}
+                    onChange={(e) => handleStockChange(e, index)}
+                    placeholder="Cantidad"
+                    className="stock-input"
+                  />
+                  <button
+                    className="delete-button"
+                    onClick={() => handleRemoveStock(index)}
+                  >
+                    ✖
+                  </button>
+                </div>
+              ))}
+              <button className="add-button" onClick={handleAddStock}>
+                Agregar stock +
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="actions">
-          <div className="actions-container">
-            <button onClick={closeModal} className="cancel-button">
+
+          <div className="buttons">
+            <button className="cancel-button" onClick={closeModal}>
               Cancelar
             </button>
-            <button onClick={handleSaveChanges} className="save-button">
+            <button className="save-button" onClick={handleSaveChanges}>
               Guardar
             </button>
           </div>

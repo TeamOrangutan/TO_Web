@@ -1,108 +1,87 @@
 import React from "react";
 
-interface ProductContainerProps {
-  product: {
-    name: string;
-    price: number;
-    description: string;
-    estado: string;
-    detalles?: string[];
-    path?: string;
-  };
+interface Product {
+  nombre: string;
+  descripcion: string;
+  precioVenta: number;
+  stock: { nombre: string; cantidad: number }[];
+  imagenes: string[];
+}
+
+interface EditProductProps {
+  product: Product;
   handleInputChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
-  handleAddDetail: () => void;
-  handleRemoveDetail: (index: number) => void;
+  handleStockChange: (
+    index: number,
+    field: string,
+    value: string | number
+  ) => void;
 }
 
-export const EditProduct: React.FC<ProductContainerProps> = ({
+export const EditProduct: React.FC<EditProductProps> = ({
   product,
   handleInputChange,
-  handleAddDetail,
-  handleRemoveDetail,
+  handleStockChange,
 }) => {
-  const handleDetailChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const updatedDetalles = [...(product.detalles || [])];
-    updatedDetalles[index] = e.target.value;
-    handleInputChange({
-      target: { name: "detalles", value: updatedDetalles },
-    });
-  };
-
   return (
-    <div className="product-container">
-      <div className="image-container">
-        <img src={`http://localhost:3000/api/products/file/${product.path}`} alt={product.name} className="product-image" />
-      </div>
-
-      <div className="edit-container">
+    <div className="edit-product-container">
+      <div className="product-details">
+        <label>Nombre del Producto</label>
         <input
           type="text"
-          name="name"
-          value={product.name}
+          name="nombre"
+          value={product.nombre}
           onChange={handleInputChange}
-          className="editable-title"
         />
+      </div>
 
+      <div className="product-details">
+        <label>Descripción del Producto</label>
+        <textarea
+          name="descripcion"
+          value={product.descripcion}
+          onChange={handleInputChange}
+        />
+      </div>
+
+      <div className="product-details">
+        <label>Precio de Venta</label>
         <input
           type="number"
-          name="price"
-          value={product.price}
+          name="precioVenta"
+          value={product.precioVenta}
           onChange={handleInputChange}
-          className="editable-price"
         />
+      </div>
 
-        <textarea
-          name="description"
-          value={product.description}
-          onChange={handleInputChange}
-          className="editable-description"
-        />
-
-        <label htmlFor="estado">Estado:</label>
-        <select
-          id="estado"
-          name="estado"
-          value={product.estado}
-          onChange={handleInputChange}
-          style={{ width: "200px" }}
-        >
-          <option value="disponible">Disponible</option>
-          <option value="agotado">Agotado</option>
-        </select>
-
-        <label htmlFor="detalles">Detalles:</label>
-        <ul className="details-list">
-          {(product.detalles || []).map((detalle, index) => (
-            <li key={index}>
+      <div className="product-stock">
+        <h3>Stock / Tallas</h3>
+        {product.stock.map((talla, index) => (
+          <div key={index} className="stock-item">
+            <div>
+              <label>Talla</label>
               <input
                 type="text"
-                value={detalle}
-                onChange={(e) => handleDetailChange(e, index)}
-                className="editable-detail"
+                name="nombre"
+                value={talla.nombre}
+                onChange={(e) => handleStockChange(index, "nombre", e.target.value)}
               />
-              <button
-                className="delete-button"
-                onClick={() => handleRemoveDetail(index)}
-              >
-                ✖
-              </button>
-            </li>
-          ))}
-          {(product.detalles?.length || 0) < 4 && (
-            <li>
-              <button className="add-button" onClick={handleAddDetail}>
-                Agregar +
-              </button>
-            </li>
-          )}
-        </ul>
+            </div>
+            <div>
+              <label>Cantidad</label>
+              <input
+                type="number"
+                name="cantidad"
+                value={talla.cantidad}
+                onChange={(e) => handleStockChange(index, "cantidad", e.target.value)}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

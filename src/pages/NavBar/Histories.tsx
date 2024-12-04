@@ -5,41 +5,61 @@ import { Title } from "../../components/Title";
 import { SortSelector } from "../../components/SortSelector";
 import { getBills, getSales } from "../../api/service/bill.service";
 import Modal from "../../components/share/Modal";
+import { motion } from "framer-motion";
+
+// Asegúrate de que los tipos de datos estén correctamente definidos
+interface SalesData {
+  ventasHoy: number;
+  ventasMensuales: number;
+  ventasSemana: number;
+  ventasTotales: number;
+}
+
+interface Bill {
+  name: string;
+  email: string;
+  paymentMethod: string;
+  date: string;
+  hour: string;
+  total: number;
+}
+
+interface Product {
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+  sizes: string[]
+}
 
 export const Histories: React.FC = () => {
-  const [dataSales, setDataSales] = useState<salesI>();
-  const [data, setData] = useState<billI[]>([]);
+  const [dataSales, setDataSales] = useState<SalesData | null>(null);
+  const [data, setData] = useState<Bill[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState<Bill[]>(data);
   const [sortBy, setSortBy] = useState("Fecha de venta");
-  const [modalVisible, setModalVisible] = useState(false); // Estado para mostrar el modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([
+    { name: "Producto 1", price: 10, quantity: 1, total: 0, sizes: ["S", "M", "L"] },
+    { name: "Producto 2", price: 15, quantity: 1, total: 0, sizes: ["M", "L", "XL"] },
+    { name: "Producto 3", price: 20, quantity: 1, total: 0, sizes: ["S", "L"] },
+  ]);
+  const [selectedProducts1, setSelectedProducts1] = useState<Product[]>([]);
 
-  interface Product {
-    name: string;
-    price: number;
-    quantity: number;
-    total: number;
-  }
   const cardsData = [
     { label: "Ventas Totales", isHighlighted: true },
     { label: "Ventas mensuales" },
     { label: "Ventas Semanales" },
     { label: "Ventas de Hoy" },
   ];
-  const selectedProducts: Product[] = [
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 },
-    { name: "NO QUIERE PRENDER", price: 10, quantity: 2, total: 20 }
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res: salesI = await getSales();
-        const response: billI[] = await getBills();
+        const res: SalesData = await getSales();
+        const response: Bill[] = await getBills();
         setDataSales(res);
         setFilteredData(response);
         setData(response);
@@ -71,7 +91,7 @@ export const Histories: React.FC = () => {
     setFilteredData(applySort(filteredData, newSortBy));
   };
 
-  const applySort = (dataToSort: typeof data, sortBy: string) => {
+  const applySort = (dataToSort: Bill[], sortBy: string) => {
     switch (sortBy) {
       case "Fecha de venta":
         return [...dataToSort].sort(
@@ -89,8 +109,38 @@ export const Histories: React.FC = () => {
   };
 
   const handleViewProducts = () => {
-    setModalVisible(true); // Muestra el modal
+    setModalVisible(true);
   };
+  const removeProduct = (index: number) => {
+    setSelectedProducts1((prevProducts) =>
+      prevProducts.filter((_, i) => i !== index)
+    );
+  };
+  const addProduct = (product: Product) => {
+    setSelectedProducts1((prev) => [
+      ...prev,
+      { ...product, quantity: 1, total: product.price },
+    ]);
+  };
+
+  const updateQuantity = (index: number, quantity: number) => {
+    setSelectedProducts1((prev) =>
+      prev.map((p, i) =>
+        i === index ? { ...p, quantity, total: p.price * quantity } : p
+      )
+    );
+  };
+  const updateSize = (index: number, newSize: string) => {
+    setSelectedProducts1((prevProducts) =>
+      prevProducts.map((product, i) =>
+        i === index ? { ...product, size: newSize } : product
+      )
+    );
+  };
+
+
+  const calculateSubtotal = () =>
+    selectedProducts1.reduce((sum, p) => sum + p.total, 0);
 
   return (
     <div className="histories-container">
@@ -115,6 +165,9 @@ export const Histories: React.FC = () => {
             onChange={handleSearch}
           />
         </div>
+        <button onClick={() => setModalVisible1(true)} style={styles.button}>
+          Crear Nueva Factura
+        </button>
       </div>
 
       <div className="cards-container">
@@ -122,7 +175,15 @@ export const Histories: React.FC = () => {
           <SalesCard
             key={index}
             label={card.label}
-            amount={String(dataSales?.ventasHoy)}
+            amount={
+              index === 0
+                ? String(dataSales?.ventasTotales)
+                : index === 1
+                ? String(dataSales?.ventasMensuales)
+                : index === 2
+                ? String(dataSales?.ventasSemana)
+                : String(dataSales?.ventasHoy)
+            }
             isHighlighted={card.isHighlighted}
           />
         ))}
@@ -157,7 +218,7 @@ export const Histories: React.FC = () => {
                     style={{
                       all: "unset",
                       background: "none",
-                      cursor: "pointer"
+                      cursor: "pointer",
                     }}
                   >
                     Ver todos
@@ -181,9 +242,247 @@ export const Histories: React.FC = () => {
       {/* Modal de productos */}
       <Modal
         isVisible={modalVisible}
-        onClose={() => setModalVisible(false)} // Cerrar el modal
-        products={selectedProducts} // Pasar los productos seleccionados
+        onClose={() => setModalVisible(false)}
+        products={selectedProducts1}
       />
+{modalVisible1 && (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    style={styles.overlay}
+  >
+    <motion.div
+      initial={{ y: "-100%" }}
+      animate={{ y: "0%" }}
+      exit={{ y: "-100%" }}
+      style={styles.modal}
+    >
+      {/* Modal de nueva factura */}
+      <div className="modal-header">
+        <button
+          onClick={() => setModalVisible1(false)}
+          style={styles.closeButton}
+        >
+          X
+        </button>
+      </div>
+      <div className="modal-content">
+        <h3>Seleccionar productos</h3>
+        <div className="product-search">
+          <input
+            type="text"
+            value={productSearch}
+            onChange={(e) => setProductSearch(e.target.value)}
+            placeholder="Buscar productos"
+          />
+          <button onClick={handleViewProducts}>Buscar</button>
+        </div>
+        <div className="product-list">
+          {availableProducts
+            .filter((product) =>
+              product.name.toLowerCase().includes(productSearch.toLowerCase())
+            )
+            .map((product, index) => (
+              <div key={index} onClick={() => addProduct(product)}>
+                {product.name}
+              </div>
+            ))}
+        </div>
+
+        {/* Muestra de productos seleccionados y subtotal */}
+        <div className="invoice">
+          <h3 className="font-bold text-2xl my-4 text-center text-blue-600">KRP Services</h3>
+          <hr className="mb-2" />
+          <div className="flex justify-between mb-6">
+            <h1 className="text-lg font-bold">Invoice</h1>
+            <div className="text-gray-700">
+              <div>Date: {new Date().toLocaleDateString()}</div>
+              <div>Invoice #: </div>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-lg font-bold mb-4">Bill To:</h2>
+            <div className="text-gray-700 mb-2"></div>
+            <div className="text-gray-700 mb-2"></div>
+            <div className="text-gray-700 mb-2"></div>
+            <div className="text-gray-700"></div>
+          </div>
+            <center>
+
+          <table className="w-full mb-8">
+            <thead>
+              <tr>
+                <th className="text-left font-bold text-gray-700">Description</th>
+                <th className="text-right font-bold text-gray-700">Amount</th>
+                <th className="text-center font-bold text-gray-700">Quantity</th>
+                <th className="text-center font-bold text-gray-700">Size</th>
+                <th className="text-center font-bold text-gray-700">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedProducts1.map((product, index) => (
+                <tr key={index}>
+                  <td className="text-left text-gray-700">{product.name}</td>
+                  <td className="text-right text-gray-700">${(product.quantity * product.price).toFixed(2)}</td>
+
+                  {/* Campo para cambiar la cantidad */}
+                  <td className="text-center">
+                    <input
+                      type="number"
+                      value={product.quantity}
+                      min="1"
+                      onChange={(e) => updateQuantity(index, e.target.value)}
+                      className="border p-1 w-16"
+                    />
+                  </td>
+
+                  {/* Selector de talla */}
+                  <td className="text-center">
+                    <select
+                      value={product.size}
+                      onChange={(e) => updateSize(index, e.target.value)}
+                      className="border p-1"
+                    >
+                      {product.sizes.map((size, i) => (
+                        <option key={i} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+
+                  {/* Botón para eliminar */}
+                  <td className="text-center">
+                    <button
+                      onClick={() => removeProduct(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td className="text-left font-bold text-gray-700">Total</td>
+                <td className="text-right font-bold text-gray-700">${calculateSubtotal()}</td>
+              </tr>
+            </tfoot>
+          </table>
+              
+            </center>
+          <div className="text-gray-700 mb-2">Thank you for your business!</div>
+          <div className="text-gray-700 text-sm">Please remit payment within 30 days.</div>
+        </div>
+
+        <div>
+          <h4>Subtotal: ${calculateSubtotal()}</h4>
+        </div>
+      </div>
+    </motion.div>
+  </motion.div>
+)}
     </div>
   );
 };
+const styles = {
+  button: {
+    padding: "8px 16px",
+    cursor: "pointer",
+    margin: "10px",
+    backgroundColor: "#000",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "14px",
+  },
+  overlay: {
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modal: {
+    padding: "15px",
+    borderRadius: "8px",
+    width: "800px",
+    height: "80%", // Auto height to allow scrolling when needed
+    maxHeight: "500px", // Set a maximum height
+    textAlign: "center" as const,
+    overflowY: "auto", // Make the modal scrollable when content exceeds maxHeight
+  },
+  input: {
+    width: "100%",
+    padding: "8px",
+    margin: "8px 0",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "14px",
+  },
+  productList: {
+    maxHeight: "120px", // Set max height
+    overflowY: "auto", // Make it scrollable if content overflows
+    marginBottom: "15px",
+    fontSize: "14px",
+  },
+  product: {
+    display: "flex",
+    justifyContent: "space-between",
+    margin: "5px 0",
+    cursor: "pointer",
+  },
+  addButton: {
+    padding: "5px 10px",
+    cursor: "pointer",
+    backgroundColor: "#28a745",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "13px",
+  },
+  selectedProducts: {
+    maxHeight: "120px", // Set max height
+    overflowY: "auto", // Make it scrollable if content overflows
+    marginBottom: "15px",
+    fontSize: "14px",
+  },
+  selectedProduct: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
+  },
+  quantityInput: {
+    width: "40px",
+    marginRight: "10px",
+    fontSize: "14px",
+    padding: "5px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+  },
+  summary: {
+    marginTop: "15px",
+    fontSize: "14px",
+    fontWeight: "bold",
+  },
+  closeButton: {
+    marginTop: "15px",
+    padding: "8px 16px",
+    cursor: "pointer",
+    backgroundColor: "#dc3545",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "14px",
+  },
+};
+
+export default Histories;
