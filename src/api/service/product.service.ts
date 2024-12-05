@@ -16,7 +16,7 @@ export const getProductsWithUpdatedPaths = async () => {
 
 export const getProducts = async () => {
   try {
-    const response = await primalGarageApi.get('/products/List');
+    const response = await primalGarageApi.get('/products/list');
 
     return response.data;
 
@@ -25,3 +25,24 @@ export const getProducts = async () => {
     throw err;
   }
 };
+
+
+export const saveInvoice = async (product: productBillSave[]) => {
+  try {
+
+    const parseProduct = product.map((product) => ({
+      producto_pk: product.producto_pk,
+      cantidad: product.cantidad,
+    }));
+    
+    const DataProductSend = {
+      productos: parseProduct,
+    };
+    
+    const response = await primalGarageApi.post('/invoices/', DataProductSend);
+    console.log(response)
+  } catch (err) {
+    console.error("Error to create invoice");
+    throw err;
+  }
+}

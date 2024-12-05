@@ -19,10 +19,23 @@ interface billI {
   total: number;
 }
 
-
 interface salesI {
-  ventasTotales: string,  
-  ventasMensuales: string, 
-  ventasSemana: string, 
-  ventasHoy: string | 0
+  ventasTotales: string;
+  ventasMensuales: string;
+  ventasSemana: string;
+  ventasHoy: string | 0;
+}
+
+interface Product {
+  producto_pk: number;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+  sizes: string[];
+}
+
+interface productBillSave {
+  producto_pk: number;
+  cantidad: number;
 }

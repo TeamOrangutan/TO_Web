@@ -7,7 +7,7 @@ import { getBills, getSales } from "../../api/service/bill.service";
 import Modal from "../../components/share/Modal";
 import { motion } from "framer-motion";
 import "../../styles/components/addProduct.css";
-import { getProducts } from "../../api/service/product.service";
+import { getProducts, saveInvoice } from "../../api/service/product.service";
 
 interface SalesData {
   ventasHoy: number;
@@ -17,6 +17,7 @@ interface SalesData {
 }
 
 interface Bill {
+  factura_pk: number;
   name: string;
   email: string;
   paymentMethod: string;
@@ -25,20 +26,13 @@ interface Bill {
   total: number;
 }
 
-interface Product {
-  name: string;
-  price: number;
-  quantity: number;
-  total: number;
-  sizes: string[];
-}
-
 type sizes = {
   name: string;
   cantidad: string;
 };
 
 interface productList {
+  producto_pk: number;
   name: string;
   price: number;
   sizes: sizes[];
@@ -56,6 +50,7 @@ export const Histories: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
   const [selectedProducts1, setSelectedProducts1] = useState<Product[]>([]);
+  const [invoice, setinvoice] = useState(0);
 
   const cardsData = [
     { label: "Ventas Totales", isHighlighted: true },
@@ -72,8 +67,8 @@ export const Histories: React.FC = () => {
 
         const listProduct: productList[] = await getProducts();
 
-        
         const ParseListProduct: Product[] = listProduct.map((list) => ({
+          producto_pk: list.producto_pk,
           name: list.name,
           price: Number(list.price),
           quantity: 1,
@@ -127,6 +122,23 @@ export const Histories: React.FC = () => {
     setFilteredData(applySort(filteredData, newSortBy));
   };
 
+  const handleSaveBill = async () => {
+    const ParseBillProducts: productBillSave[] = selectedProducts1.map(
+      (select) => ({
+        producto_pk: select.producto_pk,
+        cantidad: select.quantity,
+      })
+    );
+    try{
+      await saveInvoice(ParseBillProducts);
+      setModalVisible1(false);
+      alert('Factura creada')
+    }catch(err){
+      console.log(err);
+      alert('Bad request');
+    }
+  };
+
   const applySort = (dataToSort: Bill[], sortBy: string) => {
     switch (sortBy) {
       case "Fecha de venta":
@@ -145,7 +157,9 @@ export const Histories: React.FC = () => {
   };
 
   const handleViewProducts = () => {
+    
     setModalVisible(true);
+    
   };
   const removeProduct = (index: number) => {
     setSelectedProducts1((prevProducts) =>
@@ -249,7 +263,7 @@ export const Histories: React.FC = () => {
                 <td>{item.paymentMethod}</td>
                 <td>
                   <button
-                    onClick={() => handleViewProducts()}
+                    onClick={() => {handleViewProducts(); setinvoice(item.factura_pk);}}
                     style={{
                       all: "unset",
                       background: "none",
@@ -278,7 +292,7 @@ export const Histories: React.FC = () => {
       <Modal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
-        products={selectedProducts1}
+        id={invoice}
       />
       {modalVisible1 && (
         <motion.div
@@ -598,9 +612,7 @@ export const Histories: React.FC = () => {
                 </button>
                 <button
                   className="save-button"
-                  onClick={() => {
-                    console.log(selectedProducts1);
-                  }}
+                  onClick={() => handleSaveBill()}
                 >
                   Guardar
                 </button>

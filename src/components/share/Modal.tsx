@@ -1,32 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../../styles/modal.css";
 import LogoPrimalGarage from "../../assets/images/PrimalGarage-Black.webp";
 import { Title } from "../Title";
+import primalGarageApi from "../../api/primalGarageApi";
 
 interface Product {
   name: string;
   price: number;
   quantity: number;
-  total: number;
+  subtotal: number;
 }
 
 interface ModalProps {
   isVisible: boolean;
   onClose: () => void;
-  products: Product[];
+  id: number;
 }
 
-const Modal: React.FC<ModalProps> = ({ isVisible, onClose, products }) => {
+const Modal: React.FC<ModalProps> = ({ isVisible, onClose, id }) => {
   if (!isVisible) return null;
+  const [products, setProducts] = useState<Product[]>([]);
 
   const totalGanancias = products.reduce(
-    (acc, product) => acc + product.total,
+    (acc, product) => acc + product.subtotal,
     0
   );
+  useEffect(() => {
+    const getProduct = async () => {
+      const response = await primalGarageApi.get(`/invoices/${id}`);
+      console.log(response.data)
+      setProducts(response.data);
+    };
+    getProduct();
+  }, [id]);
   const totalVentas = totalGanancias;
 
-  // Calcular las filas adicionales vacías necesarias para llegar a 15
   const emptyRowsCount = Math.max(0, 15 - products.length);
   const emptyRows = Array.from({ length: emptyRowsCount });
 
@@ -70,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({ isVisible, onClose, products }) => {
                   <td>{product.name}</td>
                   <td>${product.price}</td>
                   <td>{product.quantity}</td>
-                  <td>${product.total}</td>
+                  <td>${product.subtotal}</td>
                 </tr>
               ))}
               {emptyRows.map((_, index) => (
