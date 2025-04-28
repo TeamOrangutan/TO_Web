@@ -1,0 +1,58 @@
+import { Route, Routes } from "react-router-dom";
+import Products from "../../Pages/user/Products";
+import ActualizarProduct from "../../Pages/user/ActualizarProduct";
+import Historial from "../../Pages/user/Historial";
+import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
+import Home from "../../Pages/user/Home";
+import LoginPage from "../../Auth/user/pages/LoginPage";
+import Details from "../../Pages/user/Details";
+
+function AppRouterUser() {
+  return (
+    <>
+      <Routes>
+        <Route path="/home" element={<Home />}></Route>
+
+        <Route
+          path="/products"
+          element={
+            <PrivateRoute>
+              <Products />
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route path="/details/:id" element={<Details />}></Route>
+
+        <Route
+          path="/actualizarProduct/:id"
+          element={
+            <PrivateRoute>
+              <ActualizarProduct />
+            </PrivateRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/historial"
+          element={
+            <PrivateRoute>
+              <Historial />
+            </PrivateRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        ></Route>
+      </Routes>
+    </>
+  );
+}
+
+export default AppRouterUser;
