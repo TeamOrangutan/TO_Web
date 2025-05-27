@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getProuductById } from "../Api/user/productsApi";
 
 export const useProductDetails = (product) => {
   const [productUpdate, setProduct] = useState({
@@ -16,24 +17,37 @@ export const useProductDetails = (product) => {
 
   useEffect(() => {
     if (product) {
-      let images = [];
-
-      if (typeof product.path === "string") {
-        images = [product.path];
-      } else if (Array.isArray(product.path)) {
-        images = product.path;
-      }
-
-      setProduct({
-        nombre: product.name || "",
-        descripcion: product.description || "",
-        precioVenta: product.price || "00.00",
-        estado: product.estado || "Disponible",
-        tallas: product.tallas || [],
-        images: images,
-      });
+      setProductData(product);
     }
   }, [product]);
+
+  const setProductData = (data) => {
+    let images = [];
+
+    if (typeof data.path === "string") {
+      images = [data.path];
+    } else if (Array.isArray(data.path)) {
+      images = data.path;
+    }
+
+    setProduct({
+      nombre: data.name || "",
+      descripcion: data.description || "",
+      precioVenta: data.price || "00.00",
+      estado: data.estado || "Disponible",
+      tallas: data.tallas || [],
+      images: images,
+    });
+  };
+
+  const refreshProduct = async (id) => {
+    try {
+      const updatedProduct = await getProuductById(id); 
+      setProductData(updatedProduct);
+    } catch (error) {
+      console.error("Error al actualizar producto:", error);
+    }
+  };
 
   const decrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
@@ -52,5 +66,6 @@ export const useProductDetails = (product) => {
     setSelectedSize,
     order,
     setorder,
+    refreshProduct,
   };
 };

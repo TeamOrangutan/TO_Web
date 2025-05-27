@@ -1,5 +1,16 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Api } from "./baseApi";
+
+
+export const getInvoiceById = async (facturaId) => {
+  try {
+    const response = await Api.get(`invoices/factura/${facturaId}`)
+    return response.data[0];
+  } catch (error) {
+    throw error
+  }
+}
 
 export const createInvoice = async (products, cliente) => {
   try {

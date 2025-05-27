@@ -7,6 +7,10 @@ import PublicRoute from "./PublicRoute";
 import Home from "../../Pages/user/Home";
 import LoginPage from "../../Auth/user/pages/LoginPage";
 import Details from "../../Pages/user/Details";
+import Carrito from "../../Components/user/Carrito/Carrito";
+import Micuenta from "../../Components/user/Profile/Micuenta";
+import Payments from "../../Pages/user/Payments";
+import ResetPasswordPage from "../../Pages/user/ResetPasswordPage";
 
 function AppRouterUser() {
   return (
@@ -14,15 +18,24 @@ function AppRouterUser() {
       <Routes>
         <Route path="/home" element={<Home />}></Route>
 
+        <Route path="/products" element={<Products />}></Route>
+
+        <Route path="/details/:id" element={<Details />}></Route>
+
+        <Route path="/carrito/" element={<Carrito />}></Route>
+
         <Route
-          path="/products"
+          path="/Perfil/"
           element={
             <PrivateRoute>
-              <Products />
+              <Micuenta />
             </PrivateRoute>
           }
         ></Route>
-        <Route path="/details/:id" element={<Details />}></Route>
+
+        {/* <Route path="/payments/" element={<Payments />}></Route> */}
+
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         <Route
           path="/actualizarProduct/:id"
@@ -34,7 +47,7 @@ function AppRouterUser() {
         ></Route>
 
         <Route
-          path="/historial"
+          path="/acercaDe"
           element={
             <PrivateRoute>
               <Historial />

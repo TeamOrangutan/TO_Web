@@ -77,27 +77,38 @@ export const ImageProductActualizar = ({ path, hoverPath, onImageChange }) => {
     );
   };
 
-
   return (
-    <Box sx={{ width: "28%", height: 400, position: "relative", top: 20 }}>
+    <Box
+      sx={{
+        width: { xs: "90%", sm: "70%", md: "60%"},
+        height: { xs: 250, sm: 300, md: 400 },
+        position: "relative",
+        mt: 4,
+        mx: "auto",
+      }}
+    >
+      {/* Flecha anterior */}
       <IconButton
         onClick={prevImage}
         sx={{
           position: "absolute",
-          right: 323,
+          left: 0,
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 2,
+          backgroundColor: "rgba(255,255,255,0.7)",
         }}
       >
         <ArrowBackIosIcon />
       </IconButton>
 
+      {/* Imagen principal */}
       <Button
         variant="contained"
         component="label"
         sx={{
           height: "100%",
+          width: "100%",
           backgroundColor: "white",
           fontSize: "80px",
           color: "black",
@@ -107,44 +118,47 @@ export const ImageProductActualizar = ({ path, hoverPath, onImageChange }) => {
         {images[currentIndex] ? (
           <img
             src={images[currentIndex]}
-            width={400}
             alt="Producto"
-            style={{ objectFit: "contain" }}
+            style={{
+              objectFit: "contain",
+              width: "100%",
+              height: "100%",
+            }}
           />
         ) : (
-          <Box sx={{ display: "flex", justifyContent: "center", ml: 7 }}>
-            <Typography sx={{ width: 340, color: "gray" }}>
+          <Box
+            sx={{ display: "flex", justifyContent: "center", width: "100%" }}
+          >
+            <Typography sx={{ color: "gray", px: 2, textAlign: "center" }}>
               Toca para agregar una imagen
             </Typography>
           </Box>
         )}
 
-        {/* <input
-          type="file"
-          name="replaceImage"
-          hidden
-          onChange={handleReplaceImage}
-        /> */}
+        {/* input de archivo descomentable si se usa */}
+        {/* <input type="file" name="replaceImage" hidden onChange={handleReplaceImage} /> */}
       </Button>
 
+      {/* Flecha siguiente */}
       <IconButton
         onClick={nextImage}
         sx={{
           position: "absolute",
-          left: 390,
+          right: 0,
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 2,
+          backgroundColor: "rgba(255,255,255,0.7)",
         }}
       >
         <ArrowForwardIosIcon />
       </IconButton>
 
+      {/* Miniatura o botón agregar */}
       <Box
         sx={{
           position: "absolute",
-          bottom: 10,
-          top: 410,
+          bottom: -60,
           left: "50%",
           transform: "translateX(-50%)",
         }}
@@ -153,8 +167,8 @@ export const ImageProductActualizar = ({ path, hoverPath, onImageChange }) => {
           variant="contained"
           component="label"
           sx={{
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             backgroundColor: "white",
             border: "1px solid black",
             padding: 0,

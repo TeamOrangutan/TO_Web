@@ -2,81 +2,137 @@ import * as React from "react";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import { Box, IconButton, ImageListItemBar, Typography } from "@mui/material";
-
 import { useNavigate } from "react-router-dom";
-import { deleteProduct, getAllProuducs } from "../../../Api/user/productsApi";
-import { useState } from "react";
-import { useEffect } from "react";
-
+import { getAllProuducs } from "../../../Api/user/productsApi";
+import { useState, useEffect } from "react";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BarLoader } from "react-spinners";
 import Grow from "@mui/material/Grow";
 import { useCart } from "../../../Auth/user/context/CartProvider";
+import { addCarrito } from "../../../Api/user/carrito";
+import { useContext } from "react";
+import { AuthContext } from "../../../Auth/user/context/AuthContext";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 export default function ImageListProduct({ order }) {
   const [products, setProducts] = useState([]);
   const [hoveredImages, setHoveredImages] = useState({});
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [error, seterror] = useState(false)
-  const [carrito, setcarrito] = useState([]);
+  const [error, setError] = useState(false);
+  const { logoutUser } = useContext(AuthContext);
 
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSm = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isMd = useMediaQuery(theme.breakpoints.between("md", "lg"));
 
-  const { handleAddToCart,handleRemoveToCart, cart, addToCart, removeFromCart } = useCart();
+  let cols = 4;
+  if (isXs) cols = 1;
+  else if (isSm) cols = 2;
+  else if (isMd) cols = 3;
 
-  
-  // const handleCarrito = (item) => {
-  //   if (!cart.find((prod) => prod.id === item.id)) {
-  //     addToCart(item);
-  //     handleAddToCart()
-  //   } else {
-  //     removeFromCart(item.id);
-  //     handleRemoveToCart()
-  //   }
-  // };
+  const { cart, addToCart, removeFromCart, refreshCart } = useCart();
 
+  const verifi = (item) => {
+    if (!cart || !Array.isArray(cart.items) || cart.items.length === 0) {
+      return false;
+    }
+
+    return cart.items.some((cartItem) => {
+      const cartItemProductId = cartItem.productId || cartItem.producto?.id;
+      return cartItemProductId === item.id;
+    });
+  };
+
+  const navigate = useNavigate();
+
+  const handleCarrito = async (item) => {
+    const user = localStorage.getItem("user");
+
+    const newOrder = {
+      productId: item.id,
+      size: "",
+      quantity: 1,
+      user: Number(user),
+    };
+
+    const verifi = cart.items.some(
+      (cartItem) => cartItem.productId === item.id
+    );
+
+    if (!verifi) {
+      try {
+        await addCarrito(
+          newOrder.productId,
+          newOrder.quantity,
+          newOrder.size,
+          newOrder.user
+        );
+        addToCart(newOrder); // Agregar al carrito
+        await refreshCart();
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          logoutUser();
+          navigate("/");
+        }
+        console.error("Error al hacer el pedido:", error);
+      }
+    } else {
+      try {
+        const itemInCart = cart.items.find(
+          (cartItem) => cartItem.productId === item.id
+        );
+
+        if (itemInCart) {
+          const itemId = itemInCart.Item_Id;
+
+          removeFromCart(itemId);
+          await refreshCart();
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          logoutUser();
+          navigate("/");
+        }
+        console.error("Error al eliminar el ítem del carrito:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        setloading(true);
+        setLoading(true);
         const data = await getAllProuducs();
         setProducts(data);
       } catch (error) {
-        seterror(true)
+        setError(true);
+
+        console.log(error);
+
         console.error("Error fetching products:", error);
       } finally {
-        setloading(false);
+        setLoading(false);
         setImagesLoaded(true);
       }
     };
     getProducts();
   }, []);
 
-  const sortedProducts = [...products];
+  console.log("products 123");
+  console.log(products);
 
+  const sortedProducts = [...products];
   if (order === "Fecha") {
     sortedProducts.sort(
       (a, b) =>
         new Date(b.fecha_de_publicacion) - new Date(a.fecha_de_publicacion)
     );
   }
-
-  const navigate = useNavigate();
-
-  const handleDelete = async (id) => {
-    await deleteProduct(id);
-    const data = await getAllProuducs();
-    setProducts(data);
-  };
-
-  const handleActualizar = (id) => {
-    navigate(`/details/${id}`);
-  };
 
   const handleDetails = (id) => {
     navigate(`/details/${id}`);
@@ -89,6 +145,12 @@ export default function ImageListProduct({ order }) {
   const handleMouseLeave = (id, originalPath) => {
     setHoveredImages((prev) => ({ ...prev, [id]: originalPath }));
   };
+
+  // const isInCart = (productId) => {
+  //   // Asegúrate de que el carrito esté cargado antes de validar
+  //   if (!cart || !cart.items) return false;
+  //   return ;
+  // };
 
   if (loading) {
     return (
@@ -104,131 +166,176 @@ export default function ImageListProduct({ order }) {
       </Box>
     );
   }
-  else if (error){
-    return (
-      <Typography sx={{mt: 8}}>
-        Ha ocurrido un error
-      </Typography>
-    )
 
+  if (error) {
+    return <Typography sx={{ mt: 8 }}>Ha ocurrido un error</Typography>;
   }
+
   return (
-    <ImageList cols={4} gap={16} sx={{ height: "900px" }}>
-      {sortedProducts.map((item) => {
-        const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
-          "\\",
-          "/"
-        )}`;
-        const hoverPath = item.hoverPath
-          ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
-              "\\",
-              "/"
-            )}`
-          : originalPath;
+    <ImageList
+      cols={cols}
+      gap={16}
+      sx={{
+        width: "100%",
+        height: { xs: "1700px", md: "900px" },
+        px: { xs: 4.5, md: 4 },
+      }}
+    >
+      {sortedProducts
+        .filter((item) => item.estado === "Disponible")
 
-        return (
-          <Grow in={imagesLoaded} timeout={1000}>
-            <ImageListItem
-              key={item.id}
-              sx={{
-                width: 278,
-                borderRadius: 2,
-                position: "relative",
-                mt: 2,
-                transition: "background-color 2s ease",
-              }}
-              >
-              <Box
-              onClick={() => {
-                handleDetails(item.id);
-              }}
-                className="img-hoverable"
+        .map((item) => {
+          const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
+            "\\",
+            "/"
+          )}`;
+          const hoverPath = item.hoverPath
+            ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
+                "\\",
+                "/"
+              )}`
+            : originalPath;
+
+          return (
+            <Grow in={imagesLoaded} timeout={1000} key={item.id}>
+              <ImageListItem
                 sx={{
-                  width: "100%",
-                  height: "100%",
+                  width: 278,
+                  borderRadius: 2,
                   position: "relative",
-                  overflow: "hidden",
-                  transition: "background-color 0.3s ease",
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={() => handleMouseEnter(item.id, hoverPath)}
-                onMouseLeave={() => handleMouseLeave(item.id, originalPath)}
-              >
-                <div>
-                  <img
-                    src={hoverPath}
-                    alt={item.name}
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      transition: "opacity 0.5s ease",
-                      opacity: hoveredImages[item.id] === hoverPath ? 1 : 0,
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <img
-                    src={originalPath}
-                    alt={item.name}
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      transition: "opacity 0.5s ease",
-                      opacity: hoveredImages[item.id] === hoverPath ? 0 : 1,
-                      borderRadius: "8px",
-                    }}
-                  />
-                </div>
-              </Box>
-
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
+                  mt: 2,
+                  transition: "background-color 2s ease",
+                  border: "1px solid #EBEBEB", // borde gris muy claro
+                  boxShadow: "0px 4px 4px 4px rgba(0, 0, 0, 0.1)", // sombra suave y difusa
                 }}
               >
-                <IconButton
-                  sx={{ borderRadius: "50%" }}
-                  onClick={() => handleCarrito(item)}
+                <Box
+                  onClick={() => handleDetails(item.id)}
+                  className="img-hoverable"
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    "& img": {
+                      transition: "transform 0.9s ease-in-out", // zoom
+                    },
+                    "&:hover img": {
+                      transform: "scale(1.1)",
+                    },
+                    "& .overlay": {
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "rgba(97, 97, 97, 0.23)",
+                      opacity: 0,
+                      transition: "opacity 0.4s ease",
+                      borderRadius: "8px",
+                      zIndex: 2,
+                    },
+                    "&:hover .overlay": {
+                      opacity: 1,
+                    },
+                  }}
+                  onMouseEnter={() => handleMouseEnter(item.id, hoverPath)}
+                  onMouseLeave={() => handleMouseLeave(item.id, originalPath)}
                 >
-                 
-                    <ShoppingCartOutlinedIcon
-                      sx={{ color: "gray", fontSize: "30px" }}
+                  {/* Overlay para oscurecer */}
+                  <div className="overlay" />
+
+                  <div>
+                    <img
+                      src={hoverPath}
+                      alt={item.name}
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        transition: "opacity 0.5s ease",
+                        opacity: hoveredImages[item.id] === hoverPath ? 1 : 0,
+                        borderRadius: "8px",
+                      }}
                     />
-                  
-                </IconButton>
+                    <img
+                      src={originalPath}
+                      alt={item.name}
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        transition: "opacity 0.5s ease",
+                        opacity: hoveredImages[item.id] === hoverPath ? 0 : 1,
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </div>
+                </Box>
 
-                {/* <IconButton
-                sx={{ borderRadius: "50%", backgroundColor: "#D9D9D9" }}
-                onClick={() => handleActualizar(item.id)}
-              >
-                <EditOutlinedIcon />
-              </IconButton>
-              <IconButton
-                sx={{ borderRadius: "50%", backgroundColor: "#D9D9D9" }}
-                onClick={() => handleDelete(item.id)}
-              >
-                <DeleteOutlineOutlinedIcon />
-              </IconButton> */}
-              </Box>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  <IconButton
+                    sx={{
+                      borderRadius: "50%",
+                      backgroundColor: "#EBEBEB",
+                      zIndex: 2,
+                    }}
+                    onClick={(e) => {
+                      handleCarrito(item);
+                    }}
+                  >
+                    {verifi(item) ? (
+                      <ShoppingCartIcon
+                        sx={{ color: "gray", fontSize: "30px" }}
+                      />
+                    ) : (
+                      <ShoppingCartOutlinedIcon
+                        sx={{ color: "gray", fontSize: "30px" }}
+                      />
+                    )}
+                  </IconButton>
+                </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "center", mb: 0 }}>
-                <ImageListItemBar title={item.name} position="below" />
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 0 }}>
-                <ImageListItemBar title={`C$${item.price}`} position="below" />
-              </Box>
-            </ImageListItem>
-          </Grow>
-        );
-      })}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 0,
+                    mb: 2,
+                  }}
+                >
+                  <Typography sx={{ fontWeight: "360", fontSize: 20 }}>
+                    {item.name}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 0,
+                    mb: 2,
+                  }}
+                >
+                  <Typography sx={{ fontWeight: "bold", fontSize: 20 }}>
+                    C$ {item.price}
+                  </Typography>
+                </Box>
+              </ImageListItem>
+            </Grow>
+          );
+        })}
     </ImageList>
   );
 }

@@ -5,6 +5,7 @@ import Navbar from "../../Components/user/Navbar/Navbar";
 import useProductById from "../../hooks/useProductById";
 
 import DetailsProduct from "../../Components/user/Products/DetailsProduct";
+import Footer from "../../Components/user/Footer";
 export const Details = () => {
   const { product, loading, error } = useProductById();
 
@@ -24,6 +25,7 @@ export const Details = () => {
         }}
       ></Box>
       <DetailsProduct product={product} />
+      <Footer />
     </>
   );
 };

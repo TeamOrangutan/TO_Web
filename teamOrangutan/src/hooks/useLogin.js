@@ -26,6 +26,7 @@ const useLogin = () => {
       const data = await login(userData.correo, userData.contrasena);
       if (data.token) {
         loginUser(data.token, data.userId);
+        localStorage.setItem('cart', data.carritoId)
         navigate("/home");
       }
     } catch (error) {

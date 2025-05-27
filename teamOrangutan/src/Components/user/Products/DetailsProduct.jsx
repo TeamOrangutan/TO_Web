@@ -7,12 +7,18 @@ import { useCart } from "../../../Auth/user/context/CartProvider";
 import TallasCard from "./TallasCard";
 import { useProductDetails } from "../../../hooks/useProductDetails";
 import QuantitySelect from "./QuantitySelect";
-import Carrito from "./Carrito/Carrito";
+import Carrito from "../Carrito/Carrito";
 import { useEffect } from "react";
 import { addCarrito } from "../../../Api/user/carrito";
+import { useContext } from "react";
+import { AuthContext } from "../../../Auth/user/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const DetailsProduct = ({ product }) => {
   const { addToCart, handleRemoveToCart } = useCart();
+  const { logoutUser } = useContext(AuthContext);
+
+  const navigate = useNavigate();
 
   const {
     productUpdate,
@@ -23,6 +29,7 @@ export const DetailsProduct = ({ product }) => {
     setSelectedSize,
     order,
     setorder,
+    refreshProduct,
   } = useProductDetails(product);
 
   const handleCarrito = async () => {
@@ -30,150 +37,145 @@ export const DetailsProduct = ({ product }) => {
 
     const hasOrder = order && order.productid;
 
-  
-      const newOrder = {
-        productid: product.id,
-        size: selectedSize,
-        quantity: quantity,
-        user: Number(user),
-      };
+    const newOrder = {
+      productid: product.id,
+      size: selectedSize,
+      quantity: quantity,
+      user: Number(user),
+    };
 
-      try {
-        await addCarrito(
-          newOrder.productid,
-          newOrder.quantity,
-          newOrder.size,
-          newOrder.user
-        );
-        setorder(newOrder);
-        addToCart();
-      } catch (error) {
-        console.error("Error al hacer el pedido:", error);
+    try {
+      await addCarrito(
+        newOrder.productid,
+        newOrder.quantity,
+        newOrder.size,
+        newOrder.user
+      );
+      setorder(newOrder);
+      addToCart(newOrder);
+      await refreshProduct(product.id);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        logoutUser();
+        navigate("/");
       }
-   
+      console.error("Error al hacer el pedido:", error);
+    }
   };
 
   return product.name ? (
-    <>
-      <Carrito />
-      <Grow in={product} timeout={1000}>
-        <Box
-          sx={{
-            mt: 5,
-          }}
-        >
-          <Box sx={{ position: "absolute", left: 500, ml: 25, mt: 2 }}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography
-                sx={{
-                  textAlign: "left",
-                  fontWeight: "bold",
-                  fontSize: "30px",
-                }}
-              >
-                {product.name}
-              </Typography>
-
-              <Typography
-                sx={{
-                  textAlign: "left",
-                  fontSize: "20px",
-                  mt: 2,
-                  fontWeight: 500,
-                }}
-              >
-                C${product.price}
-              </Typography>
+    <Grow in={product} timeout={1000}>
+      <Box
+        sx={{
+          mt: { xs: 1, md: 5 },
+          px: { xs: 2, md: 10 },
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: { xs: 6, md: 10 },
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {/* Imagen del producto */}
+        <Box sx={{ flex: 1, position: "relative", textAlign: "center" }}>
+          {product.estado === "Agotado" && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: { xs: 80, md: 140 },
+                left: "50%",
+                transform: "translateX(-50%) rotate(-10deg)",
+                backgroundColor: "rgba(255, 0, 0, 0.74)",
+                color: "white",
+                padding: "10px 30px",
+                borderRadius: "5px",
+                zIndex: 2,
+                fontWeight: "bold",
+                fontSize: { xs: 30, md: 55 },
+                border: "2px solid #EBEBEB",
+              }}
+            >
+              AGOTADO
             </Box>
+          )}
+          <ImageProductActualizar
+            path={product.path}
+            hoverPath={product.hoverPath}
+          />
+        </Box>
+
+        {/* Información del producto */}
+        <Box sx={{ flex: 1, maxWidth: 500, mt: {xs: 5, md: 0} }}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 30 }}>
+            {product.name}
+          </Typography>
+
+          <Typography sx={{ fontSize: 20, fontWeight: 500 }}>
+            C${product.price}
+          </Typography>
             <hr
               style={{ height: "1px", backgroundColor: "gray", border: "none" }}
             />
-            <Box sx={{ width: 400 }}>
-              <Typography
-                sx={{
-                  textAlign: "left",
-                  fontSize: "15px",
-                  mt: 2,
-                  fontWeight: 400,
-                }}
-              >
-                {product.description}
-              </Typography>
-            </Box>
-            <form>
-              <Typography sx={{ textAlign: "left", fontSize: "16px", mt: 4 }}>
-                Tallas
-              </Typography>
-              {productUpdate.tallas && product.tallas.length > 0 ? (
-                <Grid
-                  container
-                  spacing={1}
-                  mt={1}
-                  sx={{ width: 500, flexWrap: "wrap" }}
-                >
-                  {productUpdate.tallas.map((talla, index) => {
-                    return (
-                      <Grid item key={index} sx={{ display: "flex" }}>
-                        <TallasCard
-                          talla={talla}
-                          selectedSize={selectedSize}
-                          setSelectedSize={setSelectedSize}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              ) : (
-                <Typography>No hay tallas disponibles</Typography>
-              )}
-            </form>
-            <Typography sx={{ textAlign: "left", fontSize: "16px", mt: 2 }}>
-              Cantidad
-            </Typography>
-            <QuantitySelect
-              quantity={quantity}
-              increase={increase}
-              decrease={decrease}
-            />
-          </Box>
 
-          <Box sx={{ ml: 20 }}>
-            <ImageProductActualizar
-              path={product.path}
-              hoverPath={product.hoverPath}
-            />
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              mt: 6,
-              height: 100,
-              ml: 80,
-            }}
-          >
-            <Button
-              className="btn-addCarrito"
-              type="submit"
-              variant="contained"
+          {/* Descripción */}
+          {product.description && (
+            <Typography
               sx={{
-                ml: 7,
-                backgroundColor: "black",
-                color: "white",
-                width: 412,
-                height: 50,
-              }}
-              onClick={() => {
-                handleCarrito();
+                textAlign: "left",
+                fontSize: 15,
+                mt: 2,
+                fontWeight: 400,
               }}
             >
-              AÑADIR AL CARRITO
-            </Button>
-          </Box>
+              {product.description}
+            </Typography>
+          )}
+
+          {/* Tallas */}
+          <Typography sx={{ fontSize: 16, mt: 4 }}>Tallas</Typography>
+          {productUpdate.tallas && productUpdate.tallas.length > 0 ? (
+            <Grid container spacing={1} mt={1}>
+              {productUpdate.tallas.map((talla, index) => (
+                <Grid item key={index}>
+                  <TallasCard
+                    talla={talla}
+                    selectedSize={selectedSize}
+                    setSelectedSize={setSelectedSize}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography>No hay tallas disponibles</Typography>
+          )}
+
+          {/* Cantidad */}
+          <Typography sx={{ fontSize: 16, mt: 4 }}>Cantidad</Typography>
+          <QuantitySelect
+            quantity={quantity}
+            increase={increase}
+            decrease={decrease}
+          />
+
+          {/* Botón agregar al carrito */}
+          <Button
+            disabled={product.estado === "Agotado"}
+            variant="contained"
+            sx={{
+              mt: 4,
+              backgroundColor: "black",
+              color: "white",
+              width: "100%",
+              height: 50,
+              fontWeight: "bold",
+            }}
+            onClick={handleCarrito}
+          >
+            AÑADIR AL CARRITO
+          </Button>
         </Box>
-      </Grow>
-    </>
+      </Box>
+    </Grow>
   ) : (
     <Box
       sx={{

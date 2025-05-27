@@ -3,21 +3,33 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const getAllProuducs = async () => {
+    const token = localStorage.getItem("token");
+
   try {
-    const response = await Api.get("/products");
+    const response = await Api.get("/products",{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });;
     return response.data;
   } catch (error) {
-    console.error(
-      "Error al obtener productos:",
-      error.response?.data || error.message
-    );
+    if (error.response) {
+      console.error("Error:", error.response);
+    }
+
     throw error;
   }
 };
 
 export const getProuductById = async (id) => {
   try {
-    const response = await Api.get(`/products/${id}`);
+    const token = localStorage.getItem("token");
+
+    const response = await Api.get(`/products/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(

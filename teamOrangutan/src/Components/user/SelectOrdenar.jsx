@@ -24,7 +24,7 @@ export default function SelectOrdenar({order, setorder}) {
   return (
     <div  >
      
-      <FormControl sx={{ m: 1, width: 200 }}>
+      <FormControl sx={{ m: 1, width: 270 }}>
         <InputLabel id="demo-controlled-open-select-label">Ordenar por</InputLabel>
         <Select
           labelId="demo-controlled-open-select-label"

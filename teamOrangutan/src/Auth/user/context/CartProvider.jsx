@@ -1,55 +1,105 @@
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "./CartContext";
-import { getCarrito } from "../../../Api/user/carrito";
+import {
+  deleteItemCarrito,
+  getCarrito,
+  updateItemCart,
+} from "../../../Api/user/carrito";
+import { getProuductById } from "../../../Api/user/productsApi";
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-
   const [cart, setCart] = useState({ carritoId: null, total: 0, items: [] });
+
+  const refreshCart = async () => {
+    const carrito = await getCarrito();
+
+    const normalizedItems = carrito.items.map((item) => ({
+      Item_Id: item.carritoItem_Id,
+      productId: item.productId || item.productoId,
+      size: item.size || "",
+      quantity: item.quantity || item.cantidad || 1,
+      precio: item.precio || item.producto?.price || 0,
+    }));
+
+    setCart({
+      carritoId: carrito.carritoId,
+      total: carrito.total,
+      items: normalizedItems,
+    });
+  };
+
   useEffect(() => {
-    const fetchCarrito = async () => {
-      const response = await getCarrito();
-      setCart(response);
-      const itemsLength = response.items?.length || 0;
-      setCartCount(itemsLength);
-    };
-    fetchCarrito()
+    refreshCart();
+  }, []);
+
+  useEffect(() => {
+    const itemsLength = cart.items?.length || 0;
+    setCartCount(itemsLength);
   }, [cart]);
-  
-  
-  const addToCart = () => {
-    console.log(cartCount);
-    console.log(cart);
-    
-    // if (!product || !product.id) {
-    //   console.error(
-    //     "Producto inválido al intentar agregar al carrito:",
-    //     product
-    //   );
-    //   return;
-    // }
 
-    // setCartCount((prev) => prev + 1);
-    // const cleanedCart = cart.filter((item) => item !== null);
+  const addToCart = async (newItem) => {
+    setCart((prevCart) => {
+      const updatedCart = {
+        ...prevCart,
+        items: [...prevCart.items, newItem],
+        total: prevCart.total + (newItem.precio || 0),
+      };
+      return updatedCart;
+    });
 
-    // if (!cleanedCart.find((item) => item.id === product.id)) {
-    //   const updatedCart = [...cleanedCart, product];
-    //   setCart(updatedCart);
-    //   setIsAnimating(true);
-    //   setTimeout(() => setIsAnimating(false), 300);
-    // }
-  };
-  const removeFromCart = (productId) => {
-    setCart(cart.filter((item) => item.id !== productId));
+    setCartCount((prev) => prev + 1);
+    setIsAnimating(true);
+    await refreshCart();
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
-  const handleAddToCart = () => {};
+  const updateItemCarrito = async ({ itemId, talla, cantidad, action }) => {
+    const data = await updateItemCart(itemId, talla, cantidad, action);
+    return data;
+  };
 
-  const handleRemoveToCart = () => {
-    // setCartCount((prev) => prev - 1);
-    // setIsAnimating(true);
-    // setTimeout(() => setIsAnimating(false), 300); // Animación durante 300ms
+  const removeFromCart = async (itemId) => {
+    try {
+      await deleteItemCarrito(itemId);
+      await refreshCart();
+    } catch (error) {
+      console.error("Error al eliminar item del carrito:", error);
+    }
+  };
+
+  const fetchProductsInCart = async () => {
+    try {
+      const carrito = await getCarrito();
+      console.log(carrito);
+
+      const normalizedItems = carrito.items.map((item) => ({
+        Item_Id: item.carritoItem_Id,
+        productId: item.productId || item.productoId,
+        size: item.size || item.talla || "",
+        quantity: item.quantity || item.cantidad || 0,
+        precio: item.precio || item.producto?.price || 0,
+      }));
+
+      const products = await Promise.all(
+        normalizedItems.map(async (item) => {
+          const product = await getProuductById(item.productId);
+          return {
+            ...product,
+            quantity: item.quantity,
+            size: item.size,
+
+            Item_Id: item.Item_Id,
+          };
+        })
+      );
+
+      return products;
+    } catch (error) {
+      console.error("Error al obtener el carrito:", error);
+      throw error;
+    }
   };
 
   return (
@@ -57,11 +107,12 @@ export const CartProvider = ({ children }) => {
       value={{
         cartCount,
         isAnimating,
-        handleAddToCart,
-        handleRemoveToCart,
         cart,
         addToCart,
         removeFromCart,
+        refreshCart,
+        fetchProductsInCart,
+        updateItemCarrito,
       }}
     >
       {children}
