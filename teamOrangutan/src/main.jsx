@@ -7,6 +7,7 @@ import AppRouterUser from "./router/user/AppRouterUser.jsx";
 import AuthProvider from "./Auth/user/context/AuthProvider.jsx";
 import { CartProvider } from "./Auth/user/context/CartProvider.jsx";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import App from "../App.jsx";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -17,7 +18,7 @@ createRoot(document.getElementById("root")).render(
         <CartProvider>
            <GoogleOAuthProvider clientId={clientId}>
           <ToastContainer />
-          <AppRouterUser />
+          <App />
           </GoogleOAuthProvider>
         </CartProvider>
       </AuthProvider>

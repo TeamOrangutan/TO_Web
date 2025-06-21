@@ -1,9 +1,13 @@
-import AppRouter from "./src/router/AppRouter";
+import { useContext } from "react";
+import { AuthContext } from "./src/Auth/user/context/AuthContext";
+import AppRouterUser from "./src/router/user/AppRouterUser";
 
 const App = () => {
+
   return (
     <>
-      <AppRouter />
+      <AppRouterUser />
+      
     </>
   );
 };

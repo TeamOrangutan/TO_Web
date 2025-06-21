@@ -11,3 +11,15 @@ export const getAllOrdenes = async () => {
     throw error;
   }
 };
+
+
+export const getResumeOrdenes = async () => {
+  try {
+    const response = await Api.get('/orders/all/')
+    console.log(response.data);
+    
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}

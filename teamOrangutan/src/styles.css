@@ -6,7 +6,14 @@ html, body {
     height: 0;
     /* color: #ccccccef */
   }
-  
-.btn-addCarrito:hover{
-  background-color: gray;
+
+
+.carousel .control-arrow:before {
+
+  border-left: 12px solid black !important;
+  border-right: none !important;
+}
+.carousel .control-arrow.control-next:before {
+  border-left: none !important;
+  border-right: 12px solid rgb(0, 0, 0) !important;
 }

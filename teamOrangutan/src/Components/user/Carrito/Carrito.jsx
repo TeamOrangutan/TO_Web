@@ -36,7 +36,10 @@ export const Carrito = () => {
   const [open, setOpen] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
 
-  const { logoutUser } = useContext(AuthContext);
+  const { user, logoutUser } = useContext(AuthContext);
+
+  console.log("user");
+  console.log(user);
 
   const navigate = useNavigate();
 
@@ -54,16 +57,16 @@ export const Carrito = () => {
       setProductos(productosConCantidad);
       const cantidadesIniciales = {};
       productosConCantidad.forEach((p) => {
-        cantidadesIniciales[p.id] = {};
+        cantidadesIniciales[p.Item_Id] = {};
         p.tallas?.forEach((t) => {
-          cantidadesIniciales[p.id][t] = 0;
+          cantidadesIniciales[p.Item_Id][t] = 0;
         });
-        // opcional: si ya hay talla y cantidad en el carrito
         if (p.size && p.quantity) {
-          cantidadesIniciales[p.id][p.size] = p.quantity;
+          cantidadesIniciales[p.Item_Id][p.size] = p.quantity;
         }
       });
       setQuantitiesPorTalla(cantidadesIniciales);
+      await refreshCart();
     } catch (error) {
       if (error.response && error.response.status === 401) {
         logoutUser();
@@ -77,7 +80,12 @@ export const Carrito = () => {
 
   // 🔁 Llamado inicial una vez
   useEffect(() => {
-    fetchData();
+    const fetchAll = async () => {
+      await fetchData();
+      await refreshCart();
+    };
+
+    fetchAll();
   }, []);
 
   console.log("loading");
@@ -88,7 +96,7 @@ export const Carrito = () => {
     if (productos.length > 0 && Object.keys(selectedSizes).length === 0) {
       const initialSizes = {};
       productos.forEach((product) => {
-        initialSizes[product.id] = product.size;
+        initialSizes[product.Item_Id] = product.size;
       });
       setSelectedSizes(initialSizes);
     }
@@ -102,13 +110,12 @@ export const Carrito = () => {
     setQuantity(initialQuantities);
   }, [cart]);
 
-  const increase = async (index, itemId) => {
+  const increase = async (itemId) => {
     setLoading(true);
 
     try {
-      const nuevosProductos = [...productos];
-      const producto = nuevosProductos[index];
-      const tallaSeleccionada = selectedSizes[producto.id];
+      const producto = productos.find((p) => p.Item_Id === itemId);
+      const tallaSeleccionada = selectedSizes[itemId] || producto.size;
 
       if (!tallaSeleccionada || tallaSeleccionada === "") {
         setMessage(
@@ -116,7 +123,7 @@ export const Carrito = () => {
         );
         setMessageType("error");
         setOpen(true);
-        return; // Detener ejecución sin actualizar
+        return;
       }
 
       const data = await updateItemCarrito({
@@ -126,22 +133,17 @@ export const Carrito = () => {
         action: "increment",
       });
 
-      // Solo si el backend no dio error, actualiza cantidad y estado
-      producto.quantity += 1;
-
       setQuantitiesPorTalla((prev) => {
-        const current = prev[producto.id] || {};
-        const talla = selectedSizes[producto.id];
+        const current = prev[itemId] || {};
         return {
           ...prev,
-          [producto.id]: {
+          [itemId]: {
             ...current,
-            [talla]: (current[talla] || 0) + 1,
+            [tallaSeleccionada]: (current[tallaSeleccionada] || 1) + 1,
           },
         };
       });
 
-      setProductos(nuevosProductos);
       await fetchData();
       await refreshCart();
 
@@ -155,52 +157,51 @@ export const Carrito = () => {
       setMessageType("error");
       setOpen(true);
     } finally {
-      setLoading(false); // Siempre desactiva loading
+      setLoading(false);
     }
   };
 
-  const decrease = async (index, itemId) => {
+  const decrease = async (itemId) => {
     setLoading(true);
 
-    const nuevosProductos = [...productos];
-    const producto = nuevosProductos[index];
-    const tallaSeleccionada = selectedSizes[producto.id];
+    try {
+      const producto = productos.find((p) => p.Item_Id === itemId);
+      const tallaSeleccionada = selectedSizes[itemId] || producto.size;
 
-    if (producto.quantity >= 1) {
-      producto.quantity -= 1;
+      const cantidadActual =
+        quantitiesPorTalla[itemId]?.[tallaSeleccionada] || 1;
+      if (cantidadActual > 1) {
+        setQuantitiesPorTalla((prev) => {
+          const current = prev[itemId] || {};
+          return {
+            ...prev,
+            [itemId]: {
+              ...current,
+              [tallaSeleccionada]: cantidadActual - 1,
+            },
+          };
+        });
 
-      setQuantitiesPorTalla((prev) => {
-        const current = prev[producto.id] || {};
-        const talla = selectedSizes[producto.id];
-        return {
-          ...prev,
-          [producto.id]: {
-            ...current,
-            [talla]: Math.max((current[talla] || 0) - 1, 0),
-          },
-        };
-      });
-
-      setProductos(nuevosProductos);
-
-      try {
         const data = await updateItemCarrito({
           itemId,
           talla: tallaSeleccionada,
           cantidad: 1,
           action: "decrement",
         });
+
         await fetchData();
         await refreshCart();
         console.log(data);
-      } catch (error) {
-        setMessage(error.response.data.message);
-        setMessageType("error");
-        setOpen(true);
       }
+    } catch (error) {
+      setMessage(
+        error?.response?.data?.message || "Ocurrió un error inesperado."
+      );
+      setMessageType("error");
+      setOpen(true);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
   const calcularTotal = () => {
     return productos.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -222,7 +223,7 @@ export const Carrito = () => {
 
   const handleCheckout = () => {
     const faltanTallas = productos.some((producto) => {
-      const talla = selectedSizes[producto.id];
+      const talla = selectedSizes[producto.Item_Id];
       return !talla || talla.trim() === "";
     });
 
@@ -371,34 +372,31 @@ export const Carrito = () => {
                                   <TallasCard
                                     talla={talla}
                                     selectedSize={
-                                      selectedSizes[item.id] || null
+                                      selectedSizes[item.Item_Id] || null
                                     }
                                     setSelectedSize={(size) => {
                                       setSelectedSizes((prev) => {
-                                        const prevSize = prev[item.id];
+                                        const prevSize = prev[item.Item_Id];
                                         const newSelectedSizes = {
                                           ...prev,
-                                          [item.id]:
+                                          [item.Item_Id]:
                                             size === prevSize ? null : size,
                                         };
-
-                                        // Si cambió la talla
                                         if (size !== prevSize) {
                                           setProductos((productosPrev) =>
                                             productosPrev.map((p) =>
-                                              p.id === item.id
+                                              p.Item_Id === item.Item_Id
                                                 ? {
                                                     ...p,
                                                     quantity:
                                                       quantitiesPorTalla[
-                                                        item.id
+                                                        item.Item_Id
                                                       ]?.[size] || 0,
                                                   }
                                                 : p
                                             )
                                           );
                                         }
-
                                         return newSelectedSizes;
                                       });
                                     }}
@@ -429,7 +427,7 @@ export const Carrito = () => {
                               }}
                             >
                               <IconButton
-                                onClick={() => decrease(index, item.Item_Id)}
+                                onClick={() => decrease(item.Item_Id)}
                                 sx={{
                                   borderRight: "1px solid #ccc",
                                   borderRadius: 0,
@@ -445,11 +443,13 @@ export const Carrito = () => {
                                   textAlign: "center",
                                 }}
                               >
-                                {item.quantity}
+                                {quantitiesPorTalla[item.Item_Id]?.[
+                                  selectedSizes[item.Item_Id] || item.size
+                                ] || 1}
                               </Typography>
 
                               <IconButton
-                                onClick={() => increase(index, item.Item_Id)}
+                                onClick={() => increase(item.Item_Id)}
                                 sx={{
                                   borderLeft: "1px solid #ccc",
                                   borderRadius: 0,
@@ -487,7 +487,13 @@ export const Carrito = () => {
             </Box>
             {showPayment ? (
               <Grow in={true} timeout={1000}>
-                <Box mr={15} sx={{ position: "sticky",  width: {md: 350, xs: 300, mt: {md: 2, xs: 0} } }}>
+                <Box
+                  mr={15}
+                  sx={{
+                    position: "sticky",
+                    width: { md: 350, xs: 300, mt: { md: 2, xs: 0 } },
+                  }}
+                >
                   <Payments
                     onPaymentSuccess={async () => {
                       await refreshCart();

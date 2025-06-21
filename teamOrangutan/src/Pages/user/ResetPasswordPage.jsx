@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -10,6 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import logo from "../..../../../assets/user/logo2.png";
+import { AuthContext } from "../../Auth/user/context/AuthContext";
 
 export default function ResetPasswordPage() {
   const { token } = useParams();
@@ -21,6 +22,7 @@ export default function ResetPasswordPage() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const { logoutUser } = useContext(AuthContext);
 
   const showMessage = (msg, type = "success") => {
     setMessage(msg);
@@ -56,8 +58,11 @@ export default function ResetPasswordPage() {
         "Contraseña cambiada correctamente. Por favor, inicia sesión.",
         "success"
       );
+
+      
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
+      logoutUser()
       navigate("/");
     } catch (error) {
       showMessage(error.message, "error");
@@ -122,7 +127,7 @@ export default function ResetPasswordPage() {
               type="submit"
               fullWidth
             >
-              Iniciar sesión
+              Cambiar contraseña
             </Button>{" "}
           </Box>
           {error && <p style={{ color: "red" }}>{error}</p>}

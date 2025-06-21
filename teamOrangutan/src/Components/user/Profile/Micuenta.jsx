@@ -64,6 +64,9 @@ export const Micuenta = () => {
     userProfile();
   }, []);
 
+  console.log("user2")
+  console.log(user2)
+
   const handleUploadImage = async () => {
     if (!selectedFile) return;
 
@@ -71,6 +74,7 @@ export const Micuenta = () => {
       nombres: user2.persona.nombres,
       apellidos: user2.persona.apellidos,
       direccion: user2.persona.direccion,
+      correo: user2.correo,
       imagen: selectedFile,
     };
 
@@ -141,7 +145,6 @@ export const Micuenta = () => {
                 <Box
                   sx={{
                     border: "1px solid #EBEBEB",
-                    // ✅ Siempre 100%, y deja que el contenedor controle el tamaño
                     maxWidth: { md: "300px" }, // ✅ en desktop no crecerá más de 300px
                     height: "60%",
                     display: "flex",

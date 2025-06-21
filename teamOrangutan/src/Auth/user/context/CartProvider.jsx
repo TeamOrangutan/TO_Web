@@ -6,12 +6,13 @@ import {
   updateItemCart,
 } from "../../../Api/user/carrito";
 import { getProuductById } from "../../../Api/user/productsApi";
+import { AuthContext } from "./AuthContext";
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [cart, setCart] = useState({ carritoId: null, total: 0, items: [] });
-
+  const { user } = useContext(AuthContext);
   const refreshCart = async () => {
     const carrito = await getCarrito();
 
@@ -31,8 +32,13 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    refreshCart();
-  }, []);
+    if (user) {
+      refreshCart();
+    } else {
+      setCart({ carritoId: null, total: 0, items: [] });
+      setCartCount(0);
+    }
+  }, [user]);
 
   useEffect(() => {
     const itemsLength = cart.items?.length || 0;
@@ -94,6 +100,7 @@ export const CartProvider = ({ children }) => {
           };
         })
       );
+
 
       return products;
     } catch (error) {

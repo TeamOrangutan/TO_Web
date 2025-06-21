@@ -24,10 +24,10 @@ const useLogin = () => {
     e.preventDefault();
     try {
       const data = await login(userData.correo, userData.contrasena);
+
       if (data.token) {
-        loginUser(data.token, data.userId);
-        localStorage.setItem('cart', data.carritoId)
-        navigate("/home");
+        loginUser(data.token, data.userId, data.rol);
+        localStorage.setItem("cart", data.carritoId);
       }
     } catch (error) {
       console.log("Error en el login", error);

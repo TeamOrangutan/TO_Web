@@ -3,14 +3,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const getAllProuducs = async () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   try {
-    const response = await Api.get("/products",{
+    const response = await Api.get("/products", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    });;
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -66,6 +66,9 @@ export const createProduct = async (
       }
     });
 
+    console.log(tallas);
+    
+
     console.log("agregar");
     console.log(formData);
 
@@ -109,18 +112,42 @@ export const createProduct = async (
 
 export const updateProduct = async (id, updatedData) => {
   try {
-    const { nombre, descripcion, precioVenta, estado, tallas, images } =
-      updatedData;
+    const {
+      name,
+      description,
+      price,
+      precioFabricacion,
+      tallas,
+      path,
+      hoverPath,
+      estado
+    } = updatedData;
 
     const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("descripcion", descripcion);
-    formData.append("precioVenta", precioVenta.toString());
+    formData.append("nombre", name);
+    formData.append("descripcion", description);
     formData.append("estado", estado);
+    formData.append("precioVenta", price.toString());
+    formData.append("precioFabricacion", precioFabricacion.toString());
     formData.append("tallas", JSON.stringify(tallas));
+
+    const images = [];
+
+    if (path) {
+      images.push( path );
+    }
+
+    if (hoverPath) {
+      images.push(hoverPath);
+    }
 
     const imagenesAntiguas = images.filter((img) => typeof img === "string");
     const imagenesNuevas = images.filter((img) => img instanceof File);
+
+    console.log("updatedData");
+    console.log(updatedData);
+    console.log(imagenesNuevas);
+    
 
     formData.append("imagenesAntiguas", JSON.stringify(imagenesAntiguas));
 
@@ -131,8 +158,12 @@ export const updateProduct = async (id, updatedData) => {
     console.log("tallas");
     console.log(formData);
 
+    const token = localStorage.getItem('token')
     const response = await fetch(`http://localhost:3000/api/products/${id}`, {
       method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     });
 
@@ -143,29 +174,10 @@ export const updateProduct = async (id, updatedData) => {
     }
     const responseData = await response.json();
 
-    toast.info("Producto actualizado correctamente", {
-      position: "top-right",
-      autoClose: 3500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "dark",
-      style: { backgroundColor: "black", color: "#fff" },
-    });
+  
     return responseData;
   } catch (error) {
     console.error("Error al actualizar el producto:", error);
-    toast.info("Error al actualizar el producto:" + error, {
-      position: "top-right",
-      autoClose: 3500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "dark",
-      style: { backgroundColor: "black", color: "#fff" },
-    });
     throw error;
   }
 };
@@ -174,18 +186,7 @@ export const deleteProduct = async (id) => {
   try {
     const response = await Api.delete(`/products/${id}`);
     console.log(response);
-    if (response.status == 200) {
-      toast.success("Producto eliminado correctamente", {
-        position: "top-right",
-        autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-        style: { backgroundColor: "black", color: "#fff" },
-      });
-    }
+
     return response.data;
   } catch (error) {
     toast.error("Error " + error.response?.data?.error, {
@@ -197,5 +198,14 @@ export const deleteProduct = async (id) => {
       draggable: true,
       theme: "dark",
     });
+  }
+};
+
+export const resumenInvetario = async () => {
+  try {
+    const response = await Api.get("/products/resumenInventario");
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };

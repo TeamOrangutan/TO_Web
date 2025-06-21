@@ -24,6 +24,7 @@ export const ProfileTabs = ({ user }) => {
     correo: "",
     direccion: "",
     imagen: "",
+    telefono: "",
   });
 
   const [ordenes, setOrdenes] = useState([]);
@@ -64,6 +65,7 @@ export const ProfileTabs = ({ user }) => {
         correo: user?.correo ?? "",
         direccion: user?.persona?.direccion ?? "",
         imagen: user?.persona?.imagenPerfil ?? "",
+        telefono: user?.telefono ?? "",
       });
     }
   }, [user]);
@@ -86,6 +88,11 @@ export const ProfileTabs = ({ user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Datos actualizados:", formData);
+
+    if (!/^\d{8}$/.test(formData.telefono)) {
+      showMessage("El teléfono debe tener exactamente 8 números.", "error");
+      return;
+    }
 
     try {
       const data = await updateUserData(formData);
@@ -132,7 +139,10 @@ export const ProfileTabs = ({ user }) => {
     const success = await EmailSent(formData.correo);
 
     if (success) {
-      showMessage("Se te ha enviado un correo electrónico para cambiar la contraseña", "success");
+      showMessage(
+        "Se te ha enviado un correo electrónico para cambiar la contraseña",
+        "success"
+      );
     }
   };
 
@@ -203,17 +213,28 @@ export const ProfileTabs = ({ user }) => {
               </Box>
             </Box>
 
-            <Box mt={2}>
-              <Typography>Correo electrónico</Typography>
-              <TextField
-                name="correo"
-                value={formData.correo}
-                onChange={handleInputChange}
-                disabled={!editable}
-                fullWidth
-              />
+            <Box mt={2} display="flex" gap={2}>
+              <Box flex={1}>
+                <Typography>Correo electrónico</Typography>
+                <TextField
+                  name="correo"
+                  value={formData.correo}
+                  onChange={handleInputChange}
+                  disabled={!editable}
+                  fullWidth
+                />
+              </Box>
+              <Box flex={1}>
+                <Typography>Teléfono</Typography>
+                <TextField
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleInputChange}
+                  disabled={!editable}
+                  fullWidth
+                />
+              </Box>
             </Box>
-
             <Box mt={2}>
               <Typography>Dirección</Typography>
               <TextField

@@ -19,6 +19,10 @@ export const getCarrito = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log("obteniendo carrito");
+    
+
     return response.data;
   } catch (error) {
     throw error;

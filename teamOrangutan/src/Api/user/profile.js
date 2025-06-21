@@ -31,6 +31,7 @@ export const updateUserData = async (formDataObject) => {
     formData.append("apellidos", formDataObject.apellidos);
     formData.append("direccion", formDataObject.direccion);
     formData.append("correo", formDataObject.correo);
+    formData.append("telefono", formDataObject.telefono);
 
     if (formDataObject.imagen instanceof File) {
       formData.append("imagenPerfil", formDataObject.imagen);

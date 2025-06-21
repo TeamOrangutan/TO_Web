@@ -1,20 +1,29 @@
 import { useState } from "react";
 import useForm from "../../../hooks/useForm";
-import { Box, Button, TextField, Modal, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Modal,
+  Typography,
+  Divider,
+} from "@mui/material";
 import CustomTypography from "../CustomTypography";
 import AddIcon from "@mui/icons-material/Add";
 import ModalTallas from "./ModalTallas";
 import CloseIcon from "@mui/icons-material/Close";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 
-export const ModalComponent = ({ style, handleClose, open }) => {
+export const ModalComponent = ({ style, handleClose, open, onProductAdded }) => {
   const {
     formData,
     handleInputChange,
     handleSubmit,
     agregarTallasForm,
     setFormData,
-  } = useForm();
-  const [imagePreview, setImagePreview] = useState(null);
+  } = useForm({ onProductAdded });
+  const [mainPreview, setMainPreview] = useState(null);
+  const [additionalImagePreview, setAdditionalImagePreview] = useState(null);
   const [openTallas, setOpenTallas] = useState(false);
   const [tallas, settallas] = useState([]);
 
@@ -29,60 +38,97 @@ export const ModalComponent = ({ style, handleClose, open }) => {
 
   const handleRemoveTallas = (nombre) => {
     settallas((prevTallas) => {
-      const newTallas = prevTallas.filter((talla) => talla.nombre !== nombre);
-      agregarTallasForm(newTallas); 
-      return newTallas; 
+      const newTallas = prevTallas.filter((talla) => talla.name !== nombre);
+      agregarTallasForm(newTallas);
+      return newTallas;
     });
   };
 
-  const handleFileChange = (event) => {
+  const handleMainImageChange = (event) => {
     const file = event.target.files[0];
-
-    console.log("file ", file);
-    setImagePreview(URL.createObjectURL(file));
-    setFormData((prevData) => ({
-      ...prevData,
-      images: [...prevData.images, file],
-    }));
+    if (file) {
+      setMainPreview(URL.createObjectURL(file));
+      setFormData((prevData) => ({
+        ...prevData,
+        images: [prevData.images[0], file],
+      }));
+    }
   };
+
+  const handleAdditionalImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAdditionalImagePreview(URL.createObjectURL(file));
+      setFormData((prevData) => ({
+        ...prevData,
+        images: [prevData.images[1], file],
+      }));
+    }
+  };
+
+  console.log("tallas123");
+  console.log(tallas);
+  
 
   return (
     <div>
       <Modal keepMounted open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <CustomTypography text={"AGREGAR PRODUCTO"} />
+          <Box sx={{ display: "flex" }}>
+            <Typography variant={"h5"} fontWeight="bold" color="#111827">
+              Agregar Nuevo Producto
+            </Typography>
           </Box>
+          <Typography sx={{ fontSize: 15, mt: 0.5 }} color="#6B7280">
+            Completa la información del producto
+          </Typography>
 
+          <Box mt={2}>
+            <Divider />
+          </Box>
           <form onSubmit={handleSubmit}>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
-            >
+            <Box sx={{ display: "flex", mt: 2 }}>
               <Box
                 sx={{
-                  width: "30%",
+                  width: "40%",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   mt: 2,
                 }}
               >
+                <Box sx={{ alignSelf: "flex-start", mb: 1 }}>
+                  <Typography
+                    color="#374151"
+                    sx={{ fontSize: "14px", fontWeight: 500 }}
+                  >
+                    Imagen del Producto
+                  </Typography>
+                </Box>{" "}
                 <Button
                   variant="contained"
                   component="label"
                   sx={{
                     width: "100%",
-                    height: "100%",
+                    height: 500,
                     backgroundColor: "white",
                     fontSize: "80px",
                     color: "black",
-                    border: "1px solid black",
+                    border: "2px dashed #9CA3AF",
                     padding: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1,
+                    "&:hover": {
+                      border: "2px dashed rgb(112, 112, 112)",
+                    },
                   }}
                 >
-                  {imagePreview ? (
+                  {mainPreview ? (
                     <img
-                      src={imagePreview}
+                      src={mainPreview}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -90,74 +136,131 @@ export const ModalComponent = ({ style, handleClose, open }) => {
                       }}
                     />
                   ) : (
-                    <AddIcon />
+                    <>
+                      <ImageOutlinedIcon
+                        sx={{ fontSize: 40, color: "#6B7280" }}
+                      />
+                      <Typography variant="body2" sx={{ color: "#6B7280" }}>
+                        Subir imagen
+                      </Typography>
+                    </>
                   )}
                   <input
                     type="file"
                     name="imagenes"
-                    onChange={handleFileChange}
+                    onChange={handleMainImageChange}
                     hidden
                   />
                 </Button>
+                <Box
+                  sx={{
+                    display: "flex",
+                    mt: 2,
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      mb: 2,
+                    }}
+                  >
+                    Imagen Adicionales
+                  </Typography>
+                </Box>
                 <Button
                   variant="contained"
                   component="label"
                   sx={{
-                    width: "10%",
-                    height: "15%",
+                    width: "40%",
+                    height: "30%",
                     backgroundColor: "white",
                     fontSize: "80px",
                     color: "black",
-                    border: "1px solid black",
+                    border: "2px dashed #9CA3AF",
                     padding: 0,
                   }}
                 >
-                  {imagePreview ? (
+                  {additionalImagePreview ? (
                     <img
-                      src={imagePreview}
+                      src={additionalImagePreview}
                       style={{
-                        width: "10%",
-                        height: "10%",
-                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
                       }}
                     />
                   ) : (
-                    <AddIcon />
+                    <AddIcon sx={{ color: "#9CA3AF" }} />
                   )}
                   <input
                     type="file"
                     name="productImage"
-                    onChange={handleFileChange}
+                    onChange={handleAdditionalImageChange}
                     hidden
                   />
                 </Button>
               </Box>
-
-              <Box sx={{ width: "65%" }}>
+              <Box sx={{ width: "50%", mt: 0.5, ml: 7 }}>
+                <Typography
+                  sx={{ fontWeight: "bold", color: "#111827", fontSize: 18 }}
+                >
+                  Información Básica
+                </Typography>
+                <Typography
+                  sx={{
+                    mt: 2,
+                    color: "#374151",
+                    fontSize: 15,
+                    fontWeight: 400,
+                  }}
+                >
+                  Nombre del producto
+                </Typography>
                 <TextField
-                  fullWidth
-                  label="Nombre del Producto"
+                  placeholder="Eje: Camiseta blanca básica"
                   variant="outlined"
                   name="nombre"
                   value={formData.name}
                   onChange={handleInputChange}
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 1, width: 400 }}
+                  size="small"
                 />
+                <Typography
+                  sx={{
+                    mt: 2,
+                    color: "#374151",
+                    fontSize: 15,
+                    fontWeight: 400,
+                  }}
+                >
+                  Descripcion del producto
+                </Typography>
                 <TextField
-                  fullWidth
-                  label="Descripción"
+                  placeholder="Describe las características del producto"
                   variant="outlined"
                   name="descripcion"
                   value={formData.descripcion}
                   onChange={handleInputChange}
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 1, width: 400 }}
                   multiline
                   rows={4}
                 />
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#111827",
+                    fontSize: 18,
+                    mt: 2,
+                  }}
+                >
+                  Precios
+                </Typography>
                 <Box
                   sx={{
                     display: "flex",
-                    gap: 28,
+                    gap: 10,
                     mt: 2,
                   }}
                 >
@@ -169,34 +272,23 @@ export const ModalComponent = ({ style, handleClose, open }) => {
                       value={formData.precioVenta}
                       onChange={handleInputChange}
                       type="number"
-                      variant="standard"
+                      size="small"
                       InputProps={{
                         startAdornment: (
                           <Typography
                             sx={{
-                              fontWeight: "bold",
-                              fontSize: "20px",
+                              fontSize: "15px",
                               mr: 0.5,
+                              color: "gray",
                             }}
                           >
                             C$
                           </Typography>
                         ),
-                        disableUnderline: true,
                         sx: {
-                          fontSize: "24px",
-                          fontWeight: "bold",
+                          fontSize: "17px",
                           textAlign: "left",
                           width: "160px",
-                        },
-                      }}
-                      sx={{
-                        background: "transparent",
-                        border: "none",
-                        "& input": {
-                          textAlign: "left",
-                          fontWeight: "bold",
-                          fontSize: "24px",
                         },
                       }}
                     />
@@ -210,34 +302,23 @@ export const ModalComponent = ({ style, handleClose, open }) => {
                       value={formData.precioFabricacion}
                       onChange={handleInputChange}
                       type="number"
-                      variant="standard"
+                      size="small"
                       InputProps={{
                         startAdornment: (
                           <Typography
                             sx={{
-                              fontWeight: "bold",
-                              fontSize: "20px",
+                              fontSize: "15px",
                               mr: 0.5,
+                              color: "gray",
                             }}
                           >
                             C$
                           </Typography>
                         ),
-                        disableUnderline: true,
                         sx: {
-                          fontSize: "24px",
-                          fontWeight: "bold",
+                          fontSize: "17px",
                           textAlign: "left",
                           width: "160px",
-                        },
-                      }}
-                      sx={{
-                        background: "transparent",
-                        border: "none",
-                        "& input": {
-                          textAlign: "left",
-                          fontWeight: "bold",
-                          fontSize: "24px",
                         },
                       }}
                     />
@@ -247,63 +328,72 @@ export const ModalComponent = ({ style, handleClose, open }) => {
                 <Box sx={{ mt: 2 }}>
                   <Typography>Tallas disponibles:</Typography>
 
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 1.5,
+                      mt: 1,
+                      alignItems: "center",
+                    }}
+                  >
                     <Button
                       variant="outlined"
                       sx={{
                         color: "black",
                         border: "1px solid black",
-                        height: 26,
-                        borderRadius: 0,
+                        height: 32,
+                        minWidth: 32,
+                        borderRadius: 1,
                       }}
                       onClick={() => setOpenTallas(true)}
                     >
-                      <AddIcon />
+                      <AddIcon fontSize="small" />
                     </Button>
 
+                    {/* Lista de tallas */}
                     {tallas.length > 0 ? (
                       tallas.map((talla) => (
                         <Box
                           key={talla.nombre}
-                          ml={2}
                           sx={{
-                            color: "black",
+                            color: "white",
                             border: "1px solid black",
-                            height: 26,
-                            width: 110,
-                            borderRadius: 0,
+                            height: 32,
+                            minWidth: 140,
+                            borderRadius: 6,
                             display: "flex",
                             justifyContent: "center",
-                            position: "relative", 
-                            backgroundColor: "#D9D9D9",
+                            alignItems: "center",
+                            position: "relative",
+                            backgroundColor: "black",
                             borderColor: "white",
+                            px: 1.5,
                           }}
                         >
                           <Button
                             sx={{
-                              position: "absolute", 
-                              top: 0,
-                              right: 0,
+                              position: "absolute",
+                              top: 5,
+                              right: 2,
                               minWidth: 20,
                               minHeight: 20,
                               padding: 0,
-                              color: "black",
-                              fontSize: "small",
+                              color: "white",
+                              fontSize: 14,
                             }}
-                            onClick={() => handleRemoveTallas(talla.nombre)}
+                            onClick={() => handleRemoveTallas(talla.name)}
                           >
-                            <CloseIcon
-                              sx={{ fontSize: 15, backgroundColor: "none" }}
-                            />
+                            <CloseIcon sx={{ fontSize: 15 }} />
                           </Button>
 
-                          <Typography>
-                            {talla.nombre} {talla.cantidad} unids
-                          </Typography>
+                          <Typography sx={{ mr: 1 }}>{talla.name}</Typography>
+                          <Typography sx={{ mr: 1 }}>•</Typography>
+                          <Typography>{talla.stock} unids</Typography>
                         </Box>
                       ))
                     ) : (
-                      <Typography>No hay tallas disponibles</Typography>
+                      <Typography>No hay tallas agregadas</Typography>
                     )}
                   </Box>
                 </Box>

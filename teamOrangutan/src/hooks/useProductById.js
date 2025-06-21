@@ -24,6 +24,9 @@ const useProductById = () => {
   }, [id]);
 
 
+  console.log("hola");
+  
+
   return { product, loading, error}
 
 };

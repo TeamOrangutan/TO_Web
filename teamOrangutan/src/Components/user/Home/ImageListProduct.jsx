@@ -17,7 +17,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../Auth/user/context/AuthContext";
 import { useTheme, useMediaQuery } from "@mui/material";
 
-export default function ImageListProduct({ order }) {
+export default function ImageListProduct({ order, filtroNombre }) {
   const [products, setProducts] = useState([]);
   const [hoveredImages, setHoveredImages] = useState({});
   const [loading, setLoading] = useState(true);
@@ -152,6 +152,20 @@ export default function ImageListProduct({ order }) {
   //   return ;
   // };
 
+  let filteredProducts = products.filter(
+    (item) =>
+      item.estado === "Disponible" &&
+      item.name.toLowerCase().includes((filtroNombre || "").toLowerCase())
+  );
+
+  // Ordenar productos
+  if (order === "Fecha") {
+    filteredProducts.sort(
+      (a, b) =>
+        new Date(b.fecha_de_publicacion) - new Date(a.fecha_de_publicacion)
+    );
+  }
+
   if (loading) {
     return (
       <Box
@@ -172,170 +186,175 @@ export default function ImageListProduct({ order }) {
   }
 
   return (
-    <ImageList
-      cols={cols}
-      gap={16}
-      sx={{
-        width: "100%",
-        height: { xs: "1700px", md: "900px" },
-        px: { xs: 4.5, md: 4 },
-      }}
-    >
-      {sortedProducts
-        .filter((item) => item.estado === "Disponible")
+    <Box>
+      <ImageList
+        cols={cols}
+        gap={16}
+        sx={{
+          width: "100%",
+          height:
+            filteredProducts.length >= 4
+              ? { xs: "1700px", md: "700px" }
+              : "auto",
+          px: { xs: 4.5, md: 4 },
+        }}
+      >
+        {filteredProducts
+          .filter((item) => item.estado === "Disponible")
 
-        .map((item) => {
-          const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
-            "\\",
-            "/"
-          )}`;
-          const hoverPath = item.hoverPath
-            ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
-                "\\",
-                "/"
-              )}`
-            : originalPath;
+          .map((item) => {
+            const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
+              "\\",
+              "/"
+            )}`;
+            const hoverPath = item.hoverPath
+              ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
+                  "\\",
+                  "/"
+                )}`
+              : originalPath;
 
-          return (
-            <Grow in={imagesLoaded} timeout={1000} key={item.id}>
-              <ImageListItem
-                sx={{
-                  width: 278,
-                  borderRadius: 2,
-                  position: "relative",
-                  mt: 2,
-                  transition: "background-color 2s ease",
-                  border: "1px solid #EBEBEB", // borde gris muy claro
-                  boxShadow: "0px 4px 4px 4px rgba(0, 0, 0, 0.1)", // sombra suave y difusa
-                }}
-              >
-                <Box
-                  onClick={() => handleDetails(item.id)}
-                  className="img-hoverable"
+            return (
+              <Grow in={imagesLoaded} timeout={1000} key={item.id}>
+                <ImageListItem
                   sx={{
-                    width: "100%",
-                    height: "100%",
+                    width: 278,
+                    borderRadius: 2,
                     position: "relative",
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    "& img": {
-                      transition: "transform 0.9s ease-in-out", // zoom
-                    },
-                    "&:hover img": {
-                      transform: "scale(1.1)",
-                    },
-                    "& .overlay": {
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "rgba(97, 97, 97, 0.23)",
-                      opacity: 0,
-                      transition: "opacity 0.4s ease",
-                      borderRadius: "8px",
-                      zIndex: 2,
-                    },
-                    "&:hover .overlay": {
-                      opacity: 1,
-                    },
-                  }}
-                  onMouseEnter={() => handleMouseEnter(item.id, hoverPath)}
-                  onMouseLeave={() => handleMouseLeave(item.id, originalPath)}
-                >
-                  {/* Overlay para oscurecer */}
-                  <div className="overlay" />
-
-                  <div>
-                    <img
-                      src={hoverPath}
-                      alt={item.name}
-                      style={{
-                        position: "absolute",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                        transition: "opacity 0.5s ease",
-                        opacity: hoveredImages[item.id] === hoverPath ? 1 : 0,
-                        borderRadius: "8px",
-                      }}
-                    />
-                    <img
-                      src={originalPath}
-                      alt={item.name}
-                      style={{
-                        position: "absolute",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                        transition: "opacity 0.5s ease",
-                        opacity: hoveredImages[item.id] === hoverPath ? 0 : 1,
-                        borderRadius: "8px",
-                      }}
-                    />
-                  </div>
-                </Box>
-
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
+                    mt: 2,
+                    transition: "background-color 2s ease",
+                    border: "1px solid #EBEBEB", // borde gris muy claro
+                    boxShadow: "0px 4px 4px 4px rgba(0, 0, 0, 0.1)", // sombra suave y difusa
                   }}
                 >
-                  <IconButton
+                  <Box
+                    onClick={() => handleDetails(item.id)}
+                    className="img-hoverable"
                     sx={{
-                      borderRadius: "50%",
-                      backgroundColor: "#EBEBEB",
-                      zIndex: 2,
+                      width: "100%",
+                      height: 230,
+                      position: "relative",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      "& img": {
+                        transition: "transform 0.9s ease-in-out", // zoom
+                      },
+                      "&:hover img": {
+                        transform: "scale(1.1)",
+                      },
+                      "& .overlay": {
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(97, 97, 97, 0.23)",
+                        opacity: 0,
+                        transition: "opacity 0.4s ease",
+                        borderRadius: "8px",
+                        zIndex: 2,
+                      },
+                      "&:hover .overlay": {
+                        opacity: 1,
+                      },
                     }}
-                    onClick={(e) => {
-                      handleCarrito(item);
+                    onMouseEnter={() => handleMouseEnter(item.id, hoverPath)}
+                    onMouseLeave={() => handleMouseLeave(item.id, originalPath)}
+                  >
+                    {/* Overlay para oscurecer */}
+                    <div className="overlay" />
+
+                    <div>
+                      <img
+                        src={hoverPath}
+                        alt={item.name}
+                        style={{
+                          position: "absolute",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          transition: "opacity 0.5s ease",
+                          opacity: hoveredImages[item.id] === hoverPath ? 1 : 0,
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <img
+                        src={originalPath}
+                        alt={item.name}
+                        style={{
+                          position: "absolute",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          transition: "opacity 0.5s ease",
+                          opacity: hoveredImages[item.id] === hoverPath ? 0 : 1,
+                          borderRadius: "8px",
+                        }}
+                      />
+                    </div>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
                     }}
                   >
-                    {verifi(item) ? (
-                      <ShoppingCartIcon
-                        sx={{ color: "gray", fontSize: "30px" }}
-                      />
-                    ) : (
-                      <ShoppingCartOutlinedIcon
-                        sx={{ color: "gray", fontSize: "30px" }}
-                      />
-                    )}
-                  </IconButton>
-                </Box>
+                    <IconButton
+                      sx={{
+                        borderRadius: "50%",
+                        backgroundColor: "#EBEBEB",
+                        zIndex: 2,
+                      }}
+                      onClick={(e) => {
+                        handleCarrito(item);
+                      }}
+                    >
+                      {verifi(item) ? (
+                        <ShoppingCartIcon
+                          sx={{ color: "gray", fontSize: "30px" }}
+                        />
+                      ) : (
+                        <ShoppingCartOutlinedIcon
+                          sx={{ color: "gray", fontSize: "30px" }}
+                        />
+                      )}
+                    </IconButton>
+                  </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: 0,
-                    mb: 2,
-                  }}
-                >
-                  <Typography sx={{ fontWeight: "360", fontSize: 20 }}>
-                    {item.name}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: 0,
-                    mb: 2,
-                  }}
-                >
-                  <Typography sx={{ fontWeight: "bold", fontSize: 20 }}>
-                    C$ {item.price}
-                  </Typography>
-                </Box>
-              </ImageListItem>
-            </Grow>
-          );
-        })}
-    </ImageList>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mt: 0,
+                      mb: 2,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: "360", fontSize: 20 }}>
+                      {item.name}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mt: 0,
+                      mb: 2,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: "bold", fontSize: 20 }}>
+                      C$ {item.price}
+                    </Typography>
+                  </Box>
+                </ImageListItem>
+              </Grow>
+            );
+          })}
+      </ImageList>
+    </Box>
   );
 }

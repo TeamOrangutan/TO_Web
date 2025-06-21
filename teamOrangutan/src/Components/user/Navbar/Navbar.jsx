@@ -43,7 +43,7 @@ export const Navbar = () => {
   const [logoSRC, setlogo] = useState(logo);
   const [textColor, setTextColor] = useState("white");
   const [hoveredImages, setHoveredImages] = useState({});
-  const { logoutUser } = useContext(AuthContext);
+  const { logoutUser, user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -52,18 +52,16 @@ export const Navbar = () => {
     { label: "PRODUCTOS", path: "/products", icon: <StorefrontIcon /> },
     { label: "ACERCA DE", path: "/acercaDe", icon: <InfoIcon /> },
   ];
-  useEffect(() => {
-    const loadProducts = async () => {
-      const productosActualizados = await fetchProductsInCart();
-      setproductos(productosActualizados);
-    };
+  const loadProducts = async () => {
+    const productosActualizados = await fetchProductsInCart();
+    setproductos(productosActualizados);
+  };
 
-    if (cart.items.length > 0) {
-      loadProducts();
-    } else {
-      setproductos([]);
-    }
-  }, [cart.items]);
+  
+
+  useEffect(() => {
+    loadProducts();
+  }, [cart.items, user]);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -116,7 +114,6 @@ export const Navbar = () => {
   const handleDeleteItemCarrito = async (id) => {
     try {
       const data = await deleteItemCarrito(id);
-      console.log(data);
       await refreshCart();
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -137,6 +134,9 @@ export const Navbar = () => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  console.log("productos carruti");
+  console.log(productos);
 
   return (
     <>
@@ -247,7 +247,7 @@ export const Navbar = () => {
                 />
               </IconButton>
               <Badge
-                badgeContent={cartCount}
+                badgeContent={productos.length}
                 color="primary"
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 sx={{ "& .MuiBadge-badge": { top: 6, right: 6 } }}
@@ -386,7 +386,7 @@ export const Navbar = () => {
                           },
                         }}
                       >
-                        VER CARRITO ({cart.items.length})
+                        VER CARRITO ({productos.length})
                       </Button>
                     </Box>
                   </Box>
@@ -394,45 +394,43 @@ export const Navbar = () => {
               </Badge>
             </Box>
           </Toolbar>
-       <Drawer
-  anchor="left"
-  open={mobileOpen}
-  onClose={handleDrawerToggle}
-  sx={{
-    "& .MuiDrawer-paper": {
-      width: 240,
-      padding: 2,
-    },
-  }}
->
-  <List>
-    {menuItems.map((item) => (
-      <ListItem
-        button
-        key={item.path}
-        onClick={() => {
-          navigate(item.path);
-          setMobileOpen(false);
-        }}
-        sx={{ cursor: "pointer" }}
-      >
-        {/* Ícono a la izquierda */}
-        <Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
-          {item.icon}
-        </Box>
+          <Drawer
+            anchor="left"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            sx={{
+              "& .MuiDrawer-paper": {
+                width: 240,
+                padding: 2,
+              },
+            }}
+          >
+            <List>
+              {menuItems.map((item) => (
+                <ListItem
+                  button
+                  key={item.path}
+                  onClick={() => {
+                    navigate(item.path);
+                    setMobileOpen(false);
+                  }}
+                  sx={{ cursor: "pointer" }}
+                >
+                  {/* Ícono a la izquierda */}
+                  <Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
+                    {item.icon}
+                  </Box>
 
-        {/* Texto en negrita */}
-        <ListItemText
-          primary={
-            <Typography fontWeight="bold">
-              {item.label}
-            </Typography>
-          }
-        />
-      </ListItem>
-    ))}
-  </List>
-</Drawer>
+                  {/* Texto en negrita */}
+                  <ListItemText
+                    primary={
+                      <Typography fontWeight="bold">{item.label}</Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Drawer>
         </AppBar>
       </Box>
     </>

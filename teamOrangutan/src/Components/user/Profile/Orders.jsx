@@ -42,7 +42,7 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
       x: 0,
       y: 0,
       html2canvas: {
-        scale: 0.6, // No importa aquí, no se rasteriza todo
+        scale: 0.6,
       },
     });
   };

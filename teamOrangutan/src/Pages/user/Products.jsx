@@ -23,6 +23,7 @@ const style = {
 export const Products = () => {
   const { open, handleClose, handleOpen } = useModal();
   const [order, setorder] = useState("");
+  const [filtroNombre, setFiltroNombre] = useState(""); // <--- nuevo estado
 
   return (
     <>
@@ -55,8 +56,12 @@ export const Products = () => {
           gap: 2,
         }}
       >
-        <SelectOrdenar order={order} setorder={setorder} />
-
+<SelectOrdenar
+          order={order}
+          setorder={setorder}
+          filtroNombre={filtroNombre}
+          setFiltroNombre={setFiltroNombre}
+        />
         {/* Botón para agregar productos si lo activas */}
         {/* <Button
           variant="contained"
@@ -69,7 +74,7 @@ export const Products = () => {
 
       {/* Lista de productos */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2, px: 2 }}>
-        <ImageListProduct order={order} />
+        <ImageListProduct order={order} filtroNombre={filtroNombre} />
       </Box>
 
       {/* Modal */}

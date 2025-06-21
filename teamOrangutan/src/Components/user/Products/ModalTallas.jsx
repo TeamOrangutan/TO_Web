@@ -8,6 +8,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -20,6 +22,10 @@ export const ModalTallas = ({
   const [selectedTalla, setselectedTalla] = useState([]);
   const [cantidades, setselectedCantidades] = useState(0);
 
+  const [open2, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
+
   const handleChangeTalla = (event) => {
     setselectedTalla(event.target.value);
   };
@@ -30,16 +36,41 @@ export const ModalTallas = ({
 
   const handleSave = () => {
     const nuevaTalla = {
-      nombre: selectedTalla,
-      cantidad: parseInt(cantidades),
+      name: selectedTalla,
+      stock: parseInt(cantidades),
     };
 
     settallas((prevTallas) => {
-      const nuevasTallas = [...prevTallas, nuevaTalla];
-      agregarTallas(nuevasTallas); 
+      const tallasSeguras = Array.isArray(prevTallas) ? prevTallas : [];
+
+      const yaExiste = tallasSeguras.some(
+        (talla) => talla.name === nuevaTalla.name
+      );
+      if (yaExiste) {
+        showMessage("Ya existe una talla con ese nombre", "error");
+        return tallasSeguras;
+      }
+
+      if (
+        nuevaTalla.stock === "" ||
+        isNaN(nuevaTalla.stock) ||
+        nuevaTalla.stock <= 0
+      ) {
+        showMessage("Ingresa una cantidad válida mayor que 0.", "error");
+        return tallasSeguras;
+      }
+
+      const nuevasTallas = [...tallasSeguras, nuevaTalla];
+      agregarTallas(nuevaTalla);
       return nuevasTallas;
     });
     handleClose();
+  };
+
+  const showMessage = (msg, type = "success") => {
+    setMessage(msg);
+    setMessageType(type);
+    setOpen(true);
   };
 
   return (
@@ -129,6 +160,21 @@ export const ModalTallas = ({
           </Box>
         </Box>
       </Modal>
+      <Snackbar
+        sx={{ mt: 8 }}
+        open={open2}
+        autoHideDuration={6000}
+        onClose={() => setOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setOpen(false)}
+          severity={messageType}
+          sx={{ width: "100%" }}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

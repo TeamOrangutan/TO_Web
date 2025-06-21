@@ -11,12 +11,25 @@ import Carrito from "../../Components/user/Carrito/Carrito";
 import Micuenta from "../../Components/user/Profile/Micuenta";
 import Payments from "../../Pages/user/Payments";
 import ResetPasswordPage from "../../Pages/user/ResetPasswordPage";
+import Register from "../../Auth/user/pages/Register";
+import DashboardPage from "../../Pages/admin/DashboardPage";
 
 function AppRouterUser() {
   return (
     <>
       <Routes>
         <Route path="/home" element={<Home />}></Route>
+
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute requiredRole={1}>
+              <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+
+        
 
         <Route path="/products" element={<Products />}></Route>
 
@@ -60,6 +73,14 @@ function AppRouterUser() {
           element={
             <PublicRoute>
               <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
             </PublicRoute>
           }
         ></Route>

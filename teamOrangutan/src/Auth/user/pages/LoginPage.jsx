@@ -12,8 +12,9 @@ import logo from "../../../assets/user/logo2.png";
 
 import useLogin from "../../../hooks/useLogin";
 import { useContext, useState } from "react";
-import { GoogleLogin, useGoogleOneTapLogin  } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
   const { userData, handleChange, handleSubmit } = useLogin();
@@ -28,6 +29,8 @@ export const LoginPage = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
+  const navigate = useNavigate();
+
   const handleSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
 
@@ -41,11 +44,13 @@ export const LoginPage = () => {
       });
 
       const data = await response.json();
-      console.log(data);
-      localStorage.setItem('cart', data.carritoId)
+      if (data.error) {
+        showMessage(data.error, "error");
+        return;
+      }
+      localStorage.setItem("cart", data.carritoId);
 
-      loginUser(data.token, data.userId);
-      navigate("/home");
+      loginUser(data.token, data.userId, data.rol);
     } catch (error) {
       throw error;
     }
@@ -105,13 +110,6 @@ export const LoginPage = () => {
           height="100vh"
         >
           <Box
-            // width={377}
-            // p={4}
-            // textAlign="center"
-            // bgcolor="white"
-            // borderRadius={2}
-            // boxShadow={3}
-
             sx={{
               width: { xs: "90%", sm: 400 },
               p: { xs: 3, sm: 4 },
@@ -119,7 +117,6 @@ export const LoginPage = () => {
               bgcolor: "white",
               borderRadius: 2,
               boxShadow: 3,
-              
             }}
           >
             <Box
@@ -189,10 +186,20 @@ export const LoginPage = () => {
                 >
                   Iniciar sesión
                 </Button>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  sx={{ color: "black", borderColor: "black", mt: -1 }}
+                  fullWidth
+                  onClick={() => navigate("/register")}
+                >
+                  Crear cuenta
+                </Button>
+
                 <GoogleLogin
                   onSuccess={handleSuccess}
                   onError={() => console.log("Login Failed")}
-                  
                 />
               </Box>
             </Grow>

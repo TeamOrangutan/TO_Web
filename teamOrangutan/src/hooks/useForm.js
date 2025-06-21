@@ -2,8 +2,7 @@ import { useState } from "react";
 import { createProduct, updateProduct } from "../Api/user/productsApi";
 import { toast } from "react-toastify";
 
-// Aquí pasas `setProducts` desde el componente principal
-export const useForm = () => {
+export function useForm({ onProductAdded }) {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -12,12 +11,13 @@ export const useForm = () => {
     tallas: [],
     images: [],
   });
-
   const agregarTallasForm = (nuevasTallas) => {
-    setFormData({
-      ...formData,
-      tallas: nuevasTallas,
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      tallas: Array.isArray(nuevasTallas)
+        ? nuevasTallas
+        : [...(prevData.tallas || []), nuevasTallas],
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -40,8 +40,7 @@ export const useForm = () => {
         formData.tallas,
         formData.images
       );
-
-      console.log("Producto creado:", response.data);
+      onProductAdded();
     } catch (error) {
       console.error("Error al agregar el producto:", error);
     }
@@ -73,6 +72,6 @@ export const useForm = () => {
     setFormData,
     handleSubmitUpdate,
   };
-};
+}
 
 export default useForm;

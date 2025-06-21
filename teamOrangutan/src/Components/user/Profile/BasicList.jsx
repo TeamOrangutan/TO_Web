@@ -24,7 +24,7 @@ export default function BasicList() {
 
   const handleLogout = () => {
     logoutUser();
-    navigate("/"); // O donde quieras redirigir
+    navigate("/"); 
   };
 
   return (
