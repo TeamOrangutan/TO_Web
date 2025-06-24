@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Snackbar, Typography } from "@mui/material";
 import Grow from "@mui/material/Grow";
 
 import ImageProductActualizar from "./ImageProductActualizar";
@@ -19,7 +19,9 @@ export const DetailsProduct = ({ product }) => {
   const { addToCart, handleRemoveToCart } = useCart();
   const { logoutUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -34,73 +36,93 @@ export const DetailsProduct = ({ product }) => {
     refreshProduct,
   } = useProductDetails(product);
 
-const handleCarrito = async () => {
-  const user = localStorage.getItem("user");
-
-  // Obtén el carrito actual y asegúrate de que es un array
-  let carrito = [];
-  const storedCart = localStorage.getItem("cart");
-  if (storedCart) {
-    try {
-      const parsed = JSON.parse(storedCart);
-      carrito = Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
-      carrito = [];
+  const handleCarrito = async () => {
+    if (!selectedSize) {
+      setMessage("Debes seleccionar una talla.");
+      setMessageType("error");
+      setOpen(true);
+      return;
     }
-  }
 
-  // Busca el stock de la talla seleccionada
-  const tallaInfo = productUpdate.tallas.find(
-    (t) => t.name === selectedSize
-  );
-  const stockTalla = tallaInfo?.stock ?? 0;
+    const tallaInfo = productUpdate.tallas.find((t) => t.name === selectedSize);
+    const stockTalla = tallaInfo?.stock ?? 0;
 
-  // Busca si ya existe ese producto/talla en el carrito
-  const existente = carrito.find(
-    (item) =>
-      item.productid === product.id &&
-      item.size === selectedSize
-  );
+    if (quantity > stockTalla) {
+      setMessage(
+        "No puedes agregar más de lo disponible en stock para esta talla."
+      );
+      setMessageType("error");
+      setOpen(true);
+      return;
+    }
+    const user = localStorage.getItem("user");
 
-  let nuevaCantidad = quantity;
-  if (existente) {
-    nuevaCantidad = existente.quantity + quantity;
-  }
+    // Obtén el carrito actual y asegúrate de que es un array
+    let carrito = [];
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      try {
+        const parsed = JSON.parse(storedCart);
+        carrito = Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        carrito = [];
+      }
+    }
 
-  // Controla que la suma no supere el stock
-  if (nuevaCantidad > stockTalla) {
-    alert("No puedes agregar más de lo disponible en stock para esta talla.");
-    return;
-  }
+    // Busca el stock de la talla seleccionada
+    // const tallaInfo = productUpdate.tallas.find((t) => t.name === selectedSize);
+    // const stockTalla = tallaInfo?.stock ?? 0;
 
-  
-  const newOrder = {
-    productid: product.id,
-    size: selectedSize,
-    quantity: quantity,
-    user: Number(user),
+    // Busca si ya existe ese producto/talla en el carrito
+    const existente = carrito.find(
+      (item) => item.productid === product.id && item.size === selectedSize
+    );
+
+    
+    let nuevaCantidad = quantity;
+    if (existente) {
+      nuevaCantidad = existente.quantity + quantity;
+    }
+
+
+    if (selectedSize && nuevaCantidad > stockTalla) {
+      setMessage(
+        "No puedes agregar más de lo disponible en stock para esta talla."
+      );
+      setMessageType("error");
+      setOpen(true);
+      return;
+    }
+
+    const newOrder = {
+      productid: product.id,
+      size: selectedSize,
+      quantity: quantity,
+      user: Number(user),
+    };
+
+    try {
+      setLoading(true);
+      await addCarrito(
+        newOrder.productid,
+        newOrder.quantity,
+        newOrder.size,
+        newOrder.user
+      );
+      setorder(newOrder);
+      addToCart(newOrder);
+      await refreshProduct(product.id);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        logoutUser();
+        navigate("/");
+      }
+      console.error("Error al hacer el pedido:", error);
+    }
+    setLoading(false);
   };
 
-  try {
-    setLoading(true);
-    await addCarrito(
-      newOrder.productid,
-      newOrder.quantity,
-      newOrder.size,
-      newOrder.user
-    );
-    setorder(newOrder);
-    addToCart(newOrder);
-    await refreshProduct(product.id);
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      logoutUser();
-      navigate("/");
-    }
-    console.error("Error al hacer el pedido:", error);
-  }
-  setLoading(false);
-};
+console.log("producto,", product )
 
   return product.name ? (
     <Grow in={product} timeout={1000}>
@@ -236,6 +258,21 @@ const handleCarrito = async () => {
               AÑADIR AL CARRITO
             </Button>
           </Box>
+          <Snackbar
+            sx={{ mt: 8 }}
+            open={open}
+            autoHideDuration={6000}
+            onClose={() => setOpen(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Alert
+              onClose={() => setOpen(false)}
+              severity={messageType}
+              sx={{ width: "100%" }}
+            >
+              {message}
+            </Alert>
+          </Snackbar>
         </Box>
       </LoadingOverlayWrapper>
     </Grow>

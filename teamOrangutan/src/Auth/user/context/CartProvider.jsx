@@ -80,7 +80,6 @@ export const CartProvider = ({ children }) => {
   const fetchProductsInCart = async () => {
     try {
       const carrito = await getCarrito();
-      console.log(carrito);
 
       const normalizedItems = carrito.items.map((item) => ({
         Item_Id: item.carritoItem_Id,

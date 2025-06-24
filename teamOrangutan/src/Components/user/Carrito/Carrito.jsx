@@ -178,15 +178,24 @@ export const Carrito = () => {
 
       const cantidadActual = carritoItem ? Number(carritoItem.quantity) : 1;
 
-      console.log("CARRITOOOO");
-      console.log(cantidadActual);
       if (cantidadActual > 1) {
+        // Actualiza el estado local primero para reflejar el cambio en la UI
+        setQuantitiesPorTalla((prev) => {
+          const current = prev[itemId] || {};
+          return {
+            ...prev,
+            [itemId]: {
+              ...current,
+              [tallaSeleccionada]: cantidadActual - 1,
+            },
+          };
+        });
+
         await updateItemCarrito({
           itemId,
           talla: tallaSeleccionada,
           cantidad: 1,
           action: "decrement",
-          // finalize: false,
         });
 
         await fetchData();
@@ -205,11 +214,7 @@ export const Carrito = () => {
 
   const calcularTotal = () => {
     return productos.reduce((acc, item) => {
-      const tallaSeleccionada = selectedSizes[item.Item_Id] || item.size;
-      const carritoItem = cart.items.find(
-        (ci) => ci.productId === item.id && ci.size === tallaSeleccionada
-      );
-      const cantidad = carritoItem ? Number(carritoItem.quantity) : 0;
+      const cantidad = Number(item.quantity) || 0;
       return acc + item.price * cantidad;
     }, 0);
   };
@@ -248,6 +253,8 @@ export const Carrito = () => {
 
     setShowPayment(true);
   };
+
+  console.log("procutos en carrito: ", productos);
 
   return (
     <Box
@@ -389,21 +396,38 @@ export const Carrito = () => {
                                           [item.Item_Id]:
                                             size === prevSize ? null : size,
                                         };
-                                        if (size !== prevSize) {
-                                          setProductos((productosPrev) =>
-                                            productosPrev.map((p) =>
-                                              p.Item_Id === item.Item_Id
-                                                ? {
-                                                    ...p,
-                                                    quantity:
-                                                      quantitiesPorTalla[
-                                                        item.Item_Id
-                                                      ]?.[size] || 0,
-                                                  }
-                                                : p
-                                            )
-                                          );
-                                        }
+
+                                        // Guarda la cantidad actual de la talla seleccionada en quantitiesPorTalla
+                                        setQuantitiesPorTalla(
+                                          (prevQuantities) => {
+                                            const currentQuantities =
+                                              prevQuantities[item.Item_Id] ||
+                                              {};
+                                            return {
+                                              ...prevQuantities,
+                                              [item.Item_Id]: {
+                                                ...currentQuantities,
+                                                [size]: item.quantity,
+                                              },
+                                            };
+                                          }
+                                        );
+
+                                        // Actualiza la cantidad en productos para el render inmediato
+                                        setProductos((productosPrev) =>
+                                          productosPrev.map((p) =>
+                                            p.Item_Id === item.Item_Id
+                                              ? {
+                                                  ...p,
+                                                  quantity:
+                                                    quantitiesPorTalla[
+                                                      item.Item_Id
+                                                    ]?.[size] ?? item.quantity,
+                                                }
+                                              : p
+                                          )
+                                        );
+
                                         return newSelectedSizes;
                                       });
                                     }}
@@ -441,9 +465,9 @@ export const Carrito = () => {
                                     ci.productId === item.id &&
                                     ci.size === tallaSeleccionada
                                 );
-                                const cantidadActual = carritoItem
-                                  ? Number(carritoItem.quantity)
-                                  : 0;
+
+                                const cantidadActual =
+                                  Number(item.quantity) || 0;
 
                                 // Calcula el stock de la talla seleccionada
                                 let stockTalla = 99; // Valor por defecto si no hay tallas

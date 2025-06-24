@@ -133,16 +133,8 @@ export default function ListProducts({
         }}
       >
         {productosOrdenados.map((item) => {
-          const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
-            "\\",
-            "/"
-          )}`;
-          const hoverPath = item.hoverPath
-            ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
-                "\\",
-                "/"
-              )}`
-            : originalPath;
+          const originalPath = item.path;
+          const hoverPath = item.hoverPath ? item.hoverPath : originalPath;
 
           return (
             <Grow in={imagesLoaded} timeout={1000} key={item.id}>

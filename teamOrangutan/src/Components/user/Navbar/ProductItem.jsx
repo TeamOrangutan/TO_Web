@@ -2,16 +2,9 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 
 const ProductItem = ({ item, width = 64, height = 64 }) => {
-  const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
-    "\\",
-    "/"
-  )}`;
-  const hoverPath = item.hoverPath
-    ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
-        "\\",
-        "/"
-      )}`
-    : originalPath;
+const originalPath = item.path;
+const hoverPath = item.hoverPath || item.path;
+
 
   const [src, setSrc] = useState(originalPath);
 

@@ -193,7 +193,7 @@ export default function ImageListProduct({ order, filtroNombre }) {
         sx={{
           width: "100%",
           height:
-            filteredProducts.length >= 4
+            filteredProducts.length > 4
               ? { xs: "1700px", md: "700px" }
               : "auto",
           px: { xs: 4.5, md: 4 },
@@ -203,16 +203,8 @@ export default function ImageListProduct({ order, filtroNombre }) {
           .filter((item) => item.estado === "Disponible")
 
           .map((item) => {
-            const originalPath = `http://localhost:3000/api/products/file/${item.path.replace(
-              "\\",
-              "/"
-            )}`;
-            const hoverPath = item.hoverPath
-              ? `http://localhost:3000/api/products/file/${item.hoverPath.replace(
-                  "\\",
-                  "/"
-                )}`
-              : originalPath;
+            const originalPath = item.path;
+            const hoverPath = item.hoverPath ? item.hoverPath : originalPath;
 
             return (
               <Grow in={imagesLoaded} timeout={1000} key={item.id}>
@@ -304,15 +296,15 @@ export default function ImageListProduct({ order, filtroNombre }) {
                       gap: 1,
                     }}
                   >
-                    <IconButton
+                    {/* <IconButton
                       sx={{
                         borderRadius: "50%",
                         backgroundColor: "#EBEBEB",
                         zIndex: 2,
                       }}
-                      onClick={(e) => {
-                        handleCarrito(item);
-                      }}
+                      // onClick={(e) => {
+                      //   handleCarrito(item);
+                      // }}
                     >
                       {verifi(item) ? (
                         <ShoppingCartIcon
@@ -323,7 +315,7 @@ export default function ImageListProduct({ order, filtroNombre }) {
                           sx={{ color: "gray", fontSize: "30px" }}
                         />
                       )}
-                    </IconButton>
+                    </IconButton> */}
                   </Box>
 
                   <Box

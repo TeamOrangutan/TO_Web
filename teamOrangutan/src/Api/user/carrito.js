@@ -20,7 +20,7 @@ export const getCarrito = async () => {
       },
     });
 
-    console.log("obteniendo carrito");
+    // console.log("obteniendo carrito");
     
 
     return response.data;

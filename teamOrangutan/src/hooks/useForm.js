@@ -46,9 +46,9 @@ export function useForm({ onProductAdded }) {
     }
   };
 
-  const handleSubmitUpdate = async (e) => {
+  const handleSubmitUpdate = async (e, setLoading) => {
     e.preventDefault();
-    console.log("formData", formData);
+     if (setLoading) setLoading(true);
     try {
       const response = await updateProduct(formData.id, {
         nombre: formData.nombre,
@@ -61,7 +61,9 @@ export function useForm({ onProductAdded }) {
       console.log("Producto actualizado:", response.data);
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
-    }
+    } finally {
+    if (setLoading) setLoading(false);
+  }
   };
 
   return {

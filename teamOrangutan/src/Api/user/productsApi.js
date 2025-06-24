@@ -30,6 +30,8 @@ export const getProuductById = async (id) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("Dataa", response.data);
+    
     return response.data;
   } catch (error) {
     console.error(

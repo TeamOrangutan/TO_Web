@@ -14,11 +14,7 @@ export const ImageProductActualizar = ({ path, hoverPath, onImageChange }) => {
       const formattedPaths = [path, hoverPath]
         .filter(Boolean)
         .map(
-          (imgPath) =>
-            `http://localhost:3000/api/products/file/${imgPath.replaceAll(
-              "\\",
-              "/"
-            )}`
+          (imgPath) =>imgPath
         );
       setImages(formattedPaths);
     }
