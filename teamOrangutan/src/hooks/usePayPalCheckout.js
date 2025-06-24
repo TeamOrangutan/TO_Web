@@ -5,13 +5,11 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info"); // 'error', 'success'
   const [open, setOpen] = useState(false); // Para controlar el Snackbar
-  const {  refreshCart } =
-    useCart();
-
-    
+  const { refreshCart } = useCart();
 
   const initialOptions = {
-    "client-id": "AZGNQWafSWHum4Z-niWMd6VwYPK9SYVaBRxYIS6k3gUWfH-G0-zvjiX-Of6qi32_Im8fHOZEQe5tGSj-",
+    "client-id":
+      "AZGNQWafSWHum4Z-niWMd6VwYPK9SYVaBRxYIS6k3gUWfH-G0-zvjiX-Of6qi32_Im8fHOZEQe5tGSj-",
     "enable-funding": "venmo",
     "disable-funding": "",
     "buyer-country": "US",
@@ -22,14 +20,19 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
 
   const createOrder = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/payments/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
+      const response = await fetch(
+        "http://localhost:3000/api/payments/orders",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId }),
+        }
+      );
 
       const orderData = await response.json();
-
+      console.log("orderData");
+      console.log(orderData);
+      
       if (orderData.id) {
         return orderData.id;
       } else {
@@ -56,14 +59,14 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-           body: JSON.stringify({ userId }),
+          body: JSON.stringify({ userId }),
         }
       );
 
       const orderData = await response.json();
       console.log("orderData");
       console.log(orderData);
-      
+
       const errorDetail = orderData?.details?.[0];
 
       if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
@@ -72,8 +75,8 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
         throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
       } else {
         const transaction = orderData.purchase_units[0].payments.captures[0];
-        setMessage('¡Pago exitoso!');
-        await refreshCart()
+        setMessage("¡Pago exitoso!");
+        await refreshCart();
         setMessageType("success");
         setOpen(true);
 

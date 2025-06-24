@@ -16,10 +16,12 @@ export const CartProvider = ({ children }) => {
   const refreshCart = async () => {
     const carrito = await getCarrito();
 
+    console.log("carrito:", carrito)
+
     const normalizedItems = carrito.items.map((item) => ({
       Item_Id: item.carritoItem_Id,
       productId: item.productId || item.productoId,
-      size: item.size || "",
+      size: item.talla || "",
       quantity: item.quantity || item.cantidad || 1,
       precio: item.precio || item.producto?.price || 0,
     }));
@@ -62,7 +64,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateItemCarrito = async ({ itemId, talla, cantidad, action }) => {
-    const data = await updateItemCart(itemId, talla, cantidad, action);
+    const data = await updateItemCart(itemId, talla, cantidad, action );
     return data;
   };
 

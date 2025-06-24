@@ -376,10 +376,10 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                             </Typography>
                             <Box display="flex" gap={2}>
                               <Typography variant="body2">
-                                Talla: {item.orden_item_fk.talla.nombre}
+                                Talla: {item.orden_item_fk?.talla.nombre}
                               </Typography>
                               <Typography variant="body2">
-                                Cantidad: {item.orden_item_fk.cantidad}
+                                Cantidad: {item.orden_item_fk?.cantidad}
                               </Typography>
                             </Box>
                           </Box>

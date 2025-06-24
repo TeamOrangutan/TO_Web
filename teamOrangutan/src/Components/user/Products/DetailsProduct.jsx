@@ -34,38 +34,73 @@ export const DetailsProduct = ({ product }) => {
     refreshProduct,
   } = useProductDetails(product);
 
-  const handleCarrito = async () => {
-    const user = localStorage.getItem("user");
+const handleCarrito = async () => {
+  const user = localStorage.getItem("user");
 
-    const hasOrder = order && order.productid;
-
-    const newOrder = {
-      productid: product.id,
-      size: selectedSize,
-      quantity: quantity,
-      user: Number(user),
-    };
-
+  // Obtén el carrito actual y asegúrate de que es un array
+  let carrito = [];
+  const storedCart = localStorage.getItem("cart");
+  if (storedCart) {
     try {
-      setLoading(true);
-      await addCarrito(
-        newOrder.productid,
-        newOrder.quantity,
-        newOrder.size,
-        newOrder.user
-      );
-      setorder(newOrder);
-      addToCart(newOrder);
-      await refreshProduct(product.id);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        logoutUser();
-        navigate("/");
-      }
-      console.error("Error al hacer el pedido:", error);
+      const parsed = JSON.parse(storedCart);
+      carrito = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      carrito = [];
     }
-    setLoading(false)
+  }
+
+  // Busca el stock de la talla seleccionada
+  const tallaInfo = productUpdate.tallas.find(
+    (t) => t.name === selectedSize
+  );
+  const stockTalla = tallaInfo?.stock ?? 0;
+
+  // Busca si ya existe ese producto/talla en el carrito
+  const existente = carrito.find(
+    (item) =>
+      item.productid === product.id &&
+      item.size === selectedSize
+  );
+
+  let nuevaCantidad = quantity;
+  if (existente) {
+    nuevaCantidad = existente.quantity + quantity;
+  }
+
+  // Controla que la suma no supere el stock
+  if (nuevaCantidad > stockTalla) {
+    alert("No puedes agregar más de lo disponible en stock para esta talla.");
+    return;
+  }
+
+  
+  const newOrder = {
+    productid: product.id,
+    size: selectedSize,
+    quantity: quantity,
+    user: Number(user),
   };
+
+  try {
+    setLoading(true);
+    await addCarrito(
+      newOrder.productid,
+      newOrder.quantity,
+      newOrder.size,
+      newOrder.user
+    );
+    setorder(newOrder);
+    addToCart(newOrder);
+    await refreshProduct(product.id);
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      logoutUser();
+      navigate("/");
+    }
+    console.error("Error al hacer el pedido:", error);
+  }
+  setLoading(false);
+};
 
   return product.name ? (
     <Grow in={product} timeout={1000}>

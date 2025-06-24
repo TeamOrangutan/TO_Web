@@ -38,9 +38,6 @@ export const Carrito = () => {
 
   const { user, logoutUser } = useContext(AuthContext);
 
-  console.log("user");
-  console.log(user);
-
   const navigate = useNavigate();
 
   const { cart, fetchProductsInCart, refreshCart, updateItemCarrito } =
@@ -54,15 +51,29 @@ export const Carrito = () => {
         ...p,
         quantity: p.quantity || 0,
       }));
+
+      // Ordena los productos según el orden de cart.items
+      productosConCantidad.sort((a, b) => a.Item_Id - b.Item_Id);
+
       setProductos(productosConCantidad);
       const cantidadesIniciales = {};
       productosConCantidad.forEach((p) => {
         cantidadesIniciales[p.Item_Id] = {};
-        p.tallas?.forEach((t) => {
-          cantidadesIniciales[p.Item_Id][t] = 0;
-        });
-        if (p.size && p.quantity) {
+        // Si hay tallas, inicializa todas en 0 excepto la seleccionada
+        if (p.tallas && p.tallas.length > 0) {
+          p.tallas.forEach((t) => {
+            if (t === p.size) {
+              cantidadesIniciales[p.Item_Id][t] = p.quantity || 1;
+            } else {
+              cantidadesIniciales[p.Item_Id][t] = 0;
+            }
+          });
+        } else if (p.size && p.quantity) {
+          // Si no hay tallas, pero hay size y quantity, asigna directamente
           cantidadesIniciales[p.Item_Id][p.size] = p.quantity;
+        } else if (p.quantity) {
+          // Si solo hay quantity, asigna a una clave por defecto
+          cantidadesIniciales[p.Item_Id]["default"] = p.quantity;
         }
       });
       setQuantitiesPorTalla(cantidadesIniciales);
@@ -78,7 +89,6 @@ export const Carrito = () => {
     }
   };
 
-  // 🔁 Llamado inicial una vez
   useEffect(() => {
     const fetchAll = async () => {
       await fetchData();
@@ -88,10 +98,6 @@ export const Carrito = () => {
     fetchAll();
   }, []);
 
-  console.log("loading");
-  console.log(loading);
-
-  // Inicializar tallas seleccionadas una vez
   useEffect(() => {
     if (productos.length > 0 && Object.keys(selectedSizes).length === 0) {
       const initialSizes = {};
@@ -131,6 +137,7 @@ export const Carrito = () => {
         talla: tallaSeleccionada,
         cantidad: 1,
         action: "increment",
+        // finalize: false,
       });
 
       setQuantitiesPorTalla((prev) => {
@@ -146,8 +153,6 @@ export const Carrito = () => {
 
       await fetchData();
       await refreshCart();
-
-      console.log(data);
     } catch (error) {
       console.error("Error al incrementar", error);
 
@@ -167,44 +172,46 @@ export const Carrito = () => {
     try {
       const producto = productos.find((p) => p.Item_Id === itemId);
       const tallaSeleccionada = selectedSizes[itemId] || producto.size;
+      const carritoItem = cart.items.find(
+        (ci) => ci.productId === producto.id && ci.size === tallaSeleccionada
+      );
 
-      const cantidadActual =
-        quantitiesPorTalla[itemId]?.[tallaSeleccionada] || 1;
+      const cantidadActual = carritoItem ? Number(carritoItem.quantity) : 1;
+
+      console.log("CARRITOOOO");
+      console.log(cantidadActual);
       if (cantidadActual > 1) {
-        setQuantitiesPorTalla((prev) => {
-          const current = prev[itemId] || {};
-          return {
-            ...prev,
-            [itemId]: {
-              ...current,
-              [tallaSeleccionada]: cantidadActual - 1,
-            },
-          };
-        });
-
-        const data = await updateItemCarrito({
+        await updateItemCarrito({
           itemId,
           talla: tallaSeleccionada,
           cantidad: 1,
           action: "decrement",
+          // finalize: false,
         });
 
         await fetchData();
         await refreshCart();
-        console.log(data);
       }
     } catch (error) {
-      setMessage(
-        error?.response?.data?.message || "Ocurrió un error inesperado."
-      );
+      console.log(error);
+
+      setMessage(error?.response?.data || "Ocurrió un error inesperado.");
       setMessageType("error");
       setOpen(true);
     } finally {
       setLoading(false);
     }
   };
+
   const calcularTotal = () => {
-    return productos.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    return productos.reduce((acc, item) => {
+      const tallaSeleccionada = selectedSizes[item.Item_Id] || item.size;
+      const carritoItem = cart.items.find(
+        (ci) => ci.productId === item.id && ci.size === tallaSeleccionada
+      );
+      const cantidad = carritoItem ? Number(carritoItem.quantity) : 0;
+      return acc + item.price * cantidad;
+    }, 0);
   };
 
   const tipoCambio = 36.5;
@@ -212,6 +219,8 @@ export const Carrito = () => {
   const totalDolares = (totalCordobas / tipoCambio).toFixed(2);
   const handleDeleteItemCarrito = async (id) => {
     try {
+      setLoading(true);
+
       const del = await deleteItemCarrito(id);
       await refreshCart();
       await fetchData();
@@ -219,6 +228,7 @@ export const Carrito = () => {
     } catch (error) {
       console.error("Error al eliminar del carrito", error);
     }
+    setLoading(false);
   };
 
   const handleCheckout = () => {
@@ -236,18 +246,15 @@ export const Carrito = () => {
       return;
     }
 
-    console.log("Productos listos para pagar:", productos);
     setShowPayment(true);
   };
-
-  console.log(productos);
 
   return (
     <Box
       sx={{
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden", // evita scroll horizontal
+        overflowX: "hidden",
       }}
     >
       <LoadingOverlayWrapper
@@ -302,7 +309,6 @@ export const Carrito = () => {
               <Box
                 sx={{
                   borderRadius: 3,
-
                   height: "auto",
                   border: "1px solid #EBEBEB",
                   boxShadow: "0px 4px 4px 4px rgba(0, 0, 0, 0.1)",
@@ -370,6 +376,7 @@ export const Carrito = () => {
                                   }}
                                 >
                                   <TallasCard
+                                    showAlwaysStock={true}
                                     talla={talla}
                                     selectedSize={
                                       selectedSizes[item.Item_Id] || null
@@ -426,37 +433,65 @@ export const Carrito = () => {
                                 mt: 1,
                               }}
                             >
-                              <IconButton
-                                onClick={() => decrease(item.Item_Id)}
-                                sx={{
-                                  borderRight: "1px solid #ccc",
-                                  borderRadius: 0,
-                                }}
-                              >
-                                <RemoveIcon />
-                              </IconButton>
+                              {(() => {
+                                const tallaSeleccionada =
+                                  selectedSizes[item.Item_Id] || item.size;
+                                const carritoItem = cart.items.find(
+                                  (ci) =>
+                                    ci.productId === item.id &&
+                                    ci.size === tallaSeleccionada
+                                );
+                                const cantidadActual = carritoItem
+                                  ? Number(carritoItem.quantity)
+                                  : 0;
 
-                              <Typography
-                                sx={{
-                                  px: 2,
-                                  minWidth: "30px",
-                                  textAlign: "center",
-                                }}
-                              >
-                                {quantitiesPorTalla[item.Item_Id]?.[
-                                  selectedSizes[item.Item_Id] || item.size
-                                ] || 1}
-                              </Typography>
+                                // Calcula el stock de la talla seleccionada
+                                let stockTalla = 99; // Valor por defecto si no hay tallas
+                                if (item.tallas && item.tallas.length > 0) {
+                                  const tallaObj = item.tallas.find(
+                                    (t) => t.name === tallaSeleccionada
+                                  );
+                                  stockTalla = tallaObj
+                                    ? Number(tallaObj.stock)
+                                    : 0;
+                                }
 
-                              <IconButton
-                                onClick={() => increase(item.Item_Id)}
-                                sx={{
-                                  borderLeft: "1px solid #ccc",
-                                  borderRadius: 0,
-                                }}
-                              >
-                                <AddIcon />
-                              </IconButton>
+                                return (
+                                  <>
+                                    <IconButton
+                                      onClick={() => decrease(item.Item_Id)}
+                                      sx={{
+                                        borderRight: "1px solid #ccc",
+                                        borderRadius: 0,
+                                      }}
+                                      disabled={cantidadActual <= 1}
+                                    >
+                                      <RemoveIcon />
+                                    </IconButton>
+
+                                    <Typography
+                                      sx={{
+                                        px: 2,
+                                        minWidth: "30px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {cantidadActual}
+                                    </Typography>
+
+                                    <IconButton
+                                      onClick={() => increase(item.Item_Id)}
+                                      sx={{
+                                        borderLeft: "1px solid #ccc",
+                                        borderRadius: 0,
+                                      }}
+                                      disabled={cantidadActual >= stockTalla}
+                                    >
+                                      <AddIcon />
+                                    </IconButton>
+                                  </>
+                                );
+                              })()}
                             </Box>
                             <Box sx={{ ml: "auto", cursor: "pointer" }}>
                               <IconButton
@@ -496,8 +531,32 @@ export const Carrito = () => {
                 >
                   <Payments
                     onPaymentSuccess={async () => {
-                      await refreshCart();
-                      await fetchData(); // Recargar productos del carrito
+                      try {
+                        // ✅ Por cada item del carrito, llama a updateItemCarrito con finalize
+                        // for (const item of cart.items) {
+                        //   await updateItemCarrito({
+                        //     itemId: item.Item_Id || item.carritoItem_Id,
+                        //     talla: item.size || item.talla,
+                        //     cantidad: item.quantity || item.cantidad,
+                        //     action: "decrement",
+                        //     // finalize: true,
+                        //   });
+                        // }
+
+                        setMessage("Pago confirmado");
+                        setMessageType("success");
+                        setOpen(true);
+
+                        await refreshCart();
+                        await fetchData();
+                      } catch (error) {
+                        console.error("Error al finalizar pago:", error);
+                        setMessage(
+                          "Error al actualizar el stock tras el pago."
+                        );
+                        setMessageType("error");
+                        setOpen(true);
+                      }
                     }}
                   />
                 </Box>

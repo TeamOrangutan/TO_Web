@@ -43,14 +43,6 @@ export const ModalTallas = ({
     settallas((prevTallas) => {
       const tallasSeguras = Array.isArray(prevTallas) ? prevTallas : [];
 
-      const yaExiste = tallasSeguras.some(
-        (talla) => talla.name === nuevaTalla.name
-      );
-      if (yaExiste) {
-        showMessage("Ya existe una talla con ese nombre", "error");
-        return tallasSeguras;
-      }
-
       if (
         nuevaTalla.stock === "" ||
         isNaN(nuevaTalla.stock) ||
@@ -60,8 +52,21 @@ export const ModalTallas = ({
         return tallasSeguras;
       }
 
-      const nuevasTallas = [...tallasSeguras, nuevaTalla];
-      agregarTallas(nuevaTalla);
+      // Si la talla ya existe, reemplaza el stock
+      const yaExiste = tallasSeguras.some(
+        (talla) => talla.name === nuevaTalla.name
+      );
+      let nuevasTallas;
+      if (yaExiste) {
+        nuevasTallas = tallasSeguras.map((talla) =>
+          talla.name === nuevaTalla.name ? nuevaTalla : talla
+        );
+        showMessage("Talla actualizada con éxito", "success");
+      } else {
+        nuevasTallas = [...tallasSeguras, nuevaTalla];
+        agregarTallas(nuevaTalla);
+        showMessage("Talla agregada con éxito", "success");
+      }
       return nuevasTallas;
     });
     handleClose();
