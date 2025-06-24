@@ -192,10 +192,10 @@ export default function ImageListProduct({ order, filtroNombre }) {
         gap={16}
         sx={{
           width: "100%",
-          height:
-            filteredProducts.length > 4
-              ? { xs: "1700px", md: "700px" }
-              : "auto",
+          // height:
+          //   filteredProducts.length > 4
+          //     ? { xs: "1700px", md: "1000px" }
+          //     : "",
           px: { xs: 4.5, md: 4 },
         }}
       >
