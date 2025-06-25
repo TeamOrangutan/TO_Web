@@ -4,12 +4,10 @@ import ImageListProduct from "./ImageListProduct";
 import CustomTypography from "../../../Components/user/CustomTypography";
 
 export const ExplorarColeccion = () => {
-
   return (
     <>
       <Box
         sx={{
-          flexGrow: 1,
           display: "flex",
           justifyContent: "center",
           px: { xs: 2, sm: 4 },
@@ -25,9 +23,12 @@ export const ExplorarColeccion = () => {
           justifyContent: "center",
           alignItems: "center",
           mt: 3,
-          height: { xs: "auto", md: 800 }, // altura solo en desktop
-          px: { xs: 2, sm: 4 },
-          flexWrap: "wrap", // en caso de que ImageList tenga múltiples columnas
+          height:  "auto",
+          px: { xs: 2, sm: 4 }, 
+          flexWrap: "wrap",
+          width: "100vw", 
+          boxSizing: "border-box",
+          overflowX: "hidden", 
         }}
       >
         <ImageListProduct />
