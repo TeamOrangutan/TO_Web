@@ -190,13 +190,20 @@ export const GestionProductos = () => {
             Inventario de productos
           </Typography>
 
-          <Box sx={{ display: "flex", justifyContent: "end", mr: 10 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: { xs: "center", sm: "end" },
+              mr: { xs: 0, sm: 10 },
+              mt: { xs: 2, sm: 0 },
+            }}
+          >
             <Button
               variant="contained"
               sx={{
                 height: 40,
-                mt: { xs: 0, sm: 2 },
                 backgroundColor: "black",
+                width: { xs: "100%", sm: "auto" },
               }}
               onClick={handleOpen2}
             >
@@ -208,6 +215,7 @@ export const GestionProductos = () => {
             spacing={2}
             mt={3}
             alignItems="center"
+            sx={{ width: "100%" }}
           >
             <TextField
               label="Buscar producto"
@@ -215,7 +223,7 @@ export const GestionProductos = () => {
               size="small"
               value={filtroNombre}
               onChange={(e) => setFiltroNombre(e.target.value)}
-              sx={{ width: 400 }}
+              sx={{ width: { xs: "100%", sm: 300, md: 400 } }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -225,7 +233,10 @@ export const GestionProductos = () => {
               }}
             />
 
-            <FormControl size="small" sx={{ width: 270 }}>
+            <FormControl
+              size="small"
+              sx={{ width: { xs: "100%", sm: 200, md: 270 } }}
+            >
               <InputLabel id="ordenar-select-label">Ordenar por</InputLabel>
               <Select
                 labelId="ordenar-select-label"
@@ -248,7 +259,10 @@ export const GestionProductos = () => {
               </Select>
             </FormControl>
 
-            <FormControl size="small" sx={{ width: 200 }}>
+            <FormControl
+              size="small"
+              sx={{ width: { xs: "100%", sm: 150, md: 200 } }}
+            >
               <InputLabel id="estado-select-label">Estado</InputLabel>
               <Select
                 labelId="estado-select-label"

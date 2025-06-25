@@ -117,10 +117,17 @@ export const ModalComponent = ({
               <Divider />
             </Box>
             <form onSubmit={(e) => handleSubmit(e, setLoading)}>
-              <Box sx={{ display: "flex", mt: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  mt: 2,
+                  gap: { xs: 3, md: 0 },
+                }}
+              >
                 <Box
                   sx={{
-                    width: "40%",
+                    width: { xs: "100%", md: "40%" },
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -140,7 +147,7 @@ export const ModalComponent = ({
                     component="label"
                     sx={{
                       width: "100%",
-                      height: 500,
+                      height: { xs: 200, sm: 300, md: 500 },
                       backgroundColor: "white",
                       fontSize: "80px",
                       color: "black",
@@ -203,8 +210,8 @@ export const ModalComponent = ({
                     variant="contained"
                     component="label"
                     sx={{
-                      width: "40%",
-                      height: "30%",
+                      width: { xs: "100%", sm: "60%", md: "40%" },
+                      height: { xs: 80, sm: 120, md: "30%" },
                       backgroundColor: "white",
                       fontSize: "80px",
                       color: "black",
@@ -232,7 +239,14 @@ export const ModalComponent = ({
                     />
                   </Button>
                 </Box>
-                <Box sx={{ width: "50%", mt: 0.5, ml: 7 }}>
+                <Box
+                  sx={{
+                    width: { xs: "100%", md: "50%" },
+                    mt: 0.5,
+                    ml: { xs: 0, md: 7 },
+                  }}
+                >
+                  {" "}
                   <Typography
                     sx={{ fontWeight: "bold", color: "#111827", fontSize: 18 }}
                   >
@@ -254,7 +268,7 @@ export const ModalComponent = ({
                     name="nombre"
                     value={formData.name}
                     onChange={handleInputChange}
-                    sx={{ mt: 1, width: 400 }}
+                    sx={{ mt: 1, width: { xs: "100%", sm: 400 } }}
                     size="small"
                   />
                   <Typography
@@ -273,7 +287,7 @@ export const ModalComponent = ({
                     name="descripcion"
                     value={formData.descripcion}
                     onChange={handleInputChange}
-                    sx={{ mt: 1, width: 400 }}
+                    sx={{ mt: 1, width: { xs: "100%", sm: 400 } }}
                     multiline
                     rows={4}
                   />
@@ -290,11 +304,12 @@ export const ModalComponent = ({
                   <Box
                     sx={{
                       display: "flex",
-                      gap: 10,
+                      gap: { xs: 2, md: 10 },
                       mt: 2,
+                      flexDirection: { xs: "column", sm: "row" },
                     }}
                   >
-                    <Box>
+                    <Box sx={{ width: { xs: "100%", sm: 160 } }}>
                       <Typography>Precio de venta</Typography>
 
                       <TextField
@@ -324,7 +339,8 @@ export const ModalComponent = ({
                       />
                     </Box>
 
-                    <Box>
+                    {/* 
+        <Box sx={{ width: { xs: "100%", sm: 160 } }}>
                       <Typography>Precio de fabricación</Typography>
 
                       <TextField
@@ -352,9 +368,8 @@ export const ModalComponent = ({
                           },
                         }}
                       />
-                    </Box>
+                    </Box> */}
                   </Box>
-
                   <Box sx={{ mt: 2 }}>
                     <Typography>Tallas disponibles:</Typography>
 

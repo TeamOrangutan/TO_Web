@@ -23,7 +23,12 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
       open={open}
       onClose={onClose}
       PaperProps={{
-        sx: { width: 600, maxWidth: "90vw", borderRadius: 3 },
+        sx: {
+          width: { xs: "98vw", sm: 600 },
+          maxWidth: "98vw",
+          borderRadius: 3,
+          m: { xs: 1, sm: "auto" },
+        },
       }}
     >
       <DialogTitle fontWeight={700}>
@@ -42,7 +47,12 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Box display="flex" gap={2}>
+        <Box
+          display="flex"
+          gap={2}
+          flexDirection={{ xs: "column", sm: "row" }}
+          alignItems={{ xs: "center", sm: "flex-start" }}
+        >
           <Avatar
             sx={{ width: 100, height: 100 }}
             src={
@@ -57,9 +67,8 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
             <Typography fontSize={22} fontWeight="500">
               {user?.nombres} {user?.apellidos}{" "}
             </Typography>
-
             <Typography>{user?.correo}</Typography>
-            <Box display="flex" gap={2} mt={1}>
+            <Box display="flex" gap={2} mt={1} flexWrap="wrap">
               <Typography>
                 <Box
                   sx={{
@@ -79,9 +88,7 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
                 <Box
                   sx={{
                     ...getRoleStyles(
-                      user?.estado === "Activo"
-                        ? "Admin"
-                        : user?.rol
+                      user?.estado === "Activo" ? "Admin" : user?.rol
                     ),
                     borderRadius: 8,
                     px: 1.5,
@@ -98,7 +105,12 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
           </Box>
         </Box>
 
-        <Box display="flex" gap={4} mt={3}>
+        <Box
+          display="flex"
+          gap={4}
+          mt={3}
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
           <Box flex={1}>
             <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
               Información de contacto
@@ -158,13 +170,20 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
             </Typography>
           </Box>
         </Box>
-        <Box sx={{ mt: 3, display: "flex", gap: 3 }}>
+        <Box
+          sx={{
+            mt: 3,
+            display: "flex",
+            gap: 3,
+            flexDirection: { xs: "column", sm: "row" },
+          }}
+        >
           <Box
             sx={{
               border: "1px solid rgb(225, 218, 255)",
               p: 3,
               borderRadius: 2,
-              width: "50%",
+              width: { xs: "100%", sm: "50%" },
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -184,7 +203,7 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
               border: "1px solid rgb(225, 218, 255)",
               p: 3,
               borderRadius: 2,
-              width: "50%",
+              width: { xs: "100%", sm: "50%" },
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

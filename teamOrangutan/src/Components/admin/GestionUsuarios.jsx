@@ -11,8 +11,6 @@ import {
 import TopBar from "./TopBar";
 import Select from "@mui/material/Select";
 import SearchIcon from "@mui/icons-material/Search";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import TableUsers from "./TableUsers";
 import { useEffect, useState } from "react";
 import { getUsers } from "../../Api/user/users";
@@ -38,7 +36,6 @@ export const GestionUsuarios = () => {
     };
     getAllUsers();
   }, [reload]);
-
 
   const filteredUsers = {
     ...Users,
@@ -80,6 +77,7 @@ export const GestionUsuarios = () => {
             spacing={2}
             mt={3}
             alignItems="center"
+            sx={{ width: "100%" }}
           >
             <TextField
               label="Buscar por nombre o email"
@@ -87,7 +85,10 @@ export const GestionUsuarios = () => {
               size="small"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              sx={{ width: 400, backgroundColor: "white" }}
+              sx={{
+                width: { xs: "100%", sm: 300, md: 400 },
+                backgroundColor: "white",
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -97,14 +98,14 @@ export const GestionUsuarios = () => {
               }}
             />
 
-            <FormControl size="small" sx={{ width: 200 }}>
+            <FormControl size="small" sx={{ width: { xs: "100%", sm: 200 } }}>
               <InputLabel id="rol-select-label">Rol</InputLabel>
               <Select
                 labelId="rol-select-label"
                 id="rol-select"
                 label="Rol"
                 value={filtroRol}
-                sx={{ backgroundColor: "white"}}
+                sx={{ backgroundColor: "white" }}
                 onChange={(e) => setFiltroRol(e.target.value)}
                 input={<OutlinedInput label="Rol" />}
               >
@@ -114,14 +115,14 @@ export const GestionUsuarios = () => {
               </Select>
             </FormControl>
 
-            <FormControl size="small" sx={{ width: 200 }}>
+            <FormControl size="small" sx={{ width: { xs: "100%", sm: 200 } }}>
               <InputLabel id="estado-select-label">Estado</InputLabel>
               <Select
                 labelId="estado-select-label"
                 id="estado-select"
                 label="Estado"
                 value={filtroEstado}
-                sx={{backgroundColor: "white"}}
+                sx={{ backgroundColor: "white" }}
                 onChange={(e) => setFiltroEstado(e.target.value)}
                 input={<OutlinedInput label="Estado" />}
               >
@@ -132,7 +133,11 @@ export const GestionUsuarios = () => {
             </FormControl>
           </Stack>
 
-          <TableUsers Users={filteredUsers} reload={() => setReload(r => !r)}  loading={loading} />
+          <TableUsers
+            Users={filteredUsers}
+            reload={() => setReload((r) => !r)}
+            loading={loading}
+          />
         </Box>
       </Box>
     </>

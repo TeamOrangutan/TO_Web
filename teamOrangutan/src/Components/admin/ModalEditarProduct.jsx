@@ -241,11 +241,18 @@ export const ModalEditarProduct = ({
             </Typography>
             <Divider sx={{ mt: 2 }} />
             <form onSubmit={handleSubmit}>
-              <Box sx={{ display: "flex", mt: 2 }}>
-                {/* Imagen Principal */}
+              <Box 
+           sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  mt: 2,
+                  gap: { xs: 3, md: 0 },
+                }}
+              >
+                
                 <Box
                   sx={{
-                    width: "40%",
+                    width: { xs: "100%", md: "40%" },
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -266,8 +273,8 @@ export const ModalEditarProduct = ({
                     variant="contained"
                     component="label"
                     sx={{
-                      width: "100%",
-                      height: 500,
+                       width: "100%",
+                      height: { xs: 200, sm: 300, md: 500 },
                       backgroundColor: "white",
                       fontSize: "80px",
                       color: "black",
@@ -312,9 +319,9 @@ export const ModalEditarProduct = ({
                   <Button
                     variant="contained"
                     component="label"
-                    sx={{
-                      width: "40%",
-                      height: "30%",
+                     sx={{
+                      width: { xs: "100%", sm: "60%", md: "40%" },
+                      height: { xs: 80, sm: 120, md: "30%" },
                       backgroundColor: "white",
                       fontSize: "80px",
                       color: "black",
@@ -344,7 +351,12 @@ export const ModalEditarProduct = ({
                 </Box>
 
                 {/* Datos del producto */}
-                <Box sx={{ width: "50%", mt: 0.5, ml: 7 }}>
+                <Box
+ sx={{
+                    width: { xs: "100%", md: "50%" },
+                    mt: 0.5,
+                    ml: { xs: 0, md: 7 },
+                  }}                 >
                   <Typography fontWeight="bold" color="#111827" fontSize={18}>
                     Información Básica
                   </Typography>
@@ -358,7 +370,7 @@ export const ModalEditarProduct = ({
                     onChange={handleInputChange}
                     fullWidth
                     size="small"
-                    sx={{ mt: 1 }}
+                    sx={{ mt: 1, width: { xs: "100%", sm: 400 } }}
                   />
                   <Typography mt={2} color="#374151" fontSize={15}>
                     Descripción
@@ -371,7 +383,7 @@ export const ModalEditarProduct = ({
                     fullWidth
                     multiline
                     rows={4}
-                    sx={{ mt: 1 }}
+                    sx={{ mt: 1, width: { xs: "100%", sm: 400 } }}
                   />
                   <Typography
                     fontWeight="bold"
@@ -381,7 +393,13 @@ export const ModalEditarProduct = ({
                   >
                     Precios
                   </Typography>
-                  <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+                  <Box
+ sx={{
+                      display: "flex",
+                      gap: { xs: 2, md: 10 },
+                      mt: 2,
+                      flexDirection: { xs: "column", sm: "row" },
+                    }}                   >
                     <TextField
                       name="price"
                       value={formData.price || ""}
@@ -390,14 +408,14 @@ export const ModalEditarProduct = ({
                       label="Precio de venta"
                       size="small"
                     />
-                    <TextField
+                    {/* <TextField
                       name="precioFabricacion"
                       value={formData.precioFabricacion || ""}
                       onChange={handleInputChange}
                       type="number"
                       label="Precio de fabricación"
                       size="small"
-                    />
+                    /> */}
                   </Box>
 
                   {/* Tallas */}

@@ -194,15 +194,21 @@ export const Ajustes = () => {
       >
         <TopBar selectedOption={"Configuración"} />
 
-        <Box width="90%" mx="auto">
+        <Box width={{ xs: "98vw", sm: "90%" }} mx="auto">
           <Box
             sx={{
               border: "1px solid rgb(229, 228, 233)",
-              p: 3,
+              p: { xs: 1, sm: 3 },
               backgroundColor: "white",
             }}
           >
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems={{ xs: "flex-start", sm: "center" }}
+              flexDirection={{ xs: "column", sm: "row" }}
+              gap={2}
+            >
+              {" "}
               <Typography
                 variant="h5"
                 sx={{
@@ -215,9 +221,9 @@ export const Ajustes = () => {
                 <PersonOutlineOutlinedIcon sx={{ color: "black" }} />
                 Información Personal
               </Typography>
-
               <Box
-                ml={38}
+                ml={{ xs: 0, sm: 38 }}
+                mt={{ xs: 2, sm: 0 }}
                 sx={{
                   borderRadius: 2,
                   p: 0.7,
@@ -227,6 +233,8 @@ export const Ajustes = () => {
                   display: "flex",
                   transition: "background 0.2s, color 0.2s",
                   "&:hover": { background: "#f3f4f6" },
+                  width: { xs: "100%", sm: "auto" },
+                  justifyContent: { xs: "center", sm: "flex-start" },
                 }}
                 onClick={handleEditClick}
               >
@@ -238,9 +246,9 @@ export const Ajustes = () => {
                   {editable ? "Cancelar" : "Editar"}
                 </Typography>
               </Box>
-
               <Box
-                ml={2}
+                ml={{ xs: 0, sm: 2 }}
+                mt={{ xs: 2, sm: 0 }}
                 sx={{
                   borderRadius: 2,
                   p: 0.7,
@@ -250,6 +258,8 @@ export const Ajustes = () => {
                   display: "flex",
                   transition: "background 0.2s, color 0.2s",
                   "&:hover": { backgroundColor: "#15803d" },
+                  width: { xs: "100%", sm: "auto" },
+                  justifyContent: { xs: "center", sm: "flex-start" },
                 }}
                 onClick={handleGoToStore}
               >
@@ -279,12 +289,20 @@ export const Ajustes = () => {
               </Box>
             ) : (
               <>
-                <Box display="flex" gap={3} mt={4}>
+                <Box
+                  display="flex"
+                  gap={3}
+                  mt={4}
+                  flexDirection={{ xs: "column", sm: "row" }}
+                  alignItems={{ xs: "center", sm: "flex-start" }}
+                >
+                  {" "}
                   {/* Avatar, icono y botón */}
                   <Box
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
+                    width={{ xs: "100%", sm: "auto" }}
                   >
                     <Box
                       position="relative"
@@ -306,16 +324,16 @@ export const Ajustes = () => {
                         {formData?.nombres?.[0]}
                       </Avatar>
                       <IconButton
-                        sx={{
-                          position: "absolute",
-                          bottom: 0,
-                          right: 0,
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "2px solid white",
-                          "&:hover": { backgroundColor: "#333" },
-                        }}
-                        size="small"
+                         sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: "black",
+                    color: "white",
+                    border: "2px solid white",
+                    "&:hover": { backgroundColor: "#333" },
+                  }}
+                  size="small"
                       >
                         <PhotoCameraIcon fontSize="small" />
                       </IconButton>
@@ -347,9 +365,14 @@ export const Ajustes = () => {
                       )}
                     </Box>
                   </Box>
-
                   {/* Datos personales */}
-                  <Box display="flex" flexDirection="column" gap={2} flex={1}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    flex={1}
+                    width={{ xs: "100%", sm: "auto" }}
+                  >
                     <Box display="flex" gap={2}>
                       <Box flex={1}>
                         <Typography fontSize={15}>Nombres</Typography>
@@ -496,7 +519,7 @@ export const Ajustes = () => {
             sx={{
               mt: 2,
               border: "1px solid rgb(229, 228, 233)",
-              p: 3,
+              p: { xs: 1, sm: 3 },
               backgroundColor: "white",
             }}
           >

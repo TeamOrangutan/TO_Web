@@ -89,16 +89,24 @@ export const ModalTallas = ({
             transform: "translate(-50%, -50%)",
             bgcolor: "background.paper",
             boxShadow: 2,
-            p: 4,
-            width: 450, // Ajuste de ancho para mejor visualización
+            p: { xs: 2, sm: 4 },
+            width: { xs: "95vw", sm: 400, md: 450 },
+            maxWidth: 500,
+            borderRadius: 2,
           }}
         >
           <Typography variant="h6" sx={{ mb: 2 }}>
             Selección de Tallas y Cantidades
           </Typography>
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Box sx={{ width: "50%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+            }}
+          >
+            <Box sx={{ width: { xs: "100%", sm: "50%" } }}>
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Tallas
               </Typography>
@@ -116,7 +124,7 @@ export const ModalTallas = ({
                     id="demo-simple-select"
                     value={selectedTalla}
                     onChange={handleChangeTalla}
-                    sx={{ width: 130, height: 40, mt: 1 }}
+                    sx={{ width: "100%", height: 40, mt: 1 }}
                     label="Tallas"
                   >
                     <MenuItem value={"Ninguna"}>Ninguna</MenuItem>
@@ -129,7 +137,9 @@ export const ModalTallas = ({
               </FormControl>
             </Box>
 
-            <Box sx={{ width: "70%", mt: 1 }}>
+            <Box
+              sx={{ width: { xs: "100%", sm: "50%" }, mt: { xs: 2, sm: 1 } }}
+            >
               <Typography variant="subtitle1" sx={{ mb: 0 }}>
                 Cantidades disponibles
               </Typography>
@@ -141,6 +151,7 @@ export const ModalTallas = ({
                 onChange={handleChangeCantidades}
                 sx={{
                   mt: 1,
+                  width: "100%",
                   height: 35, // Ajusta la altura del TextField
                   "& .MuiOutlinedInput-root": {
                     height: 40, // Ajusta la altura de la caja de entrada
@@ -151,14 +162,28 @@ export const ModalTallas = ({
             </Box>
           </Box>
 
-          <Box sx={{ textAlign: "right", mt: 2 }}>
+          <Box
+            sx={{
+              textAlign: { xs: "center", sm: "right" },
+              mt: 3,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              justifyContent: { sm: "flex-end" },
+            }}
+          >
+            {" "}
             <Button variant="outlined" color="black" onClick={handleClose}>
               Cerrar
             </Button>
             <Button
               variant="contained"
               onClick={handleSave}
-              sx={{ ml: 2, backgroundColor: "black", color: "white" }}
+              sx={{
+                backgroundColor: "black",
+                color: "white",
+                width: { xs: "100%", sm: "auto" },
+              }}
             >
               Agregar
             </Button>
