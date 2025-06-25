@@ -21,7 +21,7 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
   const createOrder = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/payments/orders",
+        "https://toapiteamorangutan-production.up.railway.app/api/payments/orders",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
   const onApprove = async (data, actions) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/payments/orders/${data.orderID}/capture`,
+        `https://toapiteamorangutan-production.up.railway.app/api/payments/orders/${data.orderID}/capture`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
