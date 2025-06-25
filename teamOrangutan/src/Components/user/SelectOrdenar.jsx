@@ -8,7 +8,12 @@ import { InputAdornment, OutlinedInput, Stack, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 
-export default function SelectOrdenar({ order, setorder, filtroNombre, setFiltroNombre }) {
+export default function SelectOrdenar({
+  order,
+  setorder,
+  filtroNombre,
+  setFiltroNombre,
+}) {
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (event) => {
@@ -29,7 +34,7 @@ export default function SelectOrdenar({ order, setorder, filtroNombre, setFiltro
           size="small"
           value={filtroNombre}
           onChange={(e) => setFiltroNombre(e.target.value)}
-          sx={{ width: 400 }}
+          sx={{ width: { xs: "100%", sm: 300, md: 400 } }} // <-- Cambia aquí
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

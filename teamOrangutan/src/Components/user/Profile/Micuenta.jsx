@@ -145,7 +145,7 @@ export const Micuenta = () => {
                 <Box
                   sx={{
                     border: "1px solid #EBEBEB",
-                    maxWidth: { md: "300px" }, // ✅ en desktop no crecerá más de 300px
+                    maxWidth: { md: "300px" }, 
                     height: "60%",
                     display: "flex",
                     flexDirection: "column",

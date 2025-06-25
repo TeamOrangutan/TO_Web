@@ -41,7 +41,7 @@ export const updateUserData = async (formDataObject) => {
     console.log(formData);
 
     const response = await fetch(
-      `http://localhost:3000/api/user/updateuserdata/${user}`,
+      `https://toapiteamorangutan-production.up.railway.app/api/user/updateuserdata/${user}`,
       {
         method: "PUT",
         body: formData,

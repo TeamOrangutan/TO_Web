@@ -1,4 +1,4 @@
-import { Box, Button, Modal} from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import CustomTypography from "../../Components/user/CustomTypography";
 import SelectOrdenar from "../../Components/user/SelectOrdenar";
 import ImageListProduct from "../../Components/user/Home/ImageListProduct";
@@ -7,7 +7,6 @@ import ModalAgregarProducto from "../../Components/user/Products/ModalAgregarPro
 import { useState } from "react";
 import Navbar from "../../Components/user/Navbar/Navbar";
 import Footer from "../../Components/user/Footer";
-
 
 const style = {
   position: "absolute",
@@ -56,7 +55,7 @@ export const Products = () => {
           gap: 2,
         }}
       >
-<SelectOrdenar
+        <SelectOrdenar
           order={order}
           setorder={setorder}
           filtroNombre={filtroNombre}
@@ -85,10 +84,9 @@ export const Products = () => {
         handleOpen={handleOpen}
       />
 
-      <Footer/>
+      <Footer />
     </>
   );
 };
-
 
 export default Products;
