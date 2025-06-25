@@ -24,6 +24,7 @@ export const getProfile = async () => {
 export const updateUserData = async (formDataObject) => {
   try {
     const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
     const formData = new FormData();
 
     // Adjuntar campos de texto
@@ -37,24 +38,19 @@ export const updateUserData = async (formDataObject) => {
       formData.append("imagenPerfil", formDataObject.imagen);
     }
 
-    console.log(formDataObject);
-    console.log(formData);
-
-    const response = await fetch(
-      `https://toapiteamorangutan-production.up.railway.app/api/user/updateuserdata/${user}`,
+    // Usa tu instancia de Axios para mantener el token y la baseURL
+    const response = await Api.put(
+      `/user/updateuserdata/${user}`,
+      formData,
       {
-        method: "PUT",
-        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       }
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Error al actualizar usuario");
-    }
-
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error actualizando usuario:", error);
     throw error;
