@@ -200,11 +200,14 @@ export const DashboardPage = () => {
 
           <Box
             flexGrow={1}
-            p={3}
+            p={{ xs: 1, sm: 3 }}
             bgcolor="#F9FAFB"
             sx={{
-              width: "50%",
+              width: { xs: "100vw", md: "50%" },
               marginX: "auto",
+              minHeight: "100vh",
+              boxSizing: "border-box",
+              overflowX: "hidden",
             }}
           >
             {selectedOption === "Dashboard" && (
@@ -262,34 +265,36 @@ export const DashboardPage = () => {
                   ))} */}
 
                   {stats.ventasDiarias && (
-                    <Grid item xs={12}>
-                      <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="h6" gutterBottom>
-                          Ventas Diarias (últimos días)
-                        </Typography>
-                        <Box
-                          sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
-                          <Button
-                            size="medium"
-                            variant="contained"
-                            sx={{
-                              mb: 2,
-                              backgroundColor: "#007aff",
-                              color: "#fff",
-                            }}
-                            onClick={() => handleGenerarReporte()}
-                          >
-                            <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
-                            reporte (15 dias)
-                          </Button>
-                        </Box>
-                        <VentasDiariasBarChart
-                          ventasDiarias={stats.ventasDiarias}
-                        />
-                      </Paper>
-                    </Grid>
-                  )}
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
+              <Typography variant="h6" gutterBottom>
+                Ventas Diarias (últimos días)
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", sm: "flex-end" },
+                }}
+              >
+                <Button
+                  size="medium"
+                  variant="contained"
+                  sx={{
+                    mb: 2,
+                    backgroundColor: "#007aff",
+                    color: "#fff",
+                    width: { xs: "100%", sm: "auto" },
+                  }}
+                  onClick={() => handleGenerarReporte()}
+                >
+                  <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
+                  reporte (15 dias)
+                </Button>
+              </Box>
+              <VentasDiariasBarChart ventasDiarias={stats.ventasDiarias} />
+            </Paper>
+          </Grid>
+        )}
                 </Grid>
                 <TableOrders />
 
@@ -308,8 +313,8 @@ export const DashboardPage = () => {
             {selectedOption === "Órdenes de compra" && <OrdenesCompra />}
 
             {selectedOption === "Productos" && <GestionProductos />}
-            {selectedOption === "Ver usuarios" && <GestionUsuarios/>}
-            {selectedOption === "Ajustes" && <Ajustes/>}
+            {selectedOption === "Ver usuarios" && <GestionUsuarios />}
+            {selectedOption === "Ajustes" && <Ajustes />}
           </Box>
         </Box>
       </Grow>

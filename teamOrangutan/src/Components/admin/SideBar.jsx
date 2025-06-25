@@ -9,6 +9,8 @@ import {
   ListItemText,
   Tooltip,
   Typography,
+  useMediaQuery,
+  Drawer,
 } from "@mui/material";
 import logo from "../../assets/user/logo2.png";
 import { useContext, useState } from "react";
@@ -20,6 +22,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Auth/user/context/AuthContext";
+import { useTheme } from "@mui/material";
+
 const menuGroups = [
   {
     title: "VENTAS",
@@ -51,20 +55,23 @@ const menuGroups = [
 
 export const SideBar = ({ selectedOption, setSelectedOption }) => {
   const [collapsed, setCollapsed] = useState(false);
-
   const { logoutUser } = useContext(AuthContext);
-
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
     logoutUser();
     navigate("/");
   };
-  return (
+
+  // Sidebar content (para usar en Drawer y en desktop)
+  const sidebarContent = (
     <Box
-      width={collapsed ? "120px" : "330px"}
-      minWidth={collapsed ? "120px" : "210px"}
-      maxWidth={collapsed ? "120px" : "210px"}
+      width={collapsed ? { xs: 70, sm: 120 } : { xs: 180, sm: 330 }}
+      minWidth={collapsed ? { xs: 70, sm: 120 } : { xs: 70, sm: 210 }}
+      maxWidth={collapsed ? { xs: 70, sm: 120 } : { xs: 180, sm: 210 }}
       bgcolor="white"
       height="100vh"
       p={2}
@@ -73,6 +80,8 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
         overflowX: "hidden",
         borderRight: "1px solid #F1EEFD",
         flexShrink: 0,
+        boxSizing: "border-box",
+        position: "relative",
       }}
     >
       <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
@@ -83,15 +92,14 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
           alt="Logo Primal Garage"
           sx={{
             cursor: "pointer",
-
-            width: collapsed ? 70 : 100,
-            height: collapsed ? 40 : 60,
+            width: collapsed ? 50 : 80,
+            height: collapsed ? 30 : 50,
             transition: "width 0.3s, height 0.3s",
-            ml: collapsed ? 0 : 5,
+            ml: collapsed ? 0 : 2,
           }}
         />
 
-        {!collapsed && (
+        {!collapsed && !isMobile && (
           <IconButton sx={{ ml: 2 }} onClick={() => setCollapsed(!collapsed)}>
             <MenuOpen />
           </IconButton>
@@ -107,7 +115,6 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
               py: 0.8,
               borderRadius: 2,
               justifyContent: collapsed ? "center" : "flex-start",
-
               bgcolor: selectedOption === "Dashboard" ? "black" : "white",
               color: selectedOption === "Dashboard" ? "white" : "black",
               "&:hover": {
@@ -119,6 +126,7 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
             }}
             onClick={() => {
               setSelectedOption("Dashboard");
+              if (isMobile) setDrawerOpen(false);
             }}
           >
             <ListItemIcon sx={{ minWidth: 32 }}>
@@ -199,7 +207,7 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
                       item.logout
                         ? handleLogout()
                         : setSelectedOption(item.label);
-                        
+                      if (isMobile) setDrawerOpen(false);
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 32 }}>
@@ -224,6 +232,44 @@ export const SideBar = ({ selectedOption, setSelectedOption }) => {
       </List>
     </Box>
   );
+
+  // En mobile, usa Drawer
+  if (isMobile) {
+    return (
+      <>
+        <IconButton
+          sx={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            zIndex: 1301,
+            bgcolor: "white",
+            border: "1px solid #eee",
+          }}
+          onClick={() => setDrawerOpen(true)}
+        >
+          <MenuOpen />
+        </IconButton>
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          PaperProps={{
+            sx: {
+              width: 220,
+              maxWidth: "80vw",
+              bgcolor: "white",
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          {sidebarContent}
+        </Drawer>
+      </>
+    );
+  }
+
+  return sidebarContent;
 };
 
 export default SideBar;

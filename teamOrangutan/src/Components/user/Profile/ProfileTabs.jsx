@@ -108,7 +108,7 @@ export const ProfileTabs = ({ user }) => {
   const EmailSent = async (correo) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/auth/forgot-password/`,
+        `https://toapiteamorangutan-production.up.railway.app/api/auth/forgot-password/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
