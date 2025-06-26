@@ -6,10 +6,9 @@ import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
 export const FloatingDownloadButton = () => {
   const handleDownload = () => {
     const isAdmin = location.pathname.includes("/admin");
-    saveAs("/ManualClientes.pdf", "manual-usuario.pdf");
     const filePath = isAdmin ? "/ManualAdmin.pdf" : "/ManualClientes.pdf";
     const fileName = isAdmin ? "manual-admin.pdf" : "manual-usuario.pdf";
-        saveAs(filePath, fileName);
+    saveAs(filePath, fileName);
   };
 
   return (
