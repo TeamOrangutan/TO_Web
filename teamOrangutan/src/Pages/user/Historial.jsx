@@ -26,6 +26,7 @@ import gueguense2 from "../../assets/user/gueguense2.png";
 import macabra from "../../assets/user/macabra.png";
 import guarda1 from "../../assets/user/guarda1.png";
 import guarda2 from "../../assets/user/guarda2.png";
+import FloatingDownloadButton from "../../Components/FloatingDownloadButton";
 
 const artworks = [
   { image: lamona },
@@ -62,7 +63,9 @@ export const Historial = () => {
     <Box>
       <Navbar />
       <Grow in timeout={1000}>
+
         <Box>
+        <FloatingDownloadButton />
           <Container sx={{ py: 8, mt: 5 }}>
             <Grid container alignItems="center" spacing={4}>
               <Grid item xs={12} md={4}>
@@ -89,21 +92,26 @@ export const Historial = () => {
                   Kaiz Orangután
                 </Typography>
                 <Typography variant="body1" color="text.secondary" paragraph>
-                  Fundador, artista visual y diseñador de moda. Kaiz fusiona arte
-                  urbano, cultura ancestral y sostenibilidad en cada prenda. Su
-                  visión es vestir a las personas como si fueran una obra de arte
-                  viviente.
+                  Fundador, artista visual y diseñador de moda. Kaiz fusiona
+                  arte urbano, cultura ancestral y sostenibilidad en cada
+                  prenda. Su visión es vestir a las personas como si fueran una
+                  obra de arte viviente.
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Desde 2013, ha transformado simples camisas en piezas expresivas
-                  que cuentan historias. Cada diseño es único, ético y lleno de
-                  propósito.
+                  Desde 2013, ha transformado simples camisas en piezas
+                  expresivas que cuentan historias. Cada diseño es único, ético
+                  y lleno de propósito.
                 </Typography>
               </Grid>
             </Grid>
 
             <Box mt={8}>
-              <Typography sx={{ml: 8}} variant="h5" fontWeight="bold" gutterBottom>
+              <Typography
+                sx={{ ml: 8 }}
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+              >
                 Obras destacadas
               </Typography>
 
@@ -117,7 +125,7 @@ export const Historial = () => {
                 swipeable
                 emulateTouch
                 stopOnHover
-                centerMode={itemsPerSlide === 1} 
+                centerMode={itemsPerSlide === 1}
                 centerSlidePercentage={itemsPerSlide === 1 ? 80 : 100}
                 dynamicHeight={false}
               >
@@ -145,9 +153,7 @@ export const Historial = () => {
                             borderRadius: 3,
                             boxShadow: 2,
                             cursor: "pointer",
-                            flex: `1 1 ${
-                              itemsPerSlide === 1 ? "80%" : "30%"
-                            }`,
+                            flex: `1 1 ${itemsPerSlide === 1 ? "80%" : "30%"}`,
                             maxWidth: itemsPerSlide === 1 ? "80%" : "320px",
                             minWidth: itemsPerSlide === 1 ? "80%" : "200px",
                           }}

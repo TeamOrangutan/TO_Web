@@ -15,6 +15,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { AuthContext } from "../../../Auth/user/context/AuthContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import FloatingDownloadButton from "../../FloatingDownloadButton";
 
 export default function BasicList() {
   const { isAuthenticated, loginUser, logoutUser, user } =
@@ -31,6 +32,8 @@ export default function BasicList() {
     <Box sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       <nav aria-label="main mailbox folders">
         <List>
+                  <FloatingDownloadButton/>
+          
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>

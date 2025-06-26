@@ -91,6 +91,8 @@ const ModalPdf = ({
         </IconButton>
       </DialogTitle>
       <DialogContent ref={pdfRef}>
+          <div className="pdf-wrapper">
+
         {reporteQuincenal ? (
           <Box mt={0} p={3}>
             <Box
@@ -200,12 +202,21 @@ const ModalPdf = ({
               Análisis de Productos vendidos
             </Typography>
 
-            <Box display="flex" flexDirection="row" alignItems="center" gap={8}>
+            <Box
+              display="flex"
+              flexDirection={{ xs: "column", md: "row" }}
+              alignItems="center"
+              gap={{ xs: 3, md: 8 }}
+              sx={{ width: "100%" }}
+            >
+              {" "}
               <Box
                 sx={{
                   border: "1px solid rgba(204,204,204,0.3)",
-                  p: 3,
+                  p: { xs: 1, sm: 3 },
                   borderRadius: 2,
+                  width: { xs: "100%", md: "auto" },
+                  mb: { xs: 2, md: 0 },
                 }}
                 ref={pieChartRef}
               >
@@ -337,6 +348,8 @@ const ModalPdf = ({
         ) : (
           <Typography>No se pudo cargar la factura.</Typography>
         )}
+          </div>
+
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cerrar</Button>

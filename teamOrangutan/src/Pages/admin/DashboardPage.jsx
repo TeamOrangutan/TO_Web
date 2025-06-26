@@ -28,6 +28,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import GestionUsuarios from "../../Components/admin/GestionUsuarios";
 import Ajustes from "../../Components/admin/Ajustes";
+import FloatingDownloadButton from "../../Components/FloatingDownloadButton";
 
 export const DashboardPage = () => {
   const [user, setUser] = useState(null);
@@ -43,14 +44,14 @@ export const DashboardPage = () => {
   const barChartRef = useRef();
 
   const handlePrintPDF = async () => {
-    // 1. Captura los gráficos como imágenes
     const pieChartNode = pieChartRef.current;
     const barChartNode = barChartRef.current;
 
     // Guarda los gráficos originales
     const originalPie = pieChartNode.innerHTML;
     const originalBar = barChartNode.innerHTML;
-
+    document.body.classList.add("force-desktop");
+    await new Promise((resolve) => setTimeout(resolve, 200));
     // Captura imágenes
     const pieCanvas = await html2canvas(pieChartNode, {
       scale: 2,
@@ -90,6 +91,7 @@ export const DashboardPage = () => {
     // 4. Restaura los gráficos originales en el DOM
     pieChartNode.innerHTML = originalPie;
     barChartNode.innerHTML = originalBar;
+    document.body.classList.remove("force-desktop");
   };
   const ventasDiariasAnim = useSpring({
     number: Number(stats.totalDiario) || 0,
@@ -210,6 +212,8 @@ export const DashboardPage = () => {
               overflowX: "hidden",
             }}
           >
+                    <FloatingDownloadButton/>
+            
             {selectedOption === "Dashboard" && (
               <>
                 <Grid container spacing={2}>
@@ -265,36 +269,38 @@ export const DashboardPage = () => {
                   ))} */}
 
                   {stats.ventasDiarias && (
-          <Grid item xs={12}>
-            <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
-              <Typography variant="h6" gutterBottom>
-                Ventas Diarias (últimos días)
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "center", sm: "flex-end" },
-                }}
-              >
-                <Button
-                  size="medium"
-                  variant="contained"
-                  sx={{
-                    mb: 2,
-                    backgroundColor: "#007aff",
-                    color: "#fff",
-                    width: { xs: "100%", sm: "auto" },
-                  }}
-                  onClick={() => handleGenerarReporte()}
-                >
-                  <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
-                  reporte (15 dias)
-                </Button>
-              </Box>
-              <VentasDiariasBarChart ventasDiarias={stats.ventasDiarias} />
-            </Paper>
-          </Grid>
-        )}
+                    <Grid item xs={12}>
+                      <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
+                        <Typography variant="h6" gutterBottom>
+                          Ventas Diarias (últimos días)
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: { xs: "center", sm: "flex-end" },
+                          }}
+                        >
+                          <Button
+                            size="medium"
+                            variant="contained"
+                            sx={{
+                              mb: 2,
+                              backgroundColor: "#007aff",
+                              color: "#fff",
+                              width: { xs: "100%", sm: "auto" },
+                            }}
+                            onClick={() => handleGenerarReporte()}
+                          >
+                            <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
+                            reporte (15 dias)
+                          </Button>
+                        </Box>
+                        <VentasDiariasBarChart
+                          ventasDiarias={stats.ventasDiarias}
+                        />
+                      </Paper>
+                    </Grid>
+                  )}
                 </Grid>
                 <TableOrders />
 

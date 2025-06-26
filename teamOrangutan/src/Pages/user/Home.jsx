@@ -6,6 +6,7 @@ import ExplorarColeccion from "../../Components/user/Home/ExplorarColeccion";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Footer from "../../Components/user/Footer";
+import FloatingDownloadButton from "../../Components/FloatingDownloadButton";
 
 export const Home = () => {
   return (
@@ -54,6 +55,7 @@ export const Home = () => {
               }}
             ></div>
           </Carousel>
+        <FloatingDownloadButton/>
 
           <Box
             sx={{

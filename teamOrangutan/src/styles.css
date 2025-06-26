@@ -1,18 +1,83 @@
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    /* color: #ccccccef */
+@media print {
+  .MuiGrid-root {
+    flex-direction: row !important;
   }
 
+  .MuiBox-root {
+    flex-direction: row !important;
+    width: 100% !important;
+  }
 
+  .MuiDialog-container {
+    align-items: flex-start !important;
+  }
+
+  .MuiDialog-paper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    position: static !important;
+  }
+
+  .MuiTypography-root {
+    font-size: 12pt !important;
+  }
+
+  /* .pdf-wrapper {
+    width: 100px !important;
+    transform: scale(1) !important;
+  } */
+}
+
+/* Si quieres forzar modo escritorio en pantalla, usa la clase force-desktop en el body */
+body.force-desktop .MuiGrid-root {
+  flex-direction: row !important;
+}
+body.force-desktop .MuiBox-root {
+  flex-direction: row !important;
+  width: 100% !important;
+}
+body.force-desktop .MuiDialog-container {
+  align-items: flex-start !important;
+}
+body.force-desktop .MuiDialog-paper {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+}
+body.force-desktop .MuiTypography-root {
+  font-size: 12pt !important;
+}
+body.force-desktop .pdf-wrapper {
+  width: 800px !important;
+  transform: scale(1) !important;
+}
+
+/* Vista previa en móvil con escala */
+@media screen and (max-width: 767px) {
+  .pdf-wrapper {
+    transform: scale(0.75);
+    transform-origin: top left;
+  }
+}
+
+/* Layout base */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Carousel arrows */
 .carousel .control-arrow:before {
-
   border-left: 12px solid black !important;
   border-right: none !important;
 }
+
 .carousel .control-arrow.control-next:before {
   border-left: none !important;
   border-right: 12px solid rgb(0, 0, 0) !important;

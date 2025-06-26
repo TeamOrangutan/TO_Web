@@ -7,6 +7,7 @@ import ModalAgregarProducto from "../../Components/user/Products/ModalAgregarPro
 import { useState } from "react";
 import Navbar from "../../Components/user/Navbar/Navbar";
 import Footer from "../../Components/user/Footer";
+import FloatingDownloadButton from "../../Components/FloatingDownloadButton";
 
 const style = {
   position: "absolute",
@@ -69,7 +70,8 @@ export const Products = () => {
         >
           Agregar
         </Button> */}
-      </Box>
+      </Box>        <FloatingDownloadButton/>
+      
 
       {/* Lista de productos */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2, px: 2 }}>

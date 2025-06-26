@@ -24,6 +24,7 @@ import Payments from "../../../Pages/user/Payments";
 import { useContext } from "react";
 import { AuthContext } from "../../../Auth/user/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import FloatingDownloadButton from "../../FloatingDownloadButton";
 
 export const Carrito = () => {
   const [quantitiesPorTalla, setQuantitiesPorTalla] = useState({});
@@ -299,6 +300,8 @@ export const Carrito = () => {
               gap: 1,
             }}
           >
+                    <FloatingDownloadButton/>
+            
             <Box sx={{ flex: 1, pr: 2 }}>
               <Typography
                 sx={{ fontWeight: "bold", fontSize: { xs: 26, md: 40 } }}
