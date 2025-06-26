@@ -6,10 +6,11 @@ export function usePayPalCheckout({ userId, onPaymentSuccess }) {
   const [messageType, setMessageType] = useState("info"); // 'error', 'success'
   const [open, setOpen] = useState(false); // Para controlar el Snackbar
   const { refreshCart } = useCart();
+const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
 
   const initialOptions = {
-    "client-id":
-      "AZGNQWafSWHum4Z-niWMd6VwYPK9SYVaBRxYIS6k3gUWfH-G0-zvjiX-Of6qi32_Im8fHOZEQe5tGSj-",
+    "client-id": clientId,
     "enable-funding": "venmo",
     "disable-funding": "",
     "buyer-country": "US",
