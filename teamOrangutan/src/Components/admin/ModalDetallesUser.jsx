@@ -217,7 +217,7 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
                   color: "#2563eb",
                 }}
               >
-                $ {user?.montoTotalOrdenes}
+                $ {(Number(user?.montoTotalOrdenes) || 0).toFixed(2)}{" "}
               </Typography>
               <Typography color="gray">Total Gastado</Typography>
             </Box>
