@@ -3,7 +3,6 @@ import { PulseLoader } from "react-spinners";
 import LoadingOverlayWrapper from "react-loading-overlay-ts";
 import { getInvoiceById } from "../../../Api/user/invoice";
 import { useState } from "react";
-import logoSRC from "../../../assets/user/logo2.png";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useRef } from "react";
@@ -272,18 +271,12 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                         </Typography>
                       </Box>
 
-                      {/* Centro - Logo más arriba */}
                       <Box
-                        component="img"
-                        src={logoSRC}
-                        alt="logo"
-                        sx={{
-                          width: { xs: "100px", sm: "120px" },
-                          height: "auto",
-                          alignSelf: "flex-start", // sube el logo al tope del flex container
-                          mt: -0.1, // opcional: lo sube aún más si quieres
-                        }}
-                      />
+                      component="img"
+                      src={"https://bsbmlgtiivdziyqbegeq.supabase.co/storage/v1/object/public/products//logo2.png"}
+                      alt="logo"
+                      sx={{ width: "120px", height: "auto" }}
+                    />
 
                       {/* Lado derecho */}
                       <Box textAlign="right">
@@ -489,10 +482,9 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                       </Typography>
                     </Box>
 
-                    {/* Logo */}
                     <Box
                       component="img"
-                      src={logoSRC}
+                      src={"https://bsbmlgtiivdziyqbegeq.supabase.co/storage/v1/object/public/products//logo2.png"}
                       alt="logo"
                       sx={{ width: "120px", height: "auto" }}
                     />
