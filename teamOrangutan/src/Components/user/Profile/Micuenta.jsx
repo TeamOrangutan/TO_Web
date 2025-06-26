@@ -68,6 +68,8 @@ export const Micuenta = () => {
   console.log(user2)
 
   const handleUploadImage = async () => {
+    setLoading(true);
+
     if (!selectedFile) return;
 
     const formDataObject = {
@@ -88,6 +90,8 @@ export const Micuenta = () => {
       await userProfile(); // Refresca datos
     } catch (error) {
       console.error("Error al subir imagen", error);
+    }finally {
+      setLoading(false);
     }
   };
 
