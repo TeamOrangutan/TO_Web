@@ -13,7 +13,6 @@ const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
     "client-id": clientId,
     "enable-funding": "venmo",
     "disable-funding": "",
-    "buyer-country": "US",
     currency: "USD",
     components: "buttons",
     "data-sdk-integration-source": "developer-studio",
