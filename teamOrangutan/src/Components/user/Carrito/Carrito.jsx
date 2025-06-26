@@ -373,7 +373,7 @@ export const Carrito = () => {
                               container
                               spacing={1}
                               mt={1}
-                              sx={{ width: {sm: 500}, flexWrap: "wrap" }}
+                              sx={{ width: {sm: 100}, flexWrap: "wrap" }}
                             >
                               {item.tallas.map((talla, tallaIndex) => (
                                 <Grid2

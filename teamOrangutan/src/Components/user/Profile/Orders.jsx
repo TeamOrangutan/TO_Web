@@ -21,19 +21,24 @@ import ProductItem from "../Navbar/ProductItem";
 
 export const Orders = ({ ordenes, ordenesLoaded }) => {
   const USD_TO_CORDOBAS = 36.84;
-  const pdfRef = useRef();
+  const pdfRefDesktop = useRef();
+  const pdfRefMobile = useRef();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [loadingFactura, setLoadingFactura] = useState(false);
   const [facturaSeleccionada, setFacturaSeleccionada] = useState(null);
 
-  const handlePrintPDF = () => {
+  const handlePrintPDF = async () => {
+    const isMobile = window.innerWidth < 768;
+    const sourceRef = isMobile ? pdfRefMobile.current : pdfRefDesktop.current;
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "pt",
       format: "a4",
     });
 
-    doc.html(pdfRef.current, {
+    await new Promise((r) => setTimeout(r, 300));
+
+    doc.html(sourceRef, {
       callback: function (doc) {
         doc.save(`factura-${facturaSeleccionada?.folio || "sin-folio"}.pdf`);
       },
@@ -42,7 +47,8 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
       x: 0,
       y: 0,
       html2canvas: {
-        scale: 0.6,
+        scale: isMobile ? 0.9 : 0.64, // Aumenta la calidad del render
+        useCORS: true,
       },
     });
   };
@@ -110,7 +116,7 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                   variant="body2"
                   sx={{ fontWeight: 500, fontSize: 20 }}
                 >
-                 C$ {Math.round(orden.total * USD_TO_CORDOBAS)}
+                  C$ {Math.round(orden.total * USD_TO_CORDOBAS)}
                 </Typography>
               </Box>
 
@@ -244,46 +250,259 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                 <CloseIcon />
               </IconButton>
             </DialogTitle>
-            <DialogContent ref={pdfRef}>
-              {loadingFactura ? (
-                <PulseLoader color="#2AB9B7" />
-              ) : facturaSeleccionada ? (
-                <Box mt={0}>
+            <DialogContent>
+              <div className="pdf-wrapper" ref={pdfRefDesktop}>
+                {loadingFactura ? (
+                  <PulseLoader color="#2AB9B7" />
+                ) : facturaSeleccionada ? (
+                  <Box mt={0}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="flex-start" // ahora alineamos al tope
+                      sx={{ width: "100%" }}
+                    >
+                      {/* Lado izquierdo */}
+                      <Box textAlign="left">
+                        <Typography variant="h6" fontWeight={700}>
+                          Primal Garage
+                        </Typography>
+                        <Typography variant="body2">
+                          ID: {facturaSeleccionada?.orden_fk?.orderId}
+                        </Typography>
+                      </Box>
+
+                      {/* Centro - Logo más arriba */}
+                      <Box
+                        component="img"
+                        src={logoSRC}
+                        alt="logo"
+                        sx={{
+                          width: { xs: "100px", sm: "120px" },
+                          height: "auto",
+                          alignSelf: "flex-start", // sube el logo al tope del flex container
+                          mt: -0.1, // opcional: lo sube aún más si quieres
+                        }}
+                      />
+
+                      {/* Lado derecho */}
+                      <Box textAlign="right">
+                        <Typography variant="body1" fontWeight={500}>
+                          Factura: #{facturaSeleccionada?.folio}
+                        </Typography>
+                        <Typography variant="body2">
+                          Fecha:{" "}
+                          {facturaSeleccionada?.fecha
+                            ? new Date(
+                                facturaSeleccionada.fecha
+                              ).toLocaleDateString()
+                            : ""}
+                        </Typography>
+                        <Box
+                          sx={{
+                            borderRadius: 10,
+                            backgroundColor: "#DCFCE7",
+                            padding: "4px 8px",
+                            mt: 1,
+                            ml: 9,
+                            width: 100,
+                          }}
+                        >
+                          <Typography
+                            style={{
+                              fontWeight: 700,
+                              color: "#065F46",
+                            }}
+                          >
+                            {facturaSeleccionada?.orden_fk?.estado}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                    <Box mt={4}>
+                      <Box>
+                        <Typography
+                          fontWeight={400}
+                          fontSize={19}
+                          sx={{ letterSpacing: "normal" }}
+                        >
+                          Cliente:
+                        </Typography>
+
+                        <Typography>
+                          {facturaSeleccionada.nombreCliente}
+                        </Typography>
+                        <Typography>
+                          {facturaSeleccionada.orden_fk.payerEmail}
+                        </Typography>
+                      </Box>
+                      <Box mt={5}>
+                        <Typography fontWeight={400} fontSize={19}>
+                          Envío:{" "}
+                        </Typography>
+                        <Typography mt={1}>
+                          {facturaSeleccionada.direccion}
+                        </Typography>
+                        <Typography mt={1}>
+                          Método de pago: {facturaSeleccionada.metodoPago}
+                        </Typography>
+                        <Typography mt={1}>
+                          Telefono {facturaSeleccionada.telefono}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Box mt={5}>
+                      <Typography fontWeight={400} fontSize={19}>
+                        Productos:
+                      </Typography>
+
+                      {facturaSeleccionada.facItems?.map((item, idx) => (
+                        <Box
+                          key={idx}
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="flex-start"
+                          mb={2}
+                        >
+                          {/* Parte izquierda: imagen + info */}
+                          <Box display="flex" gap={1}>
+                            {/* Imagen */}
+                            <Box>
+                              <ProductItem
+                                item={item.orden_item_fk.producto}
+                                width={70}
+                                height={70}
+                              />
+                            </Box>
+
+                            {/* Info del producto */}
+                            <Box display="flex" flexDirection="column">
+                              <Typography fontWeight={500}>
+                                {item.orden_item_fk.producto.nombre}
+                              </Typography>
+                              <Box display="flex" gap={2}>
+                                <Typography variant="body2">
+                                  Talla: {item.orden_item_fk?.talla.nombre}
+                                </Typography>
+                                <Typography variant="body2">
+                                  Cantidad: {item.orden_item_fk?.cantidad}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </Box>
+
+                          {/* Parte derecha: precios en córdobas y dólares */}
+                          <Box
+                            display="flex"
+                            flexDirection="column"
+                            textAlign="right"
+                          >
+                            <Typography fontWeight={500}>
+                              C${" "}
+                              {Math.round(
+                                item.orden_item_fk.precio_unitario_usd *
+                                  USD_TO_CORDOBAS
+                              )}
+                            </Typography>
+                            <Typography fontWeight={500}>
+                              ${" "}
+                              {item.orden_item_fk.precio_unitario_usd.toFixed(
+                                2
+                              )}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ))}
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="h6" align="right">
+                        Total: C${" "}
+                        {Math.round(
+                          facturaSeleccionada.total * USD_TO_CORDOBAS
+                        )}
+                      </Typography>
+                      <Typography variant="h6" align="right">
+                        $ {facturaSeleccionada.total.toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box mt={13} />
+                    <Divider sx={{ mb: 0 }} />
+                    <Box
+                      component="footer"
+                      sx={{
+                        width: "100%",
+                        background: "#F8F8F8",
+                        py: 2,
+                        px: 0,
+                        mt: 0,
+                        borderTop: "1px solid #e0e0e0",
+                        textAlign: "center",
+                      }}
+                    >
+                      <Typography color="gray" fontSize={13}>
+                        Esta factura fue generada el{" "}
+                        {new Date(
+                          facturaSeleccionada?.fecha
+                        ).toLocaleDateString()}
+                      </Typography>
+                      <Typography color="gray" fontSize={11}>
+                        Primal Garage - Sistema de gestión de ventas
+                      </Typography>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Typography>No se pudo cargar la factura.</Typography>
+                )}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setModalAbierto(false)}>Cerrar</Button>
+            </DialogActions>
+          </Dialog>
+
+          <div
+            style={{ position: "absolute", top: "-9999px", left: "-9999px" }}
+          >
+            <div
+              ref={pdfRefMobile}
+              className="pdf-wrapper"
+              style={{
+                width: "750px",
+                padding: "32px",
+                backgroundColor: "white",
+              }}
+            >
+              {facturaSeleccionada && (
+                <>
                   <Box
                     display="flex"
                     justifyContent="space-between"
-                    alignItems="flex-start" // ahora alineamos al tope
-                    sx={{ width: "100%" }}
+                    alignItems="flex-start"
                   >
                     {/* Lado izquierdo */}
-                    <Box textAlign="left">
+                    <Box>
                       <Typography variant="h6" fontWeight={700}>
                         Primal Garage
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography>
                         ID: {facturaSeleccionada?.orden_fk?.orderId}
                       </Typography>
                     </Box>
 
-                    {/* Centro - Logo más arriba */}
+                    {/* Logo */}
                     <Box
                       component="img"
                       src={logoSRC}
                       alt="logo"
-                      sx={{
-                        width: { xs: "100px", sm: "120px" },
-                        height: "auto",
-                        alignSelf: "flex-start", // sube el logo al tope del flex container
-                        mt: -0.1, // opcional: lo sube aún más si quieres
-                      }}
+                      sx={{ width: "120px", height: "auto" }}
                     />
 
                     {/* Lado derecho */}
                     <Box textAlign="right">
-                      <Typography variant="body1" fontWeight={500}>
+                      <Typography>
                         Factura: #{facturaSeleccionada?.folio}
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography>
                         Fecha:{" "}
                         {facturaSeleccionada?.fecha
                           ? new Date(
@@ -297,56 +516,40 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                           backgroundColor: "#DCFCE7",
                           padding: "4px 8px",
                           mt: 1,
-                          ml: 9,
-                          width: 100,
                         }}
                       >
-                        <Typography
-                          style={{
-                            fontWeight: 700,
-                            color: "#065F46",
-                          }}
-                        >
+                        <Typography fontWeight={700} color="#065F46">
                           {facturaSeleccionada?.orden_fk?.estado}
                         </Typography>
                       </Box>
                     </Box>
                   </Box>
-                  <Box mt={4}>
-                    <Box>
-                      <Typography
-                        fontWeight={400}
-                        fontSize={19}
-                        sx={{ letterSpacing: "normal" }}
-                      >
-                        Cliente:
-                      </Typography>
 
-                      <Typography>
-                        {facturaSeleccionada.nombreCliente}
-                      </Typography>
-                      <Typography>
-                        {facturaSeleccionada.orden_fk.payerEmail}
-                      </Typography>
-                    </Box>
-                    <Box mt={5}>
-                      <Typography fontWeight={400} fontSize={19}>
-                        Envío:{" "}
-                      </Typography>
-                      <Typography mt={1}>
-                        {facturaSeleccionada.direccion}
-                      </Typography>
-                      <Typography mt={1}>
-                        Método de pago: {facturaSeleccionada.metodoPago}
-                      </Typography>
-                       <Typography mt={1}>
-                        Telefono {facturaSeleccionada.telefono}
-                      </Typography>
-                    </Box>
+                  <Box mt={4}>
+                    <Typography variant="subtitle1" fontWeight={500}>
+                      Cliente:
+                    </Typography>
+                    <Typography>{facturaSeleccionada.nombreCliente}</Typography>
+                    <Typography>
+                      {facturaSeleccionada.orden_fk.payerEmail}
+                    </Typography>
                   </Box>
 
-                  <Box mt={5}>
-                    <Typography fontWeight={400} fontSize={19}>
+                  <Box mt={4}>
+                    <Typography variant="subtitle1" fontWeight={500}>
+                      Envío:
+                    </Typography>
+                    <Typography>{facturaSeleccionada.direccion}</Typography>
+                    <Typography>
+                      Método de pago: {facturaSeleccionada.metodoPago}
+                    </Typography>
+                    <Typography>
+                      Teléfono: {facturaSeleccionada.telefono}
+                    </Typography>
+                  </Box>
+
+                  <Box mt={4}>
+                    <Typography variant="subtitle1" fontWeight={500}>
                       Productos:
                     </Typography>
 
@@ -358,7 +561,7 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                         alignItems="flex-start"
                         mb={2}
                       >
-                        {/* Parte izquierda: imagen + info */}
+                        {/* Producto y detalles */}
                         <Box display="flex" gap={1}>
                           {/* Imagen */}
                           <Box>
@@ -385,15 +588,14 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                           </Box>
                         </Box>
 
-                        {/* Parte derecha: precios en córdobas y dólares */}
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          textAlign="right"
-                        >
-                          <Typography fontWeight={500}>
+                        {/* Precios */}
+                        <Box textAlign="right">
+                          <Typography fontWeight={600}>
                             C${" "}
-                            {Math.round(item.orden_item_fk.precio_unitario_usd *USD_TO_CORDOBAS)}
+                            {Math.round(
+                              item.orden_item_fk.precio_unitario_usd *
+                                USD_TO_CORDOBAS
+                            )}
                           </Typography>
                           <Typography fontWeight={500}>
                             ${" "}
@@ -402,24 +604,47 @@ export const Orders = ({ ordenes, ordenesLoaded }) => {
                         </Box>
                       </Box>
                     ))}
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6" align="right">
+                  </Box>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Box textAlign="right">
+                    <Typography variant="h6">
                       Total: C${" "}
                       {Math.round(facturaSeleccionada.total * USD_TO_CORDOBAS)}
                     </Typography>
-                    <Typography variant="h6" align="right">
-                      $ {facturaSeleccionada.total.toFixed(2)}
+                    <Typography variant="h6">
+                      ${facturaSeleccionada.total.toFixed(2)}
                     </Typography>
                   </Box>
-                </Box>
-              ) : (
-                <Typography>No se pudo cargar la factura.</Typography>
+                  <Box mt={13} />
+                  <Divider sx={{ mb: 0 }} />
+                  <Box
+                    component="footer"
+                    sx={{
+                      width: "100%",
+                      background: "#F8F8F8",
+                      py: 2,
+                      px: 0,
+                      mt: 0,
+                      borderTop: "1px solid #e0e0e0",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography color="gray" fontSize={13}>
+                      Esta factura fue generada el{" "}
+                      {new Date(
+                        facturaSeleccionada?.fecha
+                      ).toLocaleDateString()}
+                    </Typography>
+                    <Typography color="gray" fontSize={11}>
+                      Primal Garage - Sistema de gestión de ventas
+                    </Typography>
+                  </Box>
+                </>
               )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setModalAbierto(false)}>Cerrar</Button>
-            </DialogActions>
-          </Dialog>
+            </div>
+          </div>
         </LoadingOverlayWrapper>
       </LoadingOverlayWrapper>
     </>
