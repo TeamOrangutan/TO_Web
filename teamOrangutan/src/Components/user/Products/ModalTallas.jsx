@@ -56,17 +56,25 @@ export const ModalTallas = ({
       const yaExiste = tallasSeguras.some(
         (talla) => talla.name === nuevaTalla.name
       );
+
+      console.log(yaExiste);
+      console.log(tallasSeguras);
+
       let nuevasTallas;
       if (yaExiste) {
         nuevasTallas = tallasSeguras.map((talla) =>
           talla.name === nuevaTalla.name ? nuevaTalla : talla
         );
+        console.log("actualizada");
+        
         showMessage("Talla actualizada con éxito", "success");
       } else {
         nuevasTallas = [...tallasSeguras, nuevaTalla];
         agregarTallas(nuevaTalla);
         showMessage("Talla agregada con éxito", "success");
       }
+      console.log(nuevasTallas);
+      
       return nuevasTallas;
     });
     handleClose();

@@ -60,6 +60,14 @@ export const ModalEditarProduct = ({
     refreshProduct();
   }, [product]);
 
+  useEffect(() => {
+    // Cada vez que las tallas cambien, actualiza formData.tallas
+    setProduct((prev) => ({
+      ...prev,
+      tallas: tallas,
+    }));
+  }, [tallas]);
+  
   const actualizarEstado = (tallasActualizadas) => {
     const estadoNuevo =
       tallasActualizadas.length > 0 ? "Disponible" : "Agotado";
@@ -116,7 +124,7 @@ export const ModalEditarProduct = ({
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true)
+    setLoading(true);
     e.preventDefault();
     try {
       await updateProduct(product.id, formData);
@@ -126,8 +134,7 @@ export const ModalEditarProduct = ({
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
     }
-    setLoading(false)
-
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -192,6 +199,8 @@ export const ModalEditarProduct = ({
     setShowWarning(false);
   };
 
+  console.log(formData);
+
   return (
     <>
       <LoadingOverlayWrapper
@@ -241,15 +250,14 @@ export const ModalEditarProduct = ({
             </Typography>
             <Divider sx={{ mt: 2 }} />
             <form onSubmit={handleSubmit}>
-              <Box 
-           sx={{
+              <Box
+                sx={{
                   display: "flex",
                   flexDirection: { xs: "column", md: "row" },
                   mt: 2,
                   gap: { xs: 3, md: 0 },
                 }}
               >
-                
                 <Box
                   sx={{
                     width: { xs: "100%", md: "40%" },
@@ -273,7 +281,7 @@ export const ModalEditarProduct = ({
                     variant="contained"
                     component="label"
                     sx={{
-                       width: "100%",
+                      width: "100%",
                       height: { xs: 200, sm: 300, md: 500 },
                       backgroundColor: "white",
                       fontSize: "80px",
@@ -319,7 +327,7 @@ export const ModalEditarProduct = ({
                   <Button
                     variant="contained"
                     component="label"
-                     sx={{
+                    sx={{
                       width: { xs: "100%", sm: "60%", md: "40%" },
                       height: { xs: 80, sm: 120, md: "30%" },
                       backgroundColor: "white",
@@ -352,11 +360,12 @@ export const ModalEditarProduct = ({
 
                 {/* Datos del producto */}
                 <Box
- sx={{
+                  sx={{
                     width: { xs: "100%", md: "50%" },
                     mt: 0.5,
                     ml: { xs: 0, md: 7 },
-                  }}                 >
+                  }}
+                >
                   <Typography fontWeight="bold" color="#111827" fontSize={18}>
                     Información Básica
                   </Typography>
@@ -394,12 +403,13 @@ export const ModalEditarProduct = ({
                     Precios
                   </Typography>
                   <Box
- sx={{
+                    sx={{
                       display: "flex",
                       gap: { xs: 2, md: 10 },
                       mt: 2,
                       flexDirection: { xs: "column", sm: "row" },
-                    }}                   >
+                    }}
+                  >
                     <TextField
                       name="price"
                       value={formData.price || ""}
