@@ -300,8 +300,8 @@ export const Carrito = () => {
               gap: 1,
             }}
           >
-                    <FloatingDownloadButton/>
-            
+            <FloatingDownloadButton />
+
             <Box sx={{ flex: 1, pr: 2 }}>
               <Typography
                 sx={{ fontWeight: "bold", fontSize: { xs: 26, md: 40 } }}
@@ -373,7 +373,7 @@ export const Carrito = () => {
                               container
                               spacing={1}
                               mt={1}
-                              sx={{ width: 500, flexWrap: "wrap" }}
+                              sx={{ width: {sm: 500}, flexWrap: "wrap" }}
                             >
                               {item.tallas.map((talla, tallaIndex) => (
                                 <Grid2
@@ -553,7 +553,7 @@ export const Carrito = () => {
                   mr={15}
                   sx={{
                     position: "sticky",
-                    width: { md: 350, xs: 300, mt: { md: 2, xs: 0 } },
+                    width: { md: 350, xs: 240, mt: { md: 2, xs: 0 } },
                   }}
                 >
                   <Payments
@@ -593,7 +593,7 @@ export const Carrito = () => {
                 sx={{
                   mr: 15,
                   mt: { xs: 2 },
-                  width: { md: 320, xs: 260 },
+                  width: { md: 320, xs: 195 },
                   height: "fit-content",
                   position: "sticky",
                   top: 190,
