@@ -74,7 +74,7 @@ export const createProduct = async (
     console.log("agregar");
     console.log(formData);
 
-    const response = await fetch("http://localhost:3000/api/products/", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/products/`, {
       method: "POST",
       body: formData,
     });
@@ -161,7 +161,7 @@ export const updateProduct = async (id, updatedData) => {
     console.log(formData);
 
     const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:3000/api/products/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
