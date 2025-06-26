@@ -46,12 +46,14 @@ export const DashboardPage = () => {
   const handlePrintPDF = async () => {
     const pieChartNode = pieChartRef.current;
     const barChartNode = barChartRef.current;
-
+ const isMobile = window.innerWidth < 768;
     // Guarda los gráficos originales
     const originalPie = pieChartNode.innerHTML;
     const originalBar = barChartNode.innerHTML;
-    document.body.classList.add("force-desktop");
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    if(isMobile){
+      document.body.classList.add("force-desktop");
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
     // Captura imágenes
     const pieCanvas = await html2canvas(pieChartNode, {
       scale: 2,
@@ -91,7 +93,9 @@ export const DashboardPage = () => {
     // 4. Restaura los gráficos originales en el DOM
     pieChartNode.innerHTML = originalPie;
     barChartNode.innerHTML = originalBar;
-    document.body.classList.remove("force-desktop");
+    if(isMobile){
+      document.body.classList.remove("force-desktop");
+    }
   };
   const ventasDiariasAnim = useSpring({
     number: Number(stats.totalDiario) || 0,
