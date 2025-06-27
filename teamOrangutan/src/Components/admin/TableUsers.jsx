@@ -158,7 +158,9 @@ export const TableUsers = ({ Users, loading, reload }) => {
                     <TableCell>
                       <Box display="flex" flexDirection="column">
                         <span>{user.correo}</span>
-                        <span>{user.telefono}</span>
+                        {user.telefono !== "undefined" && (
+                          <span>{user.telefono}</span>
+                        )}{" "}
                       </Box>
                     </TableCell>
                     <TableCell>
@@ -200,7 +202,7 @@ export const TableUsers = ({ Users, loading, reload }) => {
                       </Box>{" "}
                     </TableCell>{" "}
                     <TableCell>
-                      $ {user.montoTotalOrdenes} (C${" "}
+                      $ {(user.montoTotalOrdenes).toFixed(2)} (C${" "}
                       {(user.montoTotalOrdenes * USD_TO_CORDOBAS).toFixed(2)})
                     </TableCell>{" "}
                     <TableCell>

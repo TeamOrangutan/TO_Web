@@ -136,7 +136,7 @@ export const ModalDetallesUser = ({ open, onClose, user, loading }) => {
                     fontSize: 18,
                   }}
                 />
-                {user?.telefono}
+                {user?.telefono !== "undefined" && <span>{user?.telefono}</span>}{" "}
               </Typography>
               <Typography fontSize={15}>
                 <PlaceOutlinedIcon

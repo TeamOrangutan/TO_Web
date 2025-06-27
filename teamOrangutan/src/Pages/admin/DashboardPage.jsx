@@ -46,15 +46,14 @@ export const DashboardPage = () => {
   const handlePrintPDF = async () => {
     const pieChartNode = pieChartRef.current;
     const barChartNode = barChartRef.current;
- const isMobile = window.innerWidth < 768;
+    const isMobile = window.innerWidth < 768;
     // Guarda los gráficos originales
     const originalPie = pieChartNode.innerHTML;
     const originalBar = barChartNode.innerHTML;
-    if(isMobile){
+    if (isMobile) {
       document.body.classList.add("force-desktop");
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
-    // Captura imágenes
     const pieCanvas = await html2canvas(pieChartNode, {
       scale: 2,
       useCORS: true,
@@ -93,7 +92,7 @@ export const DashboardPage = () => {
     // 4. Restaura los gráficos originales en el DOM
     pieChartNode.innerHTML = originalPie;
     barChartNode.innerHTML = originalBar;
-    if(isMobile){
+    if (isMobile) {
       document.body.classList.remove("force-desktop");
     }
   };
@@ -194,6 +193,7 @@ export const DashboardPage = () => {
       icon: <MonetizationOnIcon fontSize="large" />,
     },
   ];
+  console.log(stats.ventasDiarias);
 
   return (
     <Box>
@@ -216,8 +216,8 @@ export const DashboardPage = () => {
               overflowX: "hidden",
             }}
           >
-                    <FloatingDownloadButton/>
-            
+            <FloatingDownloadButton />
+
             {selectedOption === "Dashboard" && (
               <>
                 <Grid container spacing={2}>
@@ -272,39 +272,37 @@ export const DashboardPage = () => {
                     </Grid>
                   ))} */}
 
-                  {stats.ventasDiarias && (
-                    <Grid item xs={12}>
-                      <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
-                        <Typography variant="h6" gutterBottom>
-                          Ventas Diarias (últimos días)
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: { xs: "center", sm: "flex-end" },
-                          }}
-                        >
-                          <Button
-                            size="medium"
-                            variant="contained"
-                            sx={{
-                              mb: 2,
-                              backgroundColor: "#007aff",
-                              color: "#fff",
-                              width: { xs: "100%", sm: "auto" },
-                            }}
-                            onClick={() => handleGenerarReporte()}
-                          >
-                            <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
-                            reporte (15 dias)
-                          </Button>
-                        </Box>
-                        <VentasDiariasBarChart
-                          ventasDiarias={stats.ventasDiarias}
-                        />
-                      </Paper>
-                    </Grid>
-                  )}
+{stats.ventasDiarias?.length > 0 && (
+  <Grid item xs={12}>
+    <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
+      <Typography variant="h6" gutterBottom>
+        Ventas Diarias (últimos días)
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: { xs: "center", sm: "flex-end" },
+        }}
+      >
+        <Button
+          size="medium"
+          variant="contained"
+          sx={{
+            mb: 2,
+            backgroundColor: "#007aff",
+            color: "#fff",
+            width: { xs: "100%", sm: "auto" },
+          }}
+          onClick={() => handleGenerarReporte()}
+        >
+          <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar reporte (15 días)
+        </Button>
+      </Box>
+
+      <VentasDiariasBarChart ventasDiarias={stats.ventasDiarias} />
+    </Paper>
+  </Grid>
+)}
                 </Grid>
                 <TableOrders />
 

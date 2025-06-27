@@ -27,7 +27,7 @@ export const PieChartProductos = ({
     id: index,
     value: producto.porcentaje,
     label: producto.nombreProducto,
-    color: colors[index % colors.length], // asigna color por índice
+    color: colors[index % colors.length],
   }));
 
   return (
