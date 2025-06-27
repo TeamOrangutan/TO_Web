@@ -224,7 +224,7 @@ const ModalPdf = ({
                     colors={PRODUCT_COLORS}
                   />
                 </Box>
-                <Box sx={{ alignSelf: "flex-start" }}>
+                <Box sx={{ alignSelf: "flex-start", ml: 10 }}>
                   <Typography fontWeight="bold" fontSize={18}>
                     Top Productos:
                   </Typography>
@@ -238,8 +238,8 @@ const ModalPdf = ({
                         <Box display="flex" alignItems="center" gap={1}>
                           <Box
                             sx={{
-                              width: 14,
-                              height: 14,
+                              width:8,
+                              height: 8,
                               borderRadius: "50%",
                               backgroundColor:
                                 PRODUCT_COLORS[idx % PRODUCT_COLORS.length],

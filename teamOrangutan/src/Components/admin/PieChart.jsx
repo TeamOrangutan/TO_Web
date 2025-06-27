@@ -26,7 +26,7 @@ export const PieChartProductos = ({
   const data = productosAnalisis.map((producto, index) => ({
     id: index,
     value: producto.porcentaje,
-    label: producto.nombreProducto,
+    // label: producto.nombreProducto,
     color: colors[index % colors.length],
   }));
 
@@ -52,10 +52,7 @@ export const PieChartProductos = ({
           fill: "white",
         },
       }}
-      legend={{
-        direction: "row",
-        position: { vertical: "bottom", horizontal: "middle" },
-      }}
+     
     />
   );
 };

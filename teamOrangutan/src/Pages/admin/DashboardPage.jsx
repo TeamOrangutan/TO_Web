@@ -153,7 +153,14 @@ export const DashboardPage = () => {
 
     try {
       const data = await generarReporte();
-      setreporteQuincenal(data);
+
+      const productosOrdenados = data.productosAnalisis?.sort(
+        (a, b) => b.porcentaje - a.porcentaje
+      );
+      setreporteQuincenal({
+        ...data,
+        productosAnalisis: productosOrdenados,
+      });
     } catch (error) {
       return console.error("Error al generar reporte:", error);
     }
@@ -170,6 +177,9 @@ export const DashboardPage = () => {
       />
     );
   }
+
+console.log(reporteQuincenal);
+
 
   const resumenStats = [
     {
@@ -272,37 +282,40 @@ export const DashboardPage = () => {
                     </Grid>
                   ))} */}
 
-{stats.ventasDiarias?.length > 0 && (
-  <Grid item xs={12}>
-    <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
-      <Typography variant="h6" gutterBottom>
-        Ventas Diarias (últimos días)
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: { xs: "center", sm: "flex-end" },
-        }}
-      >
-        <Button
-          size="medium"
-          variant="contained"
-          sx={{
-            mb: 2,
-            backgroundColor: "#007aff",
-            color: "#fff",
-            width: { xs: "100%", sm: "auto" },
-          }}
-          onClick={() => handleGenerarReporte()}
-        >
-          <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar reporte (15 días)
-        </Button>
-      </Box>
+                  {stats.ventasDiarias?.length > 0 && (
+                    <Grid item xs={12}>
+                      <Paper elevation={3} sx={{ p: { xs: 1, sm: 2 } }}>
+                        <Typography variant="h6" gutterBottom>
+                          Ventas Diarias (últimos días)
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: { xs: "center", sm: "flex-end" },
+                          }}
+                        >
+                          <Button
+                            size="medium"
+                            variant="contained"
+                            sx={{
+                              mb: 2,
+                              backgroundColor: "#007aff",
+                              color: "#fff",
+                              width: { xs: "100%", sm: "auto" },
+                            }}
+                            onClick={() => handleGenerarReporte()}
+                          >
+                            <DescriptionOutlinedIcon sx={{ mr: 1 }} /> Generar
+                            reporte (15 días)
+                          </Button>
+                        </Box>
 
-      <VentasDiariasBarChart ventasDiarias={stats.ventasDiarias} />
-    </Paper>
-  </Grid>
-)}
+                        <VentasDiariasBarChart
+                          ventasDiarias={stats.ventasDiarias}
+                        />
+                      </Paper>
+                    </Grid>
+                  )}
                 </Grid>
                 <TableOrders />
 
