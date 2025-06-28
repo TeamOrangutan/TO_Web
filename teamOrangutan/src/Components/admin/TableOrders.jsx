@@ -29,6 +29,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import logoSRC from "../../assets/user/logo2.png";
 import ProductItem from "../user/Navbar/ProductItem";
 import { Stack, useTheme, useMediaQuery } from "@mui/material";
+import jsPDF from "jspdf";
 
 import dayjs from "dayjs";
 import "dayjs/locale/es";
