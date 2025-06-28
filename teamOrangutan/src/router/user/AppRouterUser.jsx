@@ -62,9 +62,8 @@ function AppRouterUser() {
         <Route
           path="/acercaDe"
           element={
-            <PrivateRoute>
+          
               <Historial />
-            </PrivateRoute>
           }
         ></Route>
 
